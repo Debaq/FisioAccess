@@ -175,7 +175,7 @@ class AppScreenManager(ScreenManager):
         print(f"Loading help content for activity: {activity}")
         help_screen = self.get_screen('help')
         help_rst = help_screen.ids.help_text
-
+    
         file_path = os.path.join('rst', f"{activity}.rst")
         if os.path.exists(file_path):
             with open(file_path, 'r', encoding='utf-8') as file:
