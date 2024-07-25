@@ -1,0 +1,46 @@
+<WelcomeScreen>:
+    name: 'welcome'
+    canvas.before:
+        Color:
+            rgba: app.screen_manager.get_background_color()
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+    MDBoxLayout:
+        orientation: 'vertical'
+
+        MDToolbar:
+            title: 'FisioAccess'
+            md_bg_color: app.theme_cls.primary_color
+            elevation: 10
+            left_action_items: [['menu', lambda x: app.screen_manager.open_menu(x)]]
+            right_action_items: [['brightness-6', lambda x: app.screen_manager.switch_theme()], ['cog', lambda x: app.screen_manager.go_to_preferences()]]
+
+        Widget:
+            size_hint_y: 1
+
+        Image:
+            source: 'img/logo.png'
+            size_hint: None, None
+            size: dp(300), dp(300)  # Aumenta el tamaño del logo
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+        MDLabel:
+            text: 'Seleccione el tipo de actividad que se realizará'
+            halign: 'center'
+            theme_text_color: 'Secondary'
+            font_style: 'Subtitle1'
+            size_hint_y: None
+            height: dp(20)
+            pos_hint: {'center_y': 0.5}
+
+        Widget:
+            size_hint_y: 1
+
+        MDLabel:
+            text: 'Universidad Austral de Chile'
+            halign: 'center'
+            theme_text_color: 'Secondary'
+            size_hint_y: None
+            height: dp(30)

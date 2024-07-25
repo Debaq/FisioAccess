@@ -1,0 +1,71 @@
+<PreferencesScreen>:
+    name: 'preferences'
+    canvas.before:
+        Color:
+            rgba: app.screen_manager.get_background_color()
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+    MDBoxLayout:
+        orientation: 'vertical'
+
+        MDToolbar:
+            title: 'Preferencias'
+            md_bg_color: app.theme_cls.primary_color
+            elevation: 10
+            left_action_items: [['arrow-left', lambda x: app.screen_manager.back_to_previous_screen()]]
+
+        MDLabel:
+            text: 'Color de la aplicación'
+            halign: 'center'
+            theme_text_color: 'Primary'
+            font_style: 'H6'
+            size_hint_y: None
+            height: dp(20)
+            pos_hint: {'center_x': 0.5}
+
+        MDBoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: dp(50)
+            padding: dp(10)
+            spacing: dp(10)
+
+            Spinner:
+                id: theme_spinner
+                text: 'DeepPurple'
+                values: ['Red', 'Pink', 'Purple', 'DeepPurple', 'Indigo', 'Blue', 'LightBlue', 'Cyan', 'Teal', 'Green', 'LightGreen', 'Lime', 'Yellow', 'Amber', 'Orange', 'DeepOrange', 'Brown', 'Gray', 'BlueGray']
+                size_hint: None, None
+                size: dp(200), dp(50)
+
+        MDLabel:
+            text: 'Velocidad Serial'
+            halign: 'center'
+            theme_text_color: 'Primary'
+            font_style: 'H6'
+            size_hint_y: None
+            height: dp(20)
+            pos_hint: {'center_x': 0.5}
+
+        MDBoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: dp(50)
+            padding: dp(10)
+            spacing: dp(10)
+
+            Spinner:
+                id: baudrate_spinner
+                text: '9600'
+                values: ['9600', '19200', '38400', '57600', '115200']
+                size_hint: None, None
+                size: dp(200), dp(50)
+
+        Widget:
+            size_hint_y: 1
+
+        MDRaisedButton:
+            text: 'Guardar'
+            pos_hint: {'center_x': 0.5}
+            on_release: app.screen_manager.save_preferences()

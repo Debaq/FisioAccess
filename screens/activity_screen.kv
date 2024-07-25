@@ -1,0 +1,73 @@
+<ActivityScreen>:
+    name: 'activity'
+    canvas.before:
+        Color:
+            rgba: app.screen_manager.get_background_color()
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+    MDBoxLayout:
+        orientation: 'vertical'
+
+        MDToolbar:
+            title: 'FisioAccess - Activity'
+            md_bg_color: app.theme_cls.primary_color
+            left_action_items: [['arrow-left', lambda x: app.screen_manager.confirm_back_to_welcome()]]
+            right_action_items: [['help', lambda x: app.screen_manager.go_to_help(app.screen_manager.current_activity)], ['brightness-6', lambda x: app.screen_manager.switch_theme()], ['cog', lambda x: app.screen_manager.go_to_preferences()]]
+            elevation: 10
+
+        BoxLayout:
+            id: plot_box
+            orientation: 'vertical'
+
+        MDBoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: dp(50)
+            padding: dp(10)
+            spacing: dp(10)
+
+            MDIconButton:
+                id: record_button
+                icon: 'play'
+                on_release: app.screen_manager.toggle_record()
+
+            MDIconButton:
+                id: clear_button
+                icon: 'delete'
+                on_release: app.screen_manager.clear_plot()
+                disabled: True
+
+            MDIconButton:
+                id: move_left_button
+                icon: 'arrow-left'
+                on_release: app.screen_manager.scroll_left()
+
+            MDIconButton:
+                id: move_right_button
+                icon: 'arrow-right'
+                on_release: app.screen_manager.scroll_right()
+
+            MDIconButton:
+                id: magnify-plus_button
+                icon: 'magnify-plus'
+                on_release: app.screen_manager.zoom_in()
+
+            MDIconButton:
+                id: magnify-minus_button
+                icon: 'magnify-minus'
+                on_release: app.screen_manager.zoom_out()
+            
+            MDIconButton:
+                icon: 'marker'
+            
+            MDIconButton:
+                icon: 'marker-cancel'
+
+        MDLabel:
+            text: 'Universidad Austral de Chile'
+            halign: 'center'
+            theme_text_color: 'Secondary'
+            size_hint_y: None
+            height: dp(10)
