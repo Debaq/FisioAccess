@@ -1,29 +1,123 @@
-<PreferencesScreen>:
-    name: 'preferences'
-    canvas.before:
-        Color:
-            rgba: app.screen_manager.get_background_color()
-        Rectangle:
-            size: self.size
-            pos: self.pos
-
+<PreferencesScreen@MDScreen>:
     MDBoxLayout:
         orientation: 'vertical'
+        md_bg_color: app.theme_cls.onSecondaryColor  
 
-        MDTopAppBar:
-            title: 'Preferencias'
-            md_bg_color: app.theme_cls.primary_color
-            elevation: 10
-            left_action_items: [['arrow-left', lambda x: app.screen_manager.back_to_previous_screen()]]
+        MDScrollView:
+            size_hint_y: 0.9
 
-        MDLabel:
-            text: 'Color de la aplicación'
-            halign: 'center'
-            theme_text_color: 'Primary'
-            font_style: 'H6'
-            size_hint_y: None
-            height: dp(20)
-            pos_hint: {'center_x': 0.5}
+            MDBoxLayout:
+                orientation: 'vertical'
+                padding: "16dp"
+                spacing: "16dp"
+                adaptive_height: True
+
+                MDLabel:
+                    text: "Configuración"
+                    font_style: "Display"
+                    adaptive_height: True
+
+                MDGridLayout:
+                    cols: 3
+                    spacing: "16dp"
+                    adaptive_height: True
+
+                    MDCard:
+                        orientation: "vertical"
+                        padding: "16dp"
+                        size_hint: 1, None
+                        height: "210dp"
+                        MDLabel:
+                            text: "Temas"
+                            font_style: "Title"
+                            adaptive_height: True
+
+                        MDGridLayout:
+                            cols: 2
+
+                            adaptive_height: True
+                            MDLabel:
+                                text:"Paleta"
+                            MDButton:
+                                id: btn_palette
+                                style: "elevated"
+                                on_release: root.set_palette(self)
+                                MDButtonIcon:
+                                    icon: "plus"
+
+                                MDButtonText:
+                                    id: paletteColor_text_conf
+                                    text: ""
+                            MDLabel:
+                                text:"Esquema de colores"
+                            MDButton:
+                                style: "elevated"
+                                on_release: root.set_scheme_type(self)
+                                MDButtonIcon:
+                                    icon: "plus"
+
+                                MDButtonText:
+                                    id:schemeColor_text_conf
+                                    text: ""
+                            MDLabel:
+                                text:"Estilo"
+                            MDButton:
+                                style: "elevated"
+                                on_release: root.switch_theme(self)
+                                MDButtonText:
+                                    id: style_text_conf
+                                    text: ""
+                            MDLabel:
+                                text:"Estilo Dinamico"
+                            MDButton:
+                                style: "elevated"
+                                on_release: root.toggle_dynamic_color(self)
+                                MDButtonText:
+                                    id: styledin_text_conf
+                                    text: ""
+                            
+
+                    MDCard:
+                        orientation: "vertical"
+                        padding: "16dp"
+                        size_hint: 1, None
+                        height: "210dp"
+
+                        MDLabel:
+                            text: "Estado de la red"
+                            font_style: "Title"
+                            adaptive_height: True
+
+                        MDLabel:
+                            text: "Estado: Activo como AP"
+                            adaptive_height: True
+
+                        MDLabel:
+                            text: "Dirección de conexión: 192.168.4.1"
+                            adaptive_height: True
+
+                        MDLabel:
+                            text: "Dispositivos conectados:"
+                            adaptive_height: True
+
+                        MDList:
+                            id: connected_devices
+                            adaptive_height: True
+
+                    MDCard:
+                        orientation: "vertical"
+                        padding: "16dp"
+                        size_hint: 1, None
+                        height: "210dp"
+
+                        MDLabel:
+                            text: "Configuraciones adicionales"
+                            font_style: "Title"
+                            adaptive_height: True
+
+                        MDLabel:
+                            text: "Espacio para futuras configuraciones"
+                            adaptive_height: True
 
         MDBoxLayout:
             orientation: 'horizontal'
@@ -31,41 +125,15 @@
             height: dp(50)
             padding: dp(10)
             spacing: dp(10)
+            md_bg_color: app.theme_cls.shadowColor  
 
-            Spinner:
-                id: theme_spinner
-                text: 'DeepPurple'
-                values: ['Red', 'Pink', 'Purple', 'DeepPurple', 'Indigo', 'Blue', 'LightBlue', 'Cyan', 'Teal', 'Green', 'LightGreen', 'Lime', 'Yellow', 'Amber', 'Orange', 'DeepOrange', 'Brown', 'Gray', 'BlueGray']
-                size_hint: None, None
-                size: dp(200), dp(50)
+            MDIconButton:
+                valign: "center"
+                icon: 'arrow-left'
+                on_release: app.change_screen('HomeScreen')
 
-        MDLabel:
-            text: 'Velocidad Serial'
-            halign: 'center'
-            theme_text_color: 'Primary'
-            font_style: 'H6'
-            size_hint_y: None
-            height: dp(20)
-            pos_hint: {'center_x': 0.5}
-
-        MDBoxLayout:
-            orientation: 'horizontal'
-            size_hint_y: None
-            height: dp(50)
-            padding: dp(10)
-            spacing: dp(10)
-
-            Spinner:
-                id: baudrate_spinner
-                text: '9600'
-                values: ['9600', '19200', '38400', '57600', '115200']
-                size_hint: None, None
-                size: dp(200), dp(50)
-
-        Widget:
-            size_hint_y: 1
-
-        MDRaisedButton:
-            text: 'Guardar'
-            pos_hint: {'center_x': 0.5}
-            on_release: app.screen_manager.save_preferences()
+            MDLabel:
+                text: "Universidad Austral de Chile Sede Puerto Montt"
+                halign: "right"
+                valign: "center"
+                size_hint_x: 0.8

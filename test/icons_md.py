@@ -1,24 +1,27 @@
 from kivy.lang import Builder
 from kivy.properties import StringProperty
-from kivy.uix.screenmanager import Screen
 
 from kivymd.icon_definitions import md_icons
+from kivymd.uix.screen import MDScreen
 from kivymd.app import MDApp
-from kivymd.uix.list import OneLineIconListItem
-
+from kivymd.uix.list import MDListItem
 
 Builder.load_string(
     '''
 #:import images_path kivymd.images_path
 
 
-<CustomOneLineIconListItem>
+<IconItem>
 
-    IconLeftWidget:
+    MDListItemLeadingIcon:
         icon: root.icon
+
+    MDListItemSupportingText:
+        text: root.text
 
 
 <PreviousMDIcons>
+    md_bg_color: self.theme_cls.backgroundColor
 
     MDBoxLayout:
         orientation: 'vertical'
@@ -30,6 +33,7 @@ Builder.load_string(
 
             MDIconButton:
                 icon: 'magnify'
+                pos_hint: {'center_y': .5}
 
             MDTextField:
                 id: search_field
@@ -42,7 +46,7 @@ Builder.load_string(
             key_size: 'height'
 
             RecycleBoxLayout:
-                padding: dp(10)
+                padding: dp(10), dp(10), 0, dp(10)
                 default_size: None, dp(48)
                 default_size_hint: 1, None
                 size_hint_y: None
@@ -52,19 +56,19 @@ Builder.load_string(
 )
 
 
-class CustomOneLineIconListItem(OneLineIconListItem):
+class IconItem(MDListItem):
     icon = StringProperty()
+    text = StringProperty()
 
 
-class PreviousMDIcons(Screen):
-
+class PreviousMDIcons(MDScreen):
     def set_list_md_icons(self, text="", search=False):
         '''Builds a list of icons for the screen MDIcons.'''
 
         def add_icon_item(name_icon):
             self.ids.rv.data.append(
                 {
-                    "viewclass": "CustomOneLineIconListItem",
+                    "viewclass": "IconItem",
                     "icon": name_icon,
                     "text": name_icon,
                     "callback": lambda x: x,

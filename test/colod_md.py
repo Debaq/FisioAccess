@@ -1,12 +1,11 @@
 from kivy.clock import Clock
 from kivy.lang import Builder
-from kivy.properties import StringProperty, ColorProperty
+from kivy.properties import ColorProperty, StringProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.utils import hex_colormap
-
-from kivymd.uix.menu import MDDropdownMenu
 from kivymd.app import MDApp
-
+from kivymd.dynamic_color import DynamicColor
+from kivymd.uix.menu import MDDropdownMenu
 
 KV = '''
 <ColorCard>
@@ -23,7 +22,7 @@ KV = '''
 
 
 MDScreen:
-    md_bg_color: app.theme_cls.bg_darkest
+    md_bg_color: app.theme_cls.backgroundColor
 
     MDIconButton:
         on_release: app.open_menu(self)
@@ -118,10 +117,14 @@ class Example(MDApp):
         self.theme_cls.switch_theme()
         Clock.schedule_once(self.generate_cards, 0.5)
 
-    def generate_cards(self, *args):  # The error is found in this method.
+    def generate_cards(self, *args):
         self.root.ids.card_list.data = []
-        for color in self.theme_cls.schemes_name_colors:
-            value = f"{color}Color"
+        __schemes_name_colors = []
+        for property_name in dir(DynamicColor):
+            if '_' not in property_name:
+                __schemes_name_colors.append(property_name)
+        for color in __schemes_name_colors:
+            value = color
             self.root.ids.card_list.data.append(
                 {
                     "bg_color": getattr(self.theme_cls, value),

@@ -7,6 +7,9 @@ import threading
 import time
 import numpy as np
 
+
+
+
 class ECGLiveVis:
     def __init__(self, duration=10, sample_rate=100):
         self.duration = duration
@@ -15,7 +18,7 @@ class ECGLiveVis:
 
         # Inicializar datos
         self.y_data = [0] * self.data_len
-        self.ecg = ECG_Simulator(heart_rate=150, use_pacemaker=True)
+        self.ecg = ECG_Simulator(heart_rate=50, use_pacemaker=True)
         
         # Configurar la figura y el subplot
         self.fig, self.ax = plt.subplots(figsize=(12, 6))

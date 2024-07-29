@@ -1,25 +1,21 @@
-<ActivityScreen>:
-    name: 'activity'
-    canvas.before:
-        Color:
-            rgba: app.screen_manager.get_background_color()
-        Rectangle:
-            size: self.size
-            pos: self.pos
+<ActivityScreen@MDScreen>:
+    figure_wgt:figure_wgt
 
     MDBoxLayout:
         orientation: 'vertical'
 
-        MDTopAppBar:
-            title: 'FisioAccess - Activity'
-            md_bg_color: app.theme_cls.primary_color
-            left_action_items: [['arrow-left', lambda x: app.screen_manager.confirm_back_to_welcome()]]
-            right_action_items: [['help', lambda x: app.screen_manager.go_to_help(app.screen_manager.current_activity)], ['brightness-6', lambda x: app.screen_manager.switch_theme()], ['cog', lambda x: app.screen_manager.go_to_preferences()]]
-            elevation: 10
+        MDBoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: dp(50)
+            padding: dp(10)
+            spacing: dp(10)
+            Widget:
+            MDIcon:
+                icon: 'wifi-strength-off-outline'
 
-        BoxLayout:
-            id: plot_box
-            orientation: 'vertical'
+        MatplotFigure:
+            id:figure_wgt
 
         MDBoxLayout:
             orientation: 'horizontal'
@@ -29,9 +25,14 @@
             spacing: dp(10)
 
             MDIconButton:
+                id: back
+                icon: 'arrow-left'
+                on_release: app.change_screen('HomeScreen')
+
+            MDIconButton:
                 id: record_button
                 icon: 'play'
-                on_release: app.screen_manager.toggle_record()
+                on_release: root.toggle_record()
 
             MDIconButton:
                 id: clear_button
@@ -65,9 +66,33 @@
             MDIconButton:
                 icon: 'marker-cancel'
 
-        MDLabel:
-            text: 'Universidad Austral de Chile'
-            halign: 'center'
-            theme_text_color: 'Secondary'
-            size_hint_y: None
-            height: dp(30)
+            MDIconButton:
+                icon: 'select-search'
+            MDDivider:
+                size_hint_y: 1
+                orientation: "vertical"
+            Widget:  # Este es un layout vacío que actúa como espacio
+                size_hint_x: None
+                width: dp(210)  
+            MDDivider:
+                size_hint_y: 1
+                orientation: "vertical"
+
+
+            MDButton:
+                style: "elevated"
+                pos_hint: {"center_x": .5, "center_y": .5}
+                on_release: root.menu_measure(self)
+
+                MDButtonIcon:
+                    icon: "plus"
+
+                MDButtonText:
+                    text: "Medir"
+
+            MDIconButton:
+                icon: 'file-document-arrow-right'
+
+            MDIconButton:
+                icon: 'help'
+

@@ -1,0 +1,135 @@
+<NavItem>:
+    style: "elevated"
+    pos_hint: {"center_x": .5, "center_y": .5}
+
+
+    MDIconButton:
+        icon: root.icon
+        on_release: root.dispatch('on_release')
+
+    MDLabel:
+        text: root.text
+        opacity: 0 if root.parent.parent.parent.parent.nav_drawer_collapsed else 1
+        width: 0 if root.parent.parent.parent.parent.nav_drawer_collapsed else self.texture_size[0]
+        pos_hint: {"center_x": .5, "center_y": 0.25}
+
+<HomeScreen>:
+    MDBoxLayout:
+        orientation: 'horizontal'
+        md_bg_color: app.theme_cls.primaryColor
+
+
+        MDCard:
+            style: "elevated"
+
+            id: nav_card
+            orientation: 'vertical'
+            size_hint_x: 0.07  # Inicialmente más estrecho
+            md_bg_color: app.theme_cls.primaryColor
+            radius: 0, 20, 20, 0
+            padding: "10dp"
+            spacing: "10dp"
+            on_press:root.toggle_nav_drawer()
+
+            MDIconButton:
+                icon: "menu"
+                on_release: root.toggle_nav_drawer()
+
+            BoxLayout:
+                id: nav_items
+                orientation: 'vertical'
+                spacing: "10dp"
+
+                NavItem:
+                    icon: "home"
+                    text: "Inicio"
+                    on_release: 
+                        app.change_screen('HomeScreen')
+                        root.highlight_button(self)
+
+                NavItem:
+                    icon: "heart-settings"
+                    text: "ECG"
+                    on_release: 
+                        app.change_screen("ActivityScreen")
+                        root.highlight_button(self)
+
+                NavItem:
+                    icon: "brain"
+                    text: "EEG"
+                    on_release: 
+                        app.mostrar_notificacion("ECG conectado", "ev-plug-type2", 5)
+                        root.highlight_button(self)
+
+                NavItem:
+                    icon: "lungs"
+                    text: "Espiro"
+                    on_release: 
+                        app.change_screen("Espiro")
+                        root.highlight_button(self)
+
+                NavItem:
+                    icon: "arm-flex"
+                    text: "EMG"
+                    on_release: 
+                        app.change_screen("EMG")
+                        root.highlight_button(self)
+
+                NavItem:
+                    icon: "cog"
+                    text: "Config"
+                    on_release: 
+                        app.change_screen('COG')
+                        root.highlight_button(self)
+
+                NavItem:
+                    icon: "power"
+                    text: "Salir"
+                    on_release: 
+                        root.show_exit_confirmation()
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            md_bg_color: app.theme_cls.primaryColor
+           
+
+            MDCard: 
+                style: "elevated"
+                radius: 20, 0, 0, 20
+                size_hint_x: 0.2  # Inicialmente más estrecho
+                size_hint_y: 0.07
+                pos_hint: {"right":1}
+                padding: "10dp"
+                spacing: "10dp" 
+                elevation: 2
+                shadow_softness: 4
+                shadow_offset: (2, -2)
+                BoxLayout:
+                    id: nav_items
+                    orientation: 'horizontal'
+                    spacing: "10dp"
+                    MDIcon:
+                        icon: 'wifi-strength-off-outline'
+                    MDIcon:
+                        icon: 'battery-alert'
+                    MDIconButton:
+                        icon: 'help-box'
+                        pos_hint: {"center_x": .5, "center_y": .5}
+                    MDIconButton:
+                        id: btn_light
+                        icon: 'light-switch'
+                        pos_hint: {'center_x': .5, 'center_y': .5}
+                        on_release: app.light_switch(True)
+
+
+
+            MDLabel:
+                text: "FisioAccess"
+                theme_text_color: "Custom"
+                text_color: app.theme_cls.backgroundColor
+                font_style: 'Display'
+                halign: "center"
+                valign: "center"
+
+
+
