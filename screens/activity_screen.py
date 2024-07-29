@@ -23,6 +23,37 @@ class ActivityScreen(MDScreen):
         self.y_data = [0] * self.data_points
         self.is_running = False
         self.paused = False
+        
+        
+    def menu_measure(self, menu_button):
+        items = ["P", "Q", "R", "S", "T"]
+        
+        menu_items = [
+            {
+                "text": item,
+                "on_release": lambda x=item: self.selected_mark(x),
+            } for item in items
+        ]
+        
+        self.menu = MDDropdownMenu(
+            caller=menu_button,
+            items=menu_items,
+        )
+        
+        self.menu.open()
+
+    def selected_mark(self, item):
+        print(f"Selected: {item}")
+        self.menu.dismiss()
+
+    # Función para crear un MDListItem personalizado si es necesario
+    def custom_list_item(self, text, on_release):
+        return MDListItem(
+            MDListItemHeadlineText(
+                text=text,
+            ),
+            on_release=on_release,
+        )
 
     def toggle_record(self):
         self.recording = not self.recording
