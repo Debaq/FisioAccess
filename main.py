@@ -11,7 +11,7 @@ from utils.theme_manager import ThemeManager
 
 #from kivy.factory import Factory
 
-# Importamos la clase HomeScreen
+# Importamos la clase HomeScree
 from screens.home_screen import HomeScreen
 from screens.activity_screen import ActivityScreen
 from screens.preferences_screen import PreferencesScreen
