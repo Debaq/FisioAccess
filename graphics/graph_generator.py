@@ -5,10 +5,37 @@ from matplotlib import animation
 import matplotlib.font_manager as fm
 import os
 
+def find_font_file(start_path, font_name, max_depth=5):
+    """
+    Busca el archivo de fuente en la estructura de directorios.
+    """
+    for root, dirs, files in os.walk(start_path):
+        if font_name in files:
+            return os.path.join(root, font_name)
+        
+        # Limitar la profundidad de búsqueda
+        if root[len(start_path):].count(os.sep) >= max_depth:
+            del dirs[:]
+    
+    raise FileNotFoundError(f"No se pudo encontrar el archivo de fuente {font_name}")
 
+# Obtenemos la ruta del script actual
 script_dir = os.path.dirname(os.path.abspath(__file__))
-font_path = os.path.join(script_dir, 'fonts', 'Hack-Regular.ttf')
 
+# Subimos dos niveles para llegar a la raíz del proyecto
+project_root = os.path.dirname(os.path.dirname(script_dir))
+
+# Buscamos el archivo de fuente
+font_name = 'Hack-Regular.ttf'
+try:
+    font_path = find_font_file(project_root, font_name)
+except FileNotFoundError:
+    print(f"No se pudo encontrar el archivo {font_name}.")
+    print("Por favor, verifica que el archivo existe y está en la carpeta 'fonts'.")
+    print(f"Buscando desde: {project_root}")
+    raise
+
+font_prop = fm.FontProperties(fname=font_path)
 
 
 #optimized draw on Agg backend
@@ -17,7 +44,9 @@ mpl.rcParams['path.simplify_threshold'] = 1.0
 mpl.rcParams['agg.path.chunksize'] = 1000
 
 #define some matplotlib figure parameters
-mpl.rcParams['font.family'] = 'Hack'
+#mpl.rcParams['font.family'] = 'Hack'
+mpl.rcParams['font.family'] = font_prop.get_name()
+
 mpl.rcParams['axes.spines.top'] = False
 mpl.rcParams['axes.spines.right'] = False
 mpl.rcParams['axes.linewidth'] = 1.0
