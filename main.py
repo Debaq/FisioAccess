@@ -15,6 +15,7 @@ from utils.theme_manager import ThemeManager
 from screens.home_screen import HomeScreen
 from screens.activity_screen import ActivityScreen
 from screens.preferences_screen import PreferencesScreen
+from screens.help_screen import HelpScreen
 
 
 
@@ -33,11 +34,13 @@ class FisioAccess(MDApp):
         Builder.load_file("screens/activity_screen.kv")
         Builder.load_file('screens/preferences_screen.kv')
         Builder.load_file('screens/home_screen.kv')
+        Builder.load_file('screens/help_screen.kv')
 
         # Agregar pantallas
         self.screen_manager.add_widget(HomeScreen(name='HomeScreen'))
         self.screen_manager.add_widget(PreferencesScreen(name='COG'))
         self.screen_manager.add_widget(ActivityScreen(name='ActivityScreen'))
+        self.screen_manager.add_widget(HelpScreen(name='HelpScreen'))
 
         #verificar estilo:
         self.theme_manager = ThemeManager()
@@ -80,12 +83,18 @@ class FisioAccess(MDApp):
         if hasattr(current_screen, 'notificador'):
             current_screen.notificador.mostrar(mensaje, icono, duracion)
 
-    def change_screen(self, activity):
+    def change_screen(self, activity, area=None):
         direction = 'right' if activity == 'HomeScreen' else 'left'
-        self.screen_manager.transition.direction =direction
+        self.screen_manager.transition.direction = direction
         self.current_activity = activity
         self.current = 'activity'
         self.root.current = self.current_activity
+        if activity == 'HelpScreen' and area is not None:
+            help_screen = self.screen_manager.get_screen('HelpScreen')
+            help_screen.selected_area(area)
+
+            
+
 
     def on_start(self):
         Window.size = (1024, 600)

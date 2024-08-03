@@ -1,20 +1,8 @@
-<HelpScreen>:
-    name: 'help'
-    canvas.before:
-        Color:
-            rgba: app.screen_manager.get_background_color()
-        Rectangle:
-            size: self.size
-            pos: self.pos
+<HelpScreen@MDScreen>:
 
     MDBoxLayout:
         orientation: 'vertical'
 
-        MDTopAppBar:
-            title: 'Ayuda'
-            md_bg_color: app.theme_cls.backgroundColor
-            elevation: 10
-            left_action_items: [['arrow-left', lambda x: app.screen_manager.back_to_previous_screen()]]
 
         ScrollView:
             RstDocument:
@@ -23,3 +11,22 @@
                 size_hint_y: None
                 height: 540
                 padding: dp(10)
+
+        MDBoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: dp(50)
+            padding: dp(10)
+            spacing: dp(10)
+            md_bg_color: app.theme_cls.shadowColor  
+
+            MDIconButton:
+                valign: "center"
+                icon: 'arrow-left'
+                on_release: app.change_screen('HomeScreen')
+
+            MDLabel:
+                text: "Universidad Austral de Chile Sede Puerto Montt"
+                halign: "right"
+                valign: "center"
+                size_hint_x: 0.8
