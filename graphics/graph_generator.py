@@ -2,6 +2,14 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from kivy.metrics import dp
 from matplotlib import animation
+import matplotlib.font_manager as fm
+import os
+
+
+script_dir = os.path.dirname(os.path.abspath(__file__))
+font_path = os.path.join(script_dir, 'fonts', 'Hack-Regular.ttf')
+
+
 
 #optimized draw on Agg backend
 mpl.rcParams['path.simplify'] = True
