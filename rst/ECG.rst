@@ -9,6 +9,10 @@ Instrucciones Básicas
 1. **Colocación de Electrodos**:
     - Los sensores se pueden colocar en los antebrazos y las piernas como se muestra en la imagen. Pero de igual manera se pueden colocar en el pecho cerca de los brazos y sobre el abdomen inferior derecho. Entre más cerca del corazón estén las electrodos, mejor será la medición.
 
+.. image:: img/body.png
+  :width: 400
+  :alt: Alternative text
+
 2. **Configuración del Sistema**:
     - Conecte los electrodos al amplificador ECG.
     - Verifique que todas las conexiones estén seguras y que no haya interferencias.
@@ -17,12 +21,34 @@ Instrucciones Básicas
     - Presione el botón "Start" en la aplicación para comenzar la grabación.
     - Observe las señales en tiempo real y asegúrese de que no haya artefactos.
 
+.. image:: img/ECGtest.png
+  :width: 950
+  :alt: Alternative text
+
+4. **Barra de Selección**
+
+.. image:: img/barra.png
+  :width: 950
+  :alt: Alternative text
+
+**1**: Iniciar o detener medición.
+**2**: Eliminar medición.
+**3**: Mover linea de tiempo.                              
+**4**: Zoom.
+**5**: Seleccionar o eliminar marcas.   
+**6**: Medir Segmentos.
+**7**: Guargar registro como PDF.
+
 Consejos para una Medición Efectiva
 -----------------------------------
 
 - Evite el movimiento excesivo durante la grabación.
 - Minimice las fuentes de ruido eléctrico cerca del equipo.
 - Asegúrese de que el sujeto esté relajado y cómodo.
+
+Actividad: Reconocimiento de elementos en el electrocardiograma
+----------------------------------------------------------------
+#Aca debe ir la actividad que los alumnos deben realizar#
 
 Interpretación de Datos
 -----------------------
