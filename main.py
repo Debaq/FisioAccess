@@ -1,3 +1,10 @@
+import os
+import os
+os.environ['KIVY_WINDOW'] = 'sdl2'
+os.environ['KIVY_TEXT'] = 'sdl2'
+os.environ['KIVY_IMAGE'] = 'sdl2'
+
+
 from kivy.config import Config
 from kivy.core.window import Window
 from kivy.lang import Builder
@@ -9,6 +16,10 @@ from kivymd.uix.transition import MDSharedAxisTransition
 from utils.notification import Notificador
 from utils.theme_manager import ThemeManager
 
+from kivy.core.window import Window
+from kivy.graphics import gl_init_resources
+from kivy.graphics import opengl as gl
+
 #from kivy.factory import Factory
 
 # Importamos la clase HomeScree
@@ -19,7 +30,17 @@ from screens.help_screen import HelpScreen
 
 
 
-Config.set('input', 'mouse', 'mouse,disable_multitouch')
+#Config.set('input', 'mouse', 'mouse,disable_multitouch')
+
+
+
+def print_gl_info():
+    print('OpenGL version:', gl.glGetString(gl.GL_VERSION))
+    print('OpenGL vendor:', gl.glGetString(gl.GL_VENDOR))
+    print('OpenGL renderer:', gl.glGetString(gl.GL_RENDERER))
+    print('GLSL version:', gl.glGetString(gl.GL_SHADING_LANGUAGE_VERSION))
+
+gl_init_resources()
 
 
 class FisioAccess(MDApp):
@@ -38,7 +59,7 @@ class FisioAccess(MDApp):
 
         # Agregar pantallas
         self.screen_manager.add_widget(HomeScreen(name='HomeScreen'))
-        self.screen_manager.add_widget(PreferencesScreen(name='COG'))
+        self.screen_manager.add_widget(PreferencesScreen(name='ConfigureScreen'))
         self.screen_manager.add_widget(ActivityScreen(name='ActivityScreen'))
         self.screen_manager.add_widget(HelpScreen(name='HelpScreen'))
 
@@ -55,7 +76,7 @@ class FisioAccess(MDApp):
  
 
     def config_load_set(self,config):
-        config_screen = self.screen_manager.get_screen('COG')
+        config_screen = self.screen_manager.get_screen('ConfigureScreen')
         config_screen.ids.style_text_conf.text= config["style"]
         config_screen.ids.styledin_text_conf.text =config["dinamic"] 
         config_screen.ids.schemeColor_text_conf.text = config["schemeColor"]
@@ -99,6 +120,8 @@ class FisioAccess(MDApp):
     def on_start(self):
         Window.size = (1024, 600)
         Window.borderless = True
+        #Window.bind(on_draw=lambda _: print_gl_info())
+
         
     def on_stop(self):
         # Guarda las preferencias al cerrar la aplicación

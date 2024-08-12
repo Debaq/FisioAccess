@@ -1,0 +1,92 @@
+{
+    "orientation_horizontal": false,
+    "num_graphs": 2,
+    "graph_proportions": [1, 1],
+    "max_curves": 5,
+    "graphs": [
+        {
+            "title": "Gráfico Principal",
+            "type": "Main",
+            "x_label": "X",
+            "y_label": "Y",
+            "x_limits": [-1, 10],
+            "y_limits": [-1.5, 1.5],
+            "show_grid": true,
+            "tick_spacing": 1,
+            "curves": [
+                {
+                    "enabled": true,
+                    "name": "sin",
+                    "label": "Seno",
+                    "color": "blue"
+                },
+                {
+                    "enabled": true,
+                    "name": "cos",
+                    "label": "Coseno",
+                    "color": "#FF0000"
+                },
+                {
+                    "enabled": false,
+                    "name": "tan",
+                    "label": "Tangente",
+                    "color": "green"
+                },
+                {
+                    "enabled": false,
+                    "name": "x_squared",
+                    "label": "X al cuadrado",
+                    "color": "#800080"
+                },
+                {
+                    "enabled": false,
+                    "name": "x_cubed",
+                    "label": "X al cubo",
+                    "color": "orange"
+                }
+            ]
+        },
+        {
+            "title": "Gráfico de Vista",
+            "type": "View",
+            "x_label": "X",
+            "y_label": "Y",
+            "x_limits": [0, 5],
+            "y_limits": [-5, 5],
+            "show_grid": false,
+            "tick_spacing": 0.5,
+            "curves": [
+                {
+                    "enabled": true,
+                    "name": "tan",
+                    "label": "Tangente",
+                    "color": "green"
+                },
+                {
+                    "enabled": false,
+                    "name": "sin",
+                    "label": "Seno",
+                    "color": "blue"
+                },
+                {
+                    "enabled": false,
+                    "name": "cos",
+                    "label": "Coseno",
+                    "color": "#FF0000"
+                },
+                {
+                    "enabled": false,
+                    "name": "x_squared",
+                    "label": "X al cuadrado",
+                    "color": "#800080"
+                },
+                {
+                    "enabled": false,
+                    "name": "x_cubed",
+                    "label": "X al cubo",
+                    "color": "orange"
+                }
+            ]
+        }
+    ]
+}

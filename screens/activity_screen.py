@@ -2,58 +2,49 @@ from kivymd.uix.screen import MDScreen
 from graphics.graph_generator import GraphGenerator
 import kivy_matplotlib_widget
 from kivymd.uix.menu import MDDropdownMenu
-from kivy.metrics import dp
-import threading
-import time
 from graphics.simulators.ecg_simulator import ECG_Simulator
-
-
-from matplotlib import animation
+from kivy.clock import Clock
+import numpy as np
 
 class ActivityScreen(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.recording = False
-        self.mygraph = GraphGenerator()
+        self.mygraph = GraphGenerator(update_callback=self.update_graph_limits)
         self.figure_wgt.figure = self.mygraph.fig
-        self.ecg = ECG_Simulator(heart_rate=50, use_pacemaker=True)
+        self.heart_rate = 50
+        self.ecg = ECG_Simulator(heart_rate=self.heart_rate, use_pacemaker=True)
         self.sample_rate = 100  # Hz
-        self.data_points = 1000  # Número de puntos a mostrar
-        self.x_data = list(range(self.data_points))
-        self.y_data = [0] * self.data_points
-        self.is_running = False
-        self.paused = False
-        
+        self.display_time = 10  # segundos de datos para mostrar
+        self.max_data_points = self.sample_rate * 3600  # 1 hora de datos
+        self.x_data = np.array([])
+        self.y_data = np.array([])
+        self.total_time = 0
+        self.data_event = None
+        self.plot_event = None
+        self.viewing_latest = True
+
+    
+    def config_activity(self):
+        self.activity = 'ECG'
         
     def menu_measure(self, menu_button):
         items = ["P", "Q", "R", "S", "T"]
-        
         menu_items = [
             {
                 "text": item,
                 "on_release": lambda x=item: self.selected_mark(x),
             } for item in items
         ]
-        
         self.menu = MDDropdownMenu(
             caller=menu_button,
             items=menu_items,
         )
-        
         self.menu.open()
 
     def selected_mark(self, item):
         print(f"Selected: {item}")
         self.menu.dismiss()
-
-    # Función para crear un MDListItem personalizado si es necesario
-    def custom_list_item(self, text, on_release):
-        return MDListItem(
-            MDListItemHeadlineText(
-                text=text,
-            ),
-            on_release=on_release,
-        )
 
     def toggle_record(self):
         self.recording = not self.recording
@@ -69,30 +60,46 @@ class ActivityScreen(MDScreen):
             self.stop_recording()
 
     def start_recording(self):
-        self.is_running = True
-        self.paused = False
-        self.data_thread = threading.Thread(target=self.update_data)
-        self.data_thread.start()
-        self.mygraph.ax1.set_ylim(-1.5, 3.5)  # Ajusta según tus necesidades
-        self.mygraph.fig.canvas.draw()
-        self.anim = animation.FuncAnimation(
-            self.mygraph.fig, self.update_plot, interval=50, blit=True, cache_frame_data=False)
+        self.mygraph.ax1.set_ylim(-1.5, 3.5)
+        self.mygraph.ax1.set_xlim(0, self.display_time)
+        self.data_event = Clock.schedule_interval(self.update_data, 1.0/self.sample_rate)
+        self.plot_event = Clock.schedule_interval(self.update_plot, 1.0/30)  # 30 FPS
+
     def stop_recording(self):
-        self.is_running = False
-        self.paused = True
-        if hasattr(self, 'data_thread'):
-            self.data_thread.join()
-        if hasattr(self, 'anim'):
-            self.anim.event_source.stop()
+        if self.data_event:
+            self.data_event.cancel()
+        if self.plot_event:
+            self.plot_event.cancel()
 
-    def update_data(self):
-        while self.is_running:
-            if not self.paused:
-                new_val = self.ecg.get_next_value()
-                self.y_data = self.y_data[1:] + [new_val]
-                self.x_data = self.x_data[1:] + [self.x_data[-1] + 1]
-            time.sleep(1 / self.sample_rate)
+    def update_data(self, dt):
+        new_val = self.ecg.get_next_value()
+        self.y_data = np.append(self.y_data, new_val)
+        self.x_data = np.append(self.x_data, self.total_time)
+        if len(self.x_data) > self.max_data_points:
+            self.x_data = self.x_data[-self.max_data_points:]
+            self.y_data = self.y_data[-self.max_data_points:]
+        self.total_time += 1.0 / self.sample_rate
 
-    def update_plot(self, frame):
-        self.mygraph.update_main_ecg(self.x_data, self.y_data)
-        return self.mygraph.line1,
+    def update_plot(self, dt):
+        if len(self.x_data) > 0:
+            if self.viewing_latest:
+                x_max = self.total_time
+                x_min = max(0, x_max - self.display_time)
+                self.mygraph.ax1.set_xlim(x_min, x_max)
+            else:
+                x_min, x_max = self.mygraph.ax1.get_xlim()
+            
+            self.mygraph.update_main_ecg(self.x_data, self.y_data, x_min, x_max)
+            self.mygraph.fig.canvas.draw_idle()
+            self.mygraph.fig.canvas.flush_events()
+
+    def update_graph_limits(self, xmin, xmax):
+        self.viewing_latest = False
+        visible_data = self.y_data[(self.x_data >= xmin) & (self.x_data <= xmax)]
+        if len(visible_data) > 0:
+            ymin, ymax = visible_data.min(), visible_data.max()
+            self.mygraph.ax1.set_ylim(ymin - 0.1 * (ymax - ymin), ymax + 0.1 * (ymax - ymin))
+        self.mygraph.fig.canvas.draw_idle()
+
+    def reset_view(self):
+        self.viewing_latest = True

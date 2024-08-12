@@ -58,7 +58,7 @@
                     icon: "brain"
                     text: "EEG"
                     on_release: 
-                        app.mostrar_notificacion("ECG conectado", "ev-plug-type2", 5)
+                        app.show_notification("ECG conectado", "ev-plug-type2", 5)
                         root.highlight_button(self)
 
                 NavItem:
@@ -79,7 +79,7 @@
                     icon: "cog"
                     text: "Config"
                     on_release: 
-                        app.change_screen('COG')
+                        app.change_screen('ConfigureScreen')
                         root.highlight_button(self)
 
                 NavItem:

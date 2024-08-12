@@ -1,0 +1,39 @@
+{
+    "orientation_horizontal": false,
+    "num_graphs": 2,
+    "graph_proportions": [1, 1],
+    "max_curves": 5,
+    "graphs": [
+        {
+            "title": "Gráfico Principal",
+            "type": "Main",
+            "x_label": "X",
+            "y_label": "Y",
+            "x_limits": [-1, 10],
+            "y_limits": [-1.5, 1.5],
+            "show_grid": true,
+            "tick_spacing": 1,
+            "curves": [
+                {
+                    "enabled": true,
+                    "name": "ECG",
+                    "label": "ECG",
+                    "color": "blue"
+                }
+            ]
+        },
+        {
+            "title": "Gráfico de Vista",
+            "type": "View",
+            "x_label": "X",
+            "y_label": "Y",
+            "x_limits": [0, 5],
+            "y_limits": [-5, 5],
+            "show_grid": false,
+            "tick_spacing": 0.5,
+            "curves": [
+               
+            ]
+        }
+    ]
+}
