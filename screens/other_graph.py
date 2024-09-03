@@ -5,17 +5,16 @@ from kivy.uix.button import Button
 from kivy_garden.graph import Graph, MeshLinePlot, LinePlot
 from kivy.clock import Clock
 from kivy.graphics import Color, Rectangle
-import random
+import serial
 
 class InteractiveGraph(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        
-        # Layout para el gráfico principal y los controles
+      # Layout para el gráfico principal y los controles
         main_layout = BoxLayout(orientation='vertical')
         
         # Crear el gráfico principal
-        self.graph = Graph(xlabel='X', ylabel='Y', x_ticks_minor=5,
+        self.graph = Graph(xlabel='Time', ylabel='Value', x_ticks_minor=5,
                            x_ticks_major=25, y_ticks_major=1,
                            y_grid_label=True, x_grid_label=True, padding=5,
                            x_grid=True, y_grid=True, xmin=0, xmax=100, ymin=-1, ymax=1)
@@ -37,7 +36,7 @@ class InteractiveGraph(MDScreen):
         self.add_widget(main_layout)
         
         # Crear el gráfico secundario
-        self.secondary_graph = Graph(xlabel='X', ylabel='Y', x_ticks_minor=5,
+        self.secondary_graph = Graph(xlabel='Time', ylabel='Value', x_ticks_minor=5,
                                      x_ticks_major=25, y_ticks_major=1,
                                      y_grid_label=True, x_grid_label=True, padding=5,
                                      x_grid=True, y_grid=True, xmin=0, xmax=100, ymin=-1, ymax=1)
@@ -47,24 +46,37 @@ class InteractiveGraph(MDScreen):
         self.add_widget(self.secondary_graph)
         
         # Inicialización de variables
-        self.all_points = [(x, 0) for x in range(100)]
+        self.all_points = []
         self.is_updating = True
         self.last_touch_pos = None
         self.selection_start = None
         self.selection_end = None
+        
+        # Configurar el puerto serial
+        self.ser = serial.Serial('/dev/ttyS2', 115200)  # Ajusta el puerto y la velocidad según sea necesario
         
         # Iniciar actualización
         Clock.schedule_interval(self.update_plot, 0.05)
 
     def update_plot(self, dt):
         if self.is_updating:
-            new_point = (self.all_points[-1][0] + 1, random.uniform(-1, 1))
-            self.all_points.append(new_point)
-            self.graph.xmax = new_point[0]
-            self.graph.xmin = max(0, new_point[0] - 100)
+            try:
+                data = float(self.ser.readline().decode().strip())
+                new_point = (len(self.all_points), data)
+                self.all_points.append(new_point)
+                self.graph.xmax = new_point[0]
+                self.graph.xmin = max(0, new_point[0] - 100)
+                
+                # Ajustar ymin y ymax dinámicamente
+                if len(self.all_points) > 1:
+                    self.graph.ymin = min(p[1] for p in self.all_points[-100:])
+                    self.graph.ymax = max(p[1] for p in self.all_points[-100:])
+            except:
+                print("Error reading from serial port")
         
         self.plot.points = [p for p in self.all_points if self.graph.xmin <= p[0] <= self.graph.xmax]
         self.update_selection()
+
 
     def toggle_update(self, instance):
         self.is_updating = not self.is_updating
@@ -74,13 +86,13 @@ class InteractiveGraph(MDScreen):
         center = (self.graph.xmax + self.graph.xmin) / 2
         new_range = (self.graph.xmax - self.graph.xmin) * 0.5
         self.graph.xmin = max(0, center - new_range / 2)
-        self.graph.xmax = min(self.all_points[-1][0], center + new_range / 2)
+        self.graph.xmax = min(len(self.all_points), center + new_range / 2)
 
     def zoom_out(self, instance):
         center = (self.graph.xmax + self.graph.xmin) / 2
         new_range = (self.graph.xmax - self.graph.xmin) * 2
         self.graph.xmin = max(0, center - new_range / 2)
-        self.graph.xmax = min(self.all_points[-1][0], center + new_range / 2)
+        self.graph.xmax = min(len(self.all_points), center + new_range / 2)
 
     def on_touch_down(self, touch):
         if self.graph.collide_point(*touch.pos):
@@ -136,4 +148,6 @@ class InteractiveGraph(MDScreen):
                 x2 = self.graph.pos[0] + (self.selection_end - self.graph.xmin) / (self.graph.xmax - self.graph.xmin) * self.graph.width
                 Rectangle(pos=(min(x1, x2), self.graph.pos[1]), 
                           size=(abs(x2 - x1), self.graph.height))
+    def on_stop(self):
+        self.ser.close()
 
