@@ -27,6 +27,7 @@ from screens.home_screen import HomeScreen
 from screens.activity_screen import ActivityScreen
 from screens.preferences_screen import PreferencesScreen
 from screens.help_screen import HelpScreen
+from screens.other_graph import InteractiveGraph
 
 
 
@@ -62,6 +63,8 @@ class FisioAccess(MDApp):
         self.screen_manager.add_widget(PreferencesScreen(name='ConfigureScreen'))
         self.screen_manager.add_widget(ActivityScreen(name='ActivityScreen'))
         self.screen_manager.add_widget(HelpScreen(name='HelpScreen'))
+        self.screen_manager.add_widget(InteractiveGraph(name='InteractiveGraphScreen'))
+
 
         #verificar estilo:
         self.theme_manager = ThemeManager()
