@@ -6,11 +6,13 @@ from kivy_garden.graph import Graph, MeshLinePlot, LinePlot
 from kivy.clock import Clock
 from kivy.graphics import Color, Rectangle
 import serial
+import threading
+import queue
 
 class InteractiveGraph(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-      # Layout para el gráfico principal y los controles
+        # Layout para el gráfico principal y los controles
         main_layout = BoxLayout(orientation='vertical')
         
         # Crear el gráfico principal
@@ -52,34 +54,53 @@ class InteractiveGraph(MDScreen):
         self.selection_start = None
         self.selection_end = None
         
-        # Configurar el puerto serial
-        self.ser = serial.Serial('/dev/ttyS2', 115200)  # Ajusta el puerto y la velocidad según sea necesario
+        # Configurar el puerto serial y la cola de datos
+        self.ser = serial.Serial('/dev/ttyS2', 115200, timeout=1)
+        self.data_queue = queue.Queue()
+        
+        # Iniciar el hilo de lectura serial
+        self.serial_thread = threading.Thread(target=self.read_from_serial, daemon=True)
+        self.serial_thread.start()
         
         # Iniciar actualización
         Clock.schedule_interval(self.update_plot, 0.05)
 
+    def read_from_serial(self):
+        while True:
+            try:
+                if self.ser.in_waiting:
+                    line = self.ser.readline().decode().strip()
+                    try:
+                        data = float(line)
+                        self.data_queue.put(data)
+                    except ValueError:
+                        print(f"Valor no válido recibido: {line}")
+            except serial.SerialException:
+                print("Error de comunicación serial")
+                break
+
     def update_plot(self, dt):
         if self.is_updating:
             try:
-                data = float(self.ser.readline().decode().strip())
-                new_point = (len(self.all_points), data)
-                self.all_points.append(new_point)
-                self.graph.xmax = new_point[0]
-                self.graph.xmin = max(0, new_point[0] - 100)
+                while not self.data_queue.empty():
+                    data = self.data_queue.get_nowait()
+                    new_point = (len(self.all_points), data)
+                    self.all_points.append(new_point)
                 
-                # Ajustar ymin y ymax dinámicamente
-                if len(self.all_points) > 1:
-                    self.graph.ymin = min(p[1] for p in self.all_points[-100:])
-                    self.graph.ymax = max(p[1] for p in self.all_points[-100:])
+                if self.all_points:
+                    self.graph.xmax = self.all_points[-1][0]
+                    self.graph.xmin = max(0, self.graph.xmax - 100)
                 
-                self.plot.points = [p for p in self.all_points if self.graph.xmin <= p[0] <= self.graph.xmax]
-                self.update_selection()
-
-            except:
-                print(f"error el dato es: {data}")
-        
-
-
+                    # Ajustar ymin y ymax dinámicamente
+                    if len(self.all_points) > 1:
+                        recent_points = self.all_points[-100:]
+                        self.graph.ymin = min(p[1] for p in recent_points)
+                        self.graph.ymax = max(p[1] for p in recent_points)
+                
+                    self.plot.points = [p for p in self.all_points if self.graph.xmin <= p[0] <= self.graph.xmax]
+                    self.update_selection()
+            except Exception as e:
+                print(f"Error en update_plot: {e}")
 
     def toggle_update(self, instance):
         self.is_updating = not self.is_updating
@@ -115,7 +136,7 @@ class InteractiveGraph(MDScreen):
                 # Si no, movemos el gráfico
                 x_diff = new_touch_pos[0] - self.last_touch_pos[0]
                 self.graph.xmin = max(0, self.graph.xmin - x_diff)
-                self.graph.xmax = min(self.all_points[-1][0], self.graph.xmax - x_diff)
+                self.graph.xmax = min(self.all_points[-1][0] if self.all_points else 0, self.graph.xmax - x_diff)
             self.last_touch_pos = new_touch_pos
             self.update_selection()
             return True
@@ -151,6 +172,13 @@ class InteractiveGraph(MDScreen):
                 x2 = self.graph.pos[0] + (self.selection_end - self.graph.xmin) / (self.graph.xmax - self.graph.xmin) * self.graph.width
                 Rectangle(pos=(min(x1, x2), self.graph.pos[1]), 
                           size=(abs(x2 - x1), self.graph.height))
+
     def on_stop(self):
         self.ser.close()
 
+class MyApp(App):
+    def build(self):
+        return InteractiveGraph()
+
+if __name__ == '__main__':
+    MyApp().run()
