@@ -6,29 +6,32 @@ El electrocardiograma (ECG) es una prueba que registra la actividad eléctrica d
 Instrucciones Básicas
 ---------------------
 
-1. **Colocación de Electrodos**:
+1.- **Colocación de Electrodos**:
     - Los sensores se pueden colocar en los antebrazos y las piernas como se muestra en la imagen. Pero de igual manera se pueden colocar en el pecho cerca de los brazos y sobre el abdomen inferior derecho. Entre más cerca del corazón estén las electrodos, mejor será la medición.
 
 .. image:: img/body.png
-  :width: 400
-  :alt: Alternative text
+   :width: 800px
+   :height: 400px
+   :alt: Alternative text
 
-2. **Configuración del Sistema**:
+2.- **Configuración del Sistema**:
     - Conecte los electrodos al amplificador ECG.
     - Verifique que todas las conexiones estén seguras y que no haya interferencias.
 
-3. **Iniciar la Medición**:
+3.- **Iniciar la Medición**:
     - Presione el botón "Start" en la aplicación para comenzar la grabación.
     - Observe las señales en tiempo real y asegúrese de que no haya artefactos.
 
-.. image:: img/ECGtest.png
-  :width: 950
-  :alt: Alternative text
+.. image:: img/test.png
+   :width: 900px
+   :height: 600px
+   :alt: Alternative text
 
-4. **Barra de Selección**
+4.- **Barra de Selección**
 
 .. image:: img/barra.png
-  :width: 950
+  :width: 900px
+  :height: 200px
   :alt: Alternative text
 
 **1**: Iniciar o detener medición.
@@ -48,7 +51,32 @@ Consejos para una Medición Efectiva
 
 Actividad: Reconocimiento de elementos en el electrocardiograma
 ----------------------------------------------------------------
-#Aca debe ir la actividad que los alumnos deben realizar#
+
+1.- **Identifique y marque los siguientes elementos en su ECG**: 
+    - Onda P, Complejo QRS y Onda T
+    - Segmentos PR, ST e Intervalo QT. 
+
+2.- **Calcule la Frecuencia Cardíaca** 
+
+3.- **Calcule el Intervalo PR**:
+	- Medirel tiempo desde el inicio de la onda P hasta el comienzo del complejo QRS.
+	- Señale la duración.
+
+4.- **Calcule el Intervalo QT**:
+	- Medir el tiempo desde el inicio del complejo QRS hasta el final de la onda T.
+
+5.- **Calcule el Segmento ST**:
+	- Medir el tiempo desde el final del complejo QRS hasta el inicio de la onda T.
+	- El segmento ST debe estar en la línea base (isoelectrónico). La elevación o depresión del segmento ST puede indicar diferentes condiciones cardíacas.
+
+6.- **Duración del Complejo QRS**:
+	- Medir el tiempo desde el inicio del complejo QRS hasta su final.
+	- La duración normal es entre 80 y 120 milisegundos (ms).
+
+7.- **Medida de Amplitud de las Ondas**:
+	- Medir la altura de las ondas P, R y T.
+	- La amplitud puede proporcionar información sobre la hipertrofia o la presencia de anomalías.
+
 
 Interpretación de Datos
 -----------------------
