@@ -71,11 +71,14 @@ class InteractiveGraph(MDScreen):
                 if len(self.all_points) > 1:
                     self.graph.ymin = min(p[1] for p in self.all_points[-100:])
                     self.graph.ymax = max(p[1] for p in self.all_points[-100:])
+                
+                self.plot.points = [p for p in self.all_points if self.graph.xmin <= p[0] <= self.graph.xmax]
+                self.update_selection()
+
             except:
-                print("Error reading from serial port")
+                print(f"error el dato es: {data}")
         
-        self.plot.points = [p for p in self.all_points if self.graph.xmin <= p[0] <= self.graph.xmax]
-        self.update_selection()
+
 
 
     def toggle_update(self, instance):
