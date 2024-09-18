@@ -1,14 +1,15 @@
 import pygame
 
 class Button:
-    def __init__(self, x, y, width, height, text, color=None, disabled_color=(100, 100, 100), selected_color=(255, 255, 0), icon_path=None, on_click=None):
+    def __init__(self, x, y, width, height, text, color=None, size_icon=16,disabled_color=(100, 100, 100), selected_color=(255, 255, 0), icon=None, on_click=None):
         self.rect = pygame.Rect(x, y, width, height)
         self.text = text
         self.color = color  # Color inicial del botón
         self.disabled_color = disabled_color  # Color cuando está deshabilitado
         self.selected_color = selected_color  # Color cuando está seleccionado
         self.icon = None  # Icono como imagen opcional
-        if icon_path:
+        if icon:
+            icon_path=f'assets/icons/white/png/{size_icon}/{icon}.png'
             self.icon = pygame.image.load(icon_path)  # Cargar el icono si existe una ruta
             self.icon = pygame.transform.scale(self.icon, (width - 10, height - 10))  # Escalar el icono al tamaño del botón
         

@@ -59,7 +59,7 @@ class VerticalMenu:
     def __init__(self, game):
         self.game = game
         self.buttons = [
-            Button(10, 50, 60, 60, "", icon_path='assets/icons/white/png/16/heartbeat.png', on_click=self.go_to_ecg),
+            Button(10, 50, 60, 60, "", icon='heartbeat', on_click=self.go_to_ecg),
             # Puedes añadir más botones aquí
         ]
 
