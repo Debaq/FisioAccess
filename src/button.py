@@ -1,7 +1,7 @@
 import pygame
 
 class Button:
-    def __init__(self, x, y, width, height, text, color=None, size_icon=16,disabled_color=(100, 100, 100), selected_color=(255, 255, 0), icon=None, on_click=None):
+    def __init__(self, x, y, width, height, text, color=GREEN, size_icon=16,disabled_color=(100, 100, 100), selected_color=(255, 255, 0), icon=None, on_click=None):
         self.rect = pygame.Rect(x, y, width, height)
         self.text = text
         self.color = color  # Color inicial del botón
