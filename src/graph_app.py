@@ -11,20 +11,41 @@ class GraphApp:
         self.selection_end = None
         self.selected_data = []
         self.markers = {}
+        self.scale_factor = 1  # Nuevo: factor de escala para ajustar el gráfico
+
 
     def add_data_point(self, value):
-        self.data.append(HEIGHT - value)
+        self.data.append(value)
         self.view_start = max(0, len(self.data) - VISIBLE_POINTS)
+        self.adjust_scale()  # Ajuste automático de la escala cuando se agregan nuevos datos
+
+    def adjust_scale(self):
+        """Ajustar la escala del gráfico basado en el valor máximo y mínimo visible."""
+        if self.data:
+            visible_data = list(self.data)[self.view_start:self.view_start + VISIBLE_POINTS]
+            min_value = min(visible_data)
+            max_value = max(visible_data)
+            data_range = max_value - min_value
+
+            # Ajustar la escala para que se ajuste a la pantalla
+            if data_range > 0:
+                self.scale_factor = HEIGHT / data_range
+            else:
+                self.scale_factor = 1  # Evitar división por cero si todos los valores son iguales
 
     def draw_graph(self, screen):
+        """Dibujar el gráfico escalado para que se ajuste a la pantalla."""
         visible_data = list(self.data)[self.view_start:self.view_start + VISIBLE_POINTS]
-        for i in range(1, len(visible_data)):
-            x1 = int((i-1) * WIDTH / VISIBLE_POINTS)
-            y1 = visible_data[i-1]
-            x2 = int(i * WIDTH / VISIBLE_POINTS)
-            y2 = visible_data[i]
-            pygame.draw.line(screen, GREEN, (x1, y1), (x2, y2))
-        
+        if visible_data:
+            min_value = min(visible_data)
+            
+            for i in range(1, len(visible_data)):
+                x1 = int((i-1) * WIDTH / VISIBLE_POINTS)
+                y1 = HEIGHT - int((visible_data[i-1] - min_value) * self.scale_factor)
+                x2 = int(i * WIDTH / VISIBLE_POINTS)
+                y2 = HEIGHT - int((visible_data[i] - min_value) * self.scale_factor)
+                pygame.draw.line(screen, GREEN, (x1, y1), (x2, y2))
+
         if self.selecting:
             self.draw_selection(screen)
 
@@ -79,3 +100,11 @@ class GraphApp:
         index = int(x * len(self.selected_data) / WIDTH)
         index = max(0, min(index, len(self.selected_data) - 1))
         return x, self.selected_data[index]
+
+    def zoom_in(self):
+        """Función para hacer zoom al gráfico."""
+        self.scale_factor *= 1.2  # Incrementar el factor de escala
+
+    def zoom_out(self):
+        """Función para alejar el gráfico."""
+        self.scale_factor /= 1.2  # Reducir el factor de escala
