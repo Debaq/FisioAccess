@@ -1,0 +1,350 @@
+{
+  "blue": {
+    "light": {
+      "background": "#E6F3FF",
+      "foreground": "#A8D8FF",
+      "level_1": "#C9E6FF",
+      "level_2": "#A8D8FF",
+      "text": "#333333",
+      "title_str": "#4B9FE1",
+      "line_graph": {
+        "line_1": "#0056B3",
+        "line_2": "#004080",
+        "line_3": "#00264D",
+        "line_4": "#001A33"
+      },
+      "grid_color": "#D1E6F5",
+      "button": {
+        "background": "#6BAAE1",
+        "text": "#FFFFFF",
+        "hover": "#89BFFF",
+        "disabled": {
+          "background": "#C9E6FF",
+          "text": "#A8D8FF"
+        },
+        "selected": {
+          "background": "#4B9FE1",
+          "text": "#FFFFFF"
+        }
+      }
+    },
+    "dark": {
+      "background": "#1A3F66",
+      "foreground": "#2E5C8A",
+      "level_1": "#2E5C8A",
+      "level_2": "#3D78B3",
+      "text": "#E6F3FF",
+      "title_str": "#A8D8FF",
+      "line_graph": {
+        "line_1": "#E6F3FF",
+        "line_2": "#C9E6FF",
+        "line_3": "#A8D8FF",
+        "line_4": "#89BFFF"
+      },
+      "grid_color": "#4B9FE1",
+      "button": {
+        "background": "#6BAAE1",
+        "text": "#FFFFFF",
+        "hover": "#89BFFF",
+        "disabled": {
+          "background": "#2E5C8A",
+          "text": "#6BAAE1"
+        },
+        "selected": {
+          "background": "#A8D8FF",
+          "text": "#1A3F66"
+        }
+      }
+    }
+  },
+  "red": {
+    "light": {
+      "background": "#FFF0F0",
+      "foreground": "#FFBDBD",
+      "level_1": "#FFD6D6",
+      "level_2": "#FFBDBD",
+      "text": "#333333",
+      "title_str": "#E57373",
+      "line_graph": {
+        "line_1": "#B30000",
+        "line_2": "#800000",
+        "line_3": "#4D0000",
+        "line_4": "#330000"
+      },
+      "grid_color": "#FFE8E8",
+      "button": {
+        "background": "#EF9A9A",
+        "text": "#FFFFFF",
+        "hover": "#FFBDBD",
+        "disabled": {
+          "background": "#FFD6D6",
+          "text": "#FFBDBD"
+        },
+        "selected": {
+          "background": "#E57373",
+          "text": "#FFFFFF"
+        }
+      }
+    },
+    "dark": {
+      "background": "#8C2E2E",
+      "foreground": "#B04141",
+      "level_1": "#B04141",
+      "level_2": "#C45858",
+      "text": "#FFF0F0",
+      "title_str": "#FFBDBD",
+      "line_graph": {
+        "line_1": "#FFF0F0",
+        "line_2": "#FFD6D6",
+        "line_3": "#FFBDBD",
+        "line_4": "#EF9A9A"
+      },
+      "grid_color": "#C45858",
+      "button": {
+        "background": "#EF9A9A",
+        "text": "#FFFFFF",
+        "hover": "#FFBDBD",
+        "disabled": {
+          "background": "#B04141",
+          "text": "#EF9A9A"
+        },
+        "selected": {
+          "background": "#FFBDBD",
+          "text": "#8C2E2E"
+        }
+      }
+    }
+  },
+  "green": {
+    "light": {
+      "background": "#F0FFF0",
+      "foreground": "#BDEBD1",
+      "level_1": "#D6F5E3",
+      "level_2": "#BDEBD1",
+      "text": "#333333",
+      "title_str": "#66BB6A",
+      "line_graph": {
+        "line_1": "#006600",
+        "line_2": "#004D00",
+        "line_3": "#003300",
+        "line_4": "#001A00"
+      },
+      "grid_color": "#E8F5E9",
+      "button": {
+        "background": "#81C784",
+        "text": "#FFFFFF",
+        "hover": "#A5D6A7",
+        "disabled": {
+          "background": "#D6F5E3",
+          "text": "#BDEBD1"
+        },
+        "selected": {
+          "background": "#66BB6A",
+          "text": "#FFFFFF"
+        }
+      }
+    },
+    "dark": {
+      "background": "#2E5C2E",
+      "foreground": "#417F41",
+      "level_1": "#417F41",
+      "level_2": "#569656",
+      "text": "#F0FFF0",
+      "title_str": "#A5D6A7",
+      "line_graph": {
+        "line_1": "#F0FFF0",
+        "line_2": "#D6F5E3",
+        "line_3": "#BDEBD1",
+        "line_4": "#A5D6A7"
+      },
+      "grid_color": "#569656",
+      "button": {
+        "background": "#81C784",
+        "text": "#FFFFFF",
+        "hover": "#A5D6A7",
+        "disabled": {
+          "background": "#417F41",
+          "text": "#81C784"
+        },
+        "selected": {
+          "background": "#BDEBD1",
+          "text": "#2E5C2E"
+        }
+      }
+    }
+  },
+  "yellow": {
+    "light": {
+      "background": "#FFFEF0",
+      "foreground": "#FFF59D",
+      "level_1": "#FFF9C4",
+      "level_2": "#FFF59D",
+      "text": "#333333",
+      "title_str": "#FDD835",
+      "line_graph": {
+        "line_1": "#B38F00",
+        "line_2": "#806600",
+        "line_3": "#4D3D00",
+        "line_4": "#332600"
+      },
+      "grid_color": "#FFFDE7",
+      "button": {
+        "background": "#FFEE58",
+        "text": "#333333",
+        "hover": "#FFF176",
+        "disabled": {
+          "background": "#FFF9C4",
+          "text": "#FFF59D"
+        },
+        "selected": {
+          "background": "#FDD835",
+          "text": "#333333"
+        }
+      }
+    },
+    "dark": {
+      "background": "#8C7F1A",
+      "foreground": "#B0A128",
+      "level_1": "#B0A128",
+      "level_2": "#C9B831",
+      "text": "#333333",
+      "title_str": "#FFF176",
+      "line_graph": {
+        "line_1": "#FFF176",
+        "line_2": "#FFF59D",
+        "line_3": "#FFF9C4",
+        "line_4": "#FFEE58"
+      },
+      "grid_color": "#C9B831",
+      "button": {
+        "background": "#FFEE58",
+        "text": "#333333",
+        "hover": "#FFF176",
+        "disabled": {
+          "background": "#B0A128",
+          "text": "#FFEE58"
+        },
+        "selected": {
+          "background": "#FFF59D",
+          "text": "#8C7F1A"
+        }
+      }
+    }
+  },
+  "purple": {
+    "light": {
+      "background": "#F8F0FF",
+      "foreground": "#E1BEE7",
+      "level_1": "#EFD6F5",
+      "level_2": "#E1BEE7",
+      "text": "#333333",
+      "title_str": "#9C27B0",
+      "line_graph": {
+        "line_1": "#660066",
+        "line_2": "#4D004D",
+        "line_3": "#330033",
+        "line_4": "#1A001A"
+      },
+      "grid_color": "#F3E5F5",
+      "button": {
+        "background": "#BA68C8",
+        "text": "#FFFFFF",
+        "hover": "#CE93D8",
+        "disabled": {
+          "background": "#EFD6F5",
+          "text": "#E1BEE7"
+        },
+        "selected": {
+          "background": "#9C27B0",
+          "text": "#FFFFFF"
+        }
+      }
+    },
+    "dark": {
+      "background": "#4A1B66",
+      "foreground": "#6A288C",
+      "level_1": "#6A288C",
+      "level_2": "#8033A8",
+      "text": "#F8F0FF",
+      "title_str": "#CE93D8",
+      "line_graph": {
+        "line_1": "#F8F0FF",
+        "line_2": "#EFD6F5",
+        "line_3": "#E1BEE7",
+        "line_4": "#CE93D8"
+      },
+      "grid_color": "#8033A8",
+      "button": {
+        "background": "#BA68C8",
+        "text": "#FFFFFF",
+        "hover": "#CE93D8",
+        "disabled": {
+          "background": "#6A288C",
+          "text": "#BA68C8"
+        },
+        "selected": {
+          "background": "#E1BEE7",
+          "text": "#4A1B66"
+        }
+      }
+    }
+  },
+  "orange": {
+    "light": {
+      "background": "#FFF5E6",
+      "foreground": "#FFCC80",
+      "level_1": "#FFE0B2",
+      "level_2": "#FFCC80",
+      "text": "#333333",
+      "title_str": "#FB8C00",
+      "line_graph": {
+        "line_1": "#B35900",
+        "line_2": "#804000",
+        "line_3": "#4D2600",
+        "line_4": "#331A00"
+      },
+      "grid_color": "#FFF3E0",
+      "button": {
+        "background": "#FFA726",
+        "text": "#FFFFFF",
+        "hover": "#FFB74D",
+        "disabled": {
+          "background": "#FFE0B2",
+          "text": "#FFCC80"
+        },
+        "selected": {
+          "background": "#FB8C00",
+          "text": "#FFFFFF"
+        }
+      }
+    },
+    "dark": {
+      "background": "#8C4B1A",
+      "foreground": "#B36128",
+      "level_1": "#B36128",
+      "level_2": "#CC7033",
+      "text": "#FFF5E6",
+      "title_str": "#FFB74D",
+      "line_graph": {
+        "line_1": "#FFF5E6",
+        "line_2": "#FFE0B2",
+        "line_3": "#FFCC80",
+        "line_4": "#FFB74D"
+      },
+      "grid_color": "#CC7033",
+      "button": {
+        "background": "#FFA726",
+        "text": "#FFFFFF",
+        "hover": "#FFB74D",
+        "disabled": {
+          "background": "#B36128",
+          "text": "#FFA726"
+        },
+        "selected": {
+          "background": "#FFCC80",
+          "text": "#8C4B1A"
+        }
+      }
+    }
+  }
+}
