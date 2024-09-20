@@ -1,8 +1,11 @@
 import math
 import random
 
+
 class ECG_Simulator:
-    def __init__(self, heart_rate=60, use_pacemaker=False, p_wave=0.25, qrs_complex=1.0, t_wave=0.35, noise_level=0.05, noise_amplitude=0.005):
+    def __init__(self, heart_rate=60, use_pacemaker=False, p_wave=0.25,
+                 qrs_complex=1.0, t_wave=0.35, noise_level=0.05,
+                 noise_amplitude=0.005):
         """
         Inicializa el simulador de ECG.
 
@@ -27,7 +30,7 @@ class ECG_Simulator:
         self.p_wave = p_wave
         self.qrs_complex = qrs_complex
         self.t_wave = t_wave
-        
+
         # Intervalos y segmentos (en proporción del ciclo cardíaco)
         self.pr_interval = 0.16
         self.st_segment = 0.1
@@ -49,7 +52,8 @@ class ECG_Simulator:
         :param t_relative: Tiempo relativo en el ciclo cardíaco.
         :return: Valor de la onda P.
         """
-        return self.p_wave * self.amplitude * math.exp(-((t_relative - 0.1) ** 2) / 0.002)
+        return (self.p_wave * self.amplitude *
+                math.exp(-((t_relative - 0.1) ** 2) / 0.002))
 
     def generate_qrs_complex(self, t_relative):
         """
@@ -58,7 +62,10 @@ class ECG_Simulator:
         :param t_relative: Tiempo relativo en el ciclo cardíaco.
         :return: Valor del complejo QRS.
         """
-        return self.qrs_complex * self.amplitude * math.exp(-((t_relative - (self.pr_interval + 0.04)) ** 2) / 0.0002)
+        t_shift = self.pr_interval + 0.04
+        return self.qrs_complex * self.amplitude * math.exp(
+            -((t_relative - t_shift) ** 2) / 0.0002
+        )
 
     def generate_t_wave(self, t_relative):
         """
@@ -67,7 +74,9 @@ class ECG_Simulator:
         :param t_relative: Tiempo relativo en el ciclo cardíaco.
         :return: Valor de la onda T.
         """
-        return self.t_wave * self.amplitude * math.exp(-((t_relative - (self.pr_interval + self.st_segment + 0.2)) ** 2) / 0.006)
+        t_shift = self.pr_interval + self.st_segment + 0.2
+        return (self.t_wave * self.amplitude *
+                math.exp(-((t_relative - t_shift) ** 2) / 0.006))
 
     def generate_noise(self):
         """
@@ -89,14 +98,17 @@ class ECG_Simulator:
         p = self.generate_p_wave(t_relative)
         qrs = self.generate_qrs_complex(t_relative)
         t = self.generate_t_wave(t_relative)
-        
+
         value = p + qrs + t
 
         # Simular marcapasos si está activado
         if self.use_pacemaker:
             if self.t - self.last_pacemaker_pulse >= self.interval:
                 # Generar pulso del marcapasos
-                value += self.pacemaker_amplitude * math.exp(-((t_relative - 0.05) ** 2) / 0.00001)
+                pacemaker_pulse = self.pacemaker_amplitude * math.exp(
+                    -((t_relative - 0.05) ** 2) / 0.00001
+                )
+                value += pacemaker_pulse
                 self.last_pacemaker_pulse = self.t
 
         # Añadir ruido

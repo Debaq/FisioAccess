@@ -1,12 +1,12 @@
-import os
 import pygame
 from widgets_helpers import icon as help_icon
 
-from theming import Theming  # Importamos la clase Theming
+from theming import Theming
 
 
 class Button:
-    def __init__(self, x, y, width, height, text, size_icon=128, icon=None, on_click=None, enabled=True):
+    def __init__(self, x, y, width, height, text, size_icon=128, icon=None,
+                 on_click=None, enabled=True):
         self.rect = pygame.Rect(x, y, width, height)
         self.text = text
         color_button = Theming().get('button')
@@ -15,15 +15,14 @@ class Button:
         selected_color = pygame.Color(color_button['background'])
         self.width = width
         self.height = height
-        
-        
+
         self.color = color  # Color inicial del botón
         self.disabled_color = disabled_color  # Color cuando está deshabilitado
         self.selected_color = selected_color  # Color cuando está seleccionado
         self.icon = None  # Icono como imagen opcional
         if icon:
             self.icon = help_icon(icon, self.width, self.height, 128, 'dark')
-        
+
         self.enabled = enabled
         self.visible = True
         self.selected = False
@@ -40,13 +39,16 @@ class Button:
                 if self.color:
                     color = self.color  # Usar el color actual del botón
 
-            if not self.icon:        
+            if not self.icon:
                 pygame.draw.rect(screen, color, self.rect)
-                pygame.draw.rect(screen, (0, 0, 0,0), self.rect.inflate(-4, -4))  # Borde negro
+                pygame.draw.rect(screen, (0, 0, 0, 0),
+                                 self.rect.inflate(-4, -4))  # Borde negro
 
             # Dibuja el texto o el icono
             if self.icon:
                 # Si hay un icono, lo dibuja en el centro del botón
+                pygame.draw.rect(screen, color, self.rect)
+
                 icon_rect = self.icon.get_rect(center=self.rect.center)
                 screen.blit(self.icon, icon_rect)
             else:
@@ -58,14 +60,16 @@ class Button:
     def set_icon(self, icon):
         self.icon = help_icon(icon, self.width, self.height, 128, 'dark')
 
-
     def is_clicked(self, pos):
         """Verifica si el botón fue clicado."""
         if self.enabled:
-            return self.rect.collidepoint(pos) and self.enabled and self.visible
+            return (self.rect.collidepoint(pos) and
+                    self.enabled and
+                    self.visible)
 
     def click(self):
-        """Llama a la función on_click si está definida y el botón es clicado."""
+        """Llama a la función on_click si está definida
+        y el botón es clicado."""
         if self.on_click:
             self.on_click()
 

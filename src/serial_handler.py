@@ -1,6 +1,6 @@
 import serial
-import random
 from eeg_simulator import ECG_Simulator
+
 
 class SerialHandler:
     def __init__(self, port, baud_rate):
@@ -8,7 +8,6 @@ class SerialHandler:
         self.baud_rate = baud_rate
         self.ser = None
         self.ecg_demo = ECG_Simulator(heart_rate=60, use_pacemaker=False)
-
 
     def connect(self):
         try:
