@@ -79,7 +79,7 @@ class ToolsBar:
             self.stop_recording()
         elif self.status == "stopped" and self.last_button == "stop":
             self.clear_data()
-        
+
         self.last_button = "stop"
         self.toggle_play_pause()
         self.record_status = False
@@ -118,7 +118,7 @@ class ToolsBar:
             self.buttons[4].disable()  # Desactivar Zoom Out
             self.buttons[5].disable()  # Desactivar el medidor
             self.buttons[6].disable()  # Desactivar el marcador
-            
+
         elif self.status == "stopped":
             # Iniciar la muestra de datos
             self.status = "played"
@@ -179,7 +179,7 @@ class ToolsBar:
             self.buttons[4].disable()  # Desactivar Zoom Out
             self.buttons[5].disable()  # Desactivar el medidor
             self.buttons[6].disable()  # Desactivar el marcador
-            
+
         elif self.status == "paused" and self.last_button == "play":
             # Reanudar la muestra de datos
             self.status = "played"
@@ -199,4 +199,3 @@ class ToolsBar:
         """Borra los datos de la muestra"""
         self.game.current_screen.graph_app.clear_data()
         self.data_available = False  # Indicar que no hay datos
-   

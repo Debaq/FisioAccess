@@ -51,7 +51,6 @@ class GraphApp:
             self.data.append(value)
             if len(self.data) >= self.current_max_points:
                 if self.current_max_points < MAX_POINTS * 2:
-                    # Aumentar el límite si aún no hemos alcanzado el doble de MAX_POINTS
                     self.current_max_points = min(
                         self.current_max_points * 2, MAX_POINTS * 2)
                     self.data = deque(
@@ -71,7 +70,6 @@ class GraphApp:
         self.record = True
         self.played = True
         if len(self.data) >= self.current_max_points:
-            # Si ya hemos alcanzado el límite actual, aumentamos al siguiente nivel
             self.current_max_points = min(
                 self.current_max_points * 2, MAX_POINTS * 2)
             self.data = deque(self.data, maxlen=self.current_max_points)
@@ -84,7 +82,8 @@ class GraphApp:
 
     def adjust_scale(self):
         """
-        Ajusta la escala del gráfico basado en el valor máximo y mínimo visible.
+        Ajusta la escala del gráfico basado
+        en el valor máximo y mínimo visible.
         """
         if self.data:
             visible_data = list(self.data)[
@@ -98,26 +97,31 @@ class GraphApp:
                 # Calcular el factor de escala para ajustar el gráfico
                 self.scale_factor = self.graph_height / data_range
             else:
-                self.scale_factor = 1  # Evitar división por cero si todos los valores son iguales
+                self.scale_factor = 1 
 
     def draw_grid(self, screen):
         """Dibujar la cuadrícula del gráfico."""
         grid_color = Theming().get('grid_color')
 
         # Divisiones para el eje X (1 ms por división)
-        for x in range(self.margin_left, WIDTH - self.margin_right, int(self.graph_width / (VISIBLE_POINTS / self.grid_ms_per_div))):
+        step = int(self.graph_width / (VISIBLE_POINTS / self.grid_ms_per_div))
+        for x in range(self.margin_left, WIDTH - self.margin_right, step):
             pygame.draw.line(screen, grid_color, (x, self.margin_top),
                              (x, HEIGHT - self.margin_bottom), 1)
 
         # Divisiones para el eje Y (1 uV por división)
         data_range = max(self.data) - min(self.data) if self.data else 0
         if data_range > 0:
-            y_div_height = self.graph_height / data_range * self.grid_uv_per_div
+            y_div_height = (self.graph_height / data_range 
+                            * self.grid_uv_per_div)
             # Asegurarse de que no sea 0
             y_step = max(1, int(y_div_height * self.scale_factor))
-            for y in range(self.margin_top, HEIGHT - self.margin_bottom, y_step):
+            for y in range(self.margin_top,
+                           HEIGHT - self.margin_bottom,
+                           y_step):
                 pygame.draw.line(
-                    screen, grid_color, (self.margin_left, y), (WIDTH - self.margin_right, y), 1)
+                    screen, grid_color, (self.margin_left, y), 
+                    (WIDTH - self.margin_right, y), 1)
 
     def draw_graph(self, screen, **kwargs):
         """Dibujar el gráfico escalado para que se ajuste a la pantalla."""
@@ -216,13 +220,12 @@ class GraphApp:
                     len(self.selected_data) / self.graph_width)
         index = max(0, min(index, len(self.selected_data) - 1))
         return x, self.selected_data[index]
-    
+
     def play(self, true=True):
         if true:
             self.played = True
         else:
             self.played = False
-            
 
     def zoom_in(self):
         """Función para hacer zoom al gráfico."""
