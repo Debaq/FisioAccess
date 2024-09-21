@@ -166,7 +166,7 @@ class Game:
             self.handle_events()
             self.update()
             self.draw()
-            self.clock.tick(40)
+            self.clock.tick(60)
 
         self.serial_handler.close()
         pygame.quit()

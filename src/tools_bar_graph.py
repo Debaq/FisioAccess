@@ -11,11 +11,11 @@ class ToolsBar:
         pos_bar_y = HEIGHT - height_bar
         pos_buttons_y = pos_bar_y + 10
         self.buttons = [
-            Button(10, pos_buttons_y, 30, 30, "Iniciar",
+            Button(10, pos_buttons_y, 30, 30, "play",
                    icon="play", on_click=self.play),
-            Button(45, pos_buttons_y, 30, 30, "Detener",
+            Button(45, pos_buttons_y, 30, 30, "stop",
                    icon="stop", on_click=self.stop, enabled=False),
-            Button(80, pos_buttons_y, 30, 30, "Grabar",
+            Button(80, pos_buttons_y, 30, 30, "record",
                    icon="dot-circle-o", on_click=self.record, enabled=False),
             Button(115, pos_buttons_y, 30, 30, "+", icon="plus",
                    on_click=self.zoom_in, enabled=False),
@@ -37,6 +37,7 @@ class ToolsBar:
         self.icon_change_interval = 10
         # Indica si hay datos disponibles para borrar
         self.data_available = False
+        self.last_button = None
 
     def draw(self, **kwargs):
         # Dibujar el rectángulo de fondo del menú
@@ -64,28 +65,34 @@ class ToolsBar:
                 button.click()
 
     def play(self):
+        if self.status == "stopped" or self.status == "paused":
+            self.game.current_screen.graph_app.play()
+        else:
+            self.game.current_screen.graph_app.play(False)
+        self.last_button = "play"
         self.toggle_play_pause()
 
     def stop(self):
-        if self.record_status:
-            self.stop_recording()
-        elif self.data_available:
+        if self.status == "paused":
             self.clear_data()
-        else:
-            self.toggle_stop_to_trash()
+        elif self.status == "recored":
+            self.stop_recording()
+        elif self.status == "stopped" and self.last_button == "stop":
+            self.clear_data()
+        
+        self.last_button = "stop"
+        self.toggle_play_pause()
+        self.record_status = False
 
     def record(self):
         """Inicia la grabación de datos"""
+        self.last_button = "record"
+        self.toggle_play_pause()
+
         self.record_status = True
-        # Cambiar icono a grabación activa
-        self.buttons[2].set_icon("dot-circle-r")
+
         # Desactivar botón de grabar cuando está grabando
-        self.buttons[2].disable()
-        self.game.current_screen.graph_app.start_recording()
-        self.buttons[0].disable()  # Desactivar Play/Pause durante la grabación
-        self.buttons[1].set_icon("stop")  # Cambiar icono de detener grabación
-        # Activar el botón de Stop para detener grabación
-        self.buttons[1].enable()
+        # self.game.current_screen.graph_app.start_recording()
 
     def zoom_in(self):
         self.game.current_screen.graph_app.zoom_in()
@@ -93,17 +100,34 @@ class ToolsBar:
     def zoom_out(self):
         self.game.current_screen.graph_app.zoom_out()
 
+    def measure(self):
+        self.game.measure_activate(True)
+
+    def marks(self):
+        self.game.marks_activate(True)
+
     def toggle_play_pause(self):
         """Alterna entre iniciar y pausar la muestra de datos"""
-        if self.status == "stopped":
+        if self.status == "stopped" and self.last_button == "stop":
+            self.buttons[0].set_icon("play")  # Cambiar a ícono de play
+            self.buttons[0].enable()  # Mantener Play habilitado
+            self.buttons[1].set_icon("stop")  # Cambiar a ícono de stop
+            self.buttons[1].disable()  # Desactivar botón de stop
+            self.buttons[2].disable()  # Desactivar botón de grabar
+            self.buttons[3].disable()  # Desactivar Zoom In
+            self.buttons[4].disable()  # Desactivar Zoom Out
+            self.buttons[5].disable()  # Desactivar el medidor
+            self.buttons[6].disable()  # Desactivar el marcador
+            
+        elif self.status == "stopped":
             # Iniciar la muestra de datos
             self.status = "played"
             self.buttons[0].set_icon("pause")  # Cambiar a ícono de pausa
             self.buttons[1].set_icon("stop")  # Asegurar que sea icono de stop
             self.buttons[1].disable()
             self.buttons[2].enable()  # Habilitar botón de grabar
-            self.game.current_screen.graph_app.played = True
-        elif self.status == "played":
+
+        elif self.status == "played" and self.last_button == "play":
             # Pausar la muestra de datos
             self.status = "paused"
             self.buttons[0].set_icon("play")  # Cambiar a ícono de play
@@ -113,56 +137,66 @@ class ToolsBar:
             self.buttons[2].disable()  # Desactivar botón de grabar
             self.buttons[3].enable()  # Habilitar Zoom In
             self.buttons[4].enable()  # Habilitar Zoom Out
-            self.buttons[5].enable() # Habilita el medidor
-            self.buttons[6].enable() # Habilita el marcador
+            self.buttons[5].enable()  # Habilita el medidor
+            self.buttons[6].enable()  # Habilita el marcador
 
-            self.game.current_screen.graph_app.played = False
-        elif self.status == "paused":
+        elif self.status == "played" and self.last_button == "record":
+            # graba los datos
+            self.status = "recored"
+
+            self.buttons[0].set_icon("play")  # Cambiar a ícono de play
+            self.buttons[0].disable()
+            self.buttons[1].set_icon("stop")
+            self.buttons[1].enable()  # Habilitar botón de borrar
+            self.buttons[2].disable()  # Desactivar botón de grabar
+            self.buttons[3].disable()  # Habilitar Zoom In
+            self.buttons[4].disable()  # Habilitar Zoom Out
+            self.buttons[5].disable()  # Habilita el medidor
+            self.buttons[6].disable()  # Habilita el marcador
+
+        elif self.status == "recored" and self.last_button == "stop":
+            self.status = "stopped"
+            self.buttons[0].disable()  # Desactivar botón de borrar
+            self.buttons[1].enable()  # Habilita botón de borrar
+            self.buttons[1].set_icon("trash")  # Cambiar a ícono de borrar
+            self.buttons[2].set_icon(
+                "dot-circle-o")  # Cambiar icono a grabación activa
+            self.buttons[2].disable()  # Desactivar botón de grabar
+            self.buttons[3].enable()  # Habilita Zoom In
+            self.buttons[4].enable()  # Habilita Zoom Out
+            self.buttons[5].enable()  # Habilita el medidor
+            self.buttons[6].enable()  # Habilita el marcador
+
+        elif self.status == "paused" and self.last_button == "stop":
+            # Reanudar la muestra de datos
+            self.status = "stopped"
+            self.buttons[0].enable()  # Habilitar botón de borrar
+            self.buttons[1].disable()  # Desactivar botón de borrar
+            self.buttons[2].set_icon(
+                "dot-circle-o")  # Cambiar icono a grabación activa
+            self.buttons[2].disable()  # Desactivar botón de grabar
+            self.buttons[3].disable()  # Desactivar Zoom In
+            self.buttons[4].disable()  # Desactivar Zoom Out
+            self.buttons[5].disable()  # Desactivar el medidor
+            self.buttons[6].disable()  # Desactivar el marcador
+            
+        elif self.status == "paused" and self.last_button == "play":
             # Reanudar la muestra de datos
             self.status = "played"
             self.buttons[0].set_icon("pause")  # Cambiar a ícono de pausa
-            self.buttons[1].set_icon("stop")  # Volver a icono de stop
-            self.buttons[1].disable()  # Desactivar botón de borrar
-            # Habilitar botón de grabar cuando se reanuda
-            self.buttons[2].enable()
-            self.buttons[3].disable()  # Deshabilitar Zoom In
-            self.buttons[4].disable()  # Deshabilitar Zoom Out
-            self.game.current_screen.graph_app.played = True
-
-    def toggle_stop_to_trash(self):
-        """Cambia el botón de stop a trash si hay datos disponibles"""
-        if self.status == "paused" and not self.record_status:
-            self.buttons[1].set_icon("trash")  # Cambia a ícono de trash
-            self.buttons[1].enable()  # Habilitar botón de trash
-            self.data_available = True  # Marcar que hay datos disponibles
+            self.buttons[1].set_icon("stop")  # Asegurar que sea icono de stop
+            self.buttons[1].disable()
+            self.buttons[2].enable()  # Habilitar botón de grabar
 
     def stop_recording(self):
         """Detiene la grabación y muestra de datos"""
         self.record_status = False
-        self.buttons[0].enable()  # Habilitar Play/Pause
-        self.buttons[1].set_icon("trash")  # Cambiar a icono de borrar
-        self.buttons[1].enable()  # Habilitar botón de borrar
-        # Cambiar a icono de grabación inactiva
-        self.buttons[2].set_icon("dot-circle-o")
         self.record_tick = 0  # Reiniciar el contador de grabación
         self.data_available = True  # Indicar que hay datos disponibles
-        self.status = "paused"
+        self.game.current_screen.graph_app.play(False)
 
     def clear_data(self):
         """Borra los datos de la muestra"""
         self.game.current_screen.graph_app.clear_data()
-        # Deshabilitar botón de borrar después de limpiar
-        self.buttons[1].disable()
-        self.buttons[2].disable()  # Deshabilitar botón de grabar
-        self.buttons[3].disable()  # Deshabilitar Zoom In
-        self.buttons[4].disable()  # Deshabilitar Zoom Out
         self.data_available = False  # Indicar que no hay datos
-        self.status = "stopped"
-        self.buttons[0].set_icon("play")  # Restablecer icono a play
-        self.buttons[0].enable()  # Habilitar Play/Pause
-        
-    def measure(self):
-        self.game.measure_activate(True)
-        
-    def marks(self):
-        self.game.marks_activate(True)
+   

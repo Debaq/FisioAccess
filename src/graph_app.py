@@ -216,6 +216,13 @@ class GraphApp:
                     len(self.selected_data) / self.graph_width)
         index = max(0, min(index, len(self.selected_data) - 1))
         return x, self.selected_data[index]
+    
+    def play(self, true=True):
+        if true:
+            self.played = True
+        else:
+            self.played = False
+            
 
     def zoom_in(self):
         """Función para hacer zoom al gráfico."""

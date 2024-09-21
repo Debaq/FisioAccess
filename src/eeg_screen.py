@@ -15,43 +15,43 @@ class ECGScreen(Screen):
                                       handles_visible=(True, False),
                                       handle_icon="caret-left",
                                       callback_function=self.slider_callback)
-        
+
         self.slider_horizontal = Slider(30, 30, 0, 950, direction="horizontal",
                                         handles_visible=(True, False),
                                         handle_icon="caret-down",
                                         callback_function=self.slider_callback)
-        
+
         self.slider_vertical.hide()
         self.slider_horizontal.hide()
-        
-        #self.cuadro = pygame.Rect(0,0,100,400)
+
+        # self.cuadro = pygame.Rect(0,0,100,400)
 
     def slider_callback(self, positions):
         """Función de callback que se llama al mover los sliders"""
         print("Posiciones de los sliders:", positions)
-        
+
     def measure_activate(self, active=True):
         self.slider_vertical.hide(False)
         self.slider_horizontal.hide(False)
-        
+
         if active:
             self.slider_vertical.handles_visible = (True, True)
             self.slider_horizontal.handles_visible = (True, True)
         else:
             self.slider_vertical.handles_visible = (False, False)
             self.slider_horizontal.handles_visible = (False, False)
-            
+
     def mark_activate(self, activate=True):
         self.slider_vertical.hide(False)
         self.slider_horizontal.hide(False)
-        
+
         if activate:
             self.slider_vertical.handles_visible = (True, False)
             self.slider_horizontal.handles_visible = (True, False)
         else:
             self.slider_vertical.handles_visible = (False, False)
-            self.slider_horizontal.handles_visible = (False, False) 
-        
+            self.slider_horizontal.handles_visible = (False, False)
+
     def draw(self, **kwargs):
         # obtener los datos del grafico
         value = kwargs["data"]
@@ -62,7 +62,7 @@ class ECGScreen(Screen):
         # Dibujar gráfico y botones del ECG
         self.graph_app.draw_graph(self.game.screen, data=value)
         self.menu.draw()
-        
+
         # dibujar los fps
         fps = self.game.clock.get_fps()
         fps_text = self.game.font.render(
@@ -73,9 +73,10 @@ class ECGScreen(Screen):
         self.slider_vertical.draw(self.game.screen)
         self.slider_horizontal.draw(self.game.screen)
 
-        #pygame.draw.rect(self.game.transparent_surface, (255, 0, 0, 100), self.cuadro)
-        #self.game.screen.blit(self.game.transparent_surface, (0, 0))
-        
+        # pygame.draw.rect(self.game.transparent_surface, (255, 0, 0, 100),
+        # self.cuadro)
+        # self.game.screen.blit(self.game.transparent_surface, (0, 0))
+
     def handle_events(self, event):
         self.slider_vertical.handle_events(event)
         self.slider_horizontal.handle_events(event)
