@@ -1,8 +1,10 @@
+from serial_handler import SerialHandler
+
 from theming import Theming
+
 from dial import DialScreen
 from config.settings import *
 from src.utils import get_ip_address
-from src.serial_handler import SerialHandler
 from src.button import Button
 from src.eeg_screen import ECGScreen
 from src.screen import Screen
@@ -12,7 +14,6 @@ import os
 
 
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 
