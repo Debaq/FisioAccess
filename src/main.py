@@ -29,15 +29,13 @@ def update_from_github():
             return True
     except subprocess.CalledProcessError as e:
         print(f"Error al actualizar desde GitHub: {e}")
-        sys.exit(1)
+        return False
 
 def main():
     print("Importando módulos y iniciando el juego...")
     try:
         from src.game import Game
-        from src.theming import Theming
         
-        theming = Theming(color_scheme='purple', mode='dark')
         game = Game()
         game.run()
     except ImportError as e:
@@ -45,9 +43,15 @@ def main():
         sys.exit(1)
 
 if __name__ == "__main__":
-    updated = update_from_github()
-    if updated:
-        print("Se realizaron actualizaciones. Reiniciando el script para cargar los cambios...")
-        os.execv(sys.executable, ['python'] + sys.argv)
-    else:
+    # Verificar si ya se ha intentado una actualización
+    if len(sys.argv) > 1 and sys.argv[1] == "--updated":
+        # Si ya se intentó actualizar, simplemente ejecutar el juego
         main()
+    else:
+        updated = update_from_github()
+        if updated:
+            print("Se realizaron actualizaciones. Reiniciando el script para cargar los cambios...")
+            # Reiniciar el script con un flag para indicar que ya se actualizó
+            os.execv(sys.executable, [sys.executable] + [sys.argv[0], "--updated"])
+        else:
+            main()

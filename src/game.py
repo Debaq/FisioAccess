@@ -9,6 +9,7 @@ import pygame
 import sys
 import os
 
+theming = Theming(color_scheme='purple', mode='dark')
 
 class Game:
     def __init__(self):
