@@ -1,8 +1,10 @@
-from config.settings import *
+from config.settings import NAMEAPP, VER, HEIGHT
 from theming import Theming
 from src.screen import Screen
 from src.button import Button
+from helper_qr import QRGenerator
 import pygame
+
 
 class HomeScreen(Screen):
     def __init__(self, game):
@@ -20,6 +22,10 @@ class HomeScreen(Screen):
         title_rect = title_surf.get_rect(
             center=(self.game.WIDTH // 2, self.game.HEIGHT // 2))
         self.game.screen.blit(title_surf, title_rect)
+        qr_gen = QRGenerator()
+        qr = qr_gen.generate_qr_surface("http://172.17.41.173:5000",
+                                        (200, 200))
+        self.game.screen.blit(qr, (800, 50))  # Centrar el QR en la pantalla
 
         # Mostrar IP en el borde derecho
         thm_text = Theming().get('text')
@@ -42,7 +48,6 @@ class HomeScreen(Screen):
             pos = pygame.mouse.get_pos()
             # Maneja eventos del menú
             self.menu.handle_events(pos)
-
 
 
 class VerticalMenu:
@@ -82,4 +87,5 @@ class VerticalMenu:
         self.game.current_screen = self.game.screens['ecg']
 
     def go_to_dial(self):
-        self.game.current_screen = self.game.screens['dial']
+        pass
+        # self.game.current_screen = self.game.screens['dial']

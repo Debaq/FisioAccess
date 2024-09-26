@@ -108,14 +108,14 @@ def main():
 if __name__ == "__main__":
     # Verificar si ya se ha intentado una actualización
     if len(sys.argv) > 1 and sys.argv[1] == "--updated":
-        # Si ya se intentó actualizar, imprimir 
+        # Si ya se intentó actualizar, imprimir
         # información de Git y ejecutar el juego
         print_git_info()
         main()
     else:
         updated = update_from_github()
         if updated:
-            print("""Se realizaron actualizaciones. 
+            print("""Se realizaron actualizaciones.
                   Reiniciando el script para cargar los cambios...""")
             # Reiniciar el script con un flag para indicar que ya se actualizó
             os.execv(sys.executable,
