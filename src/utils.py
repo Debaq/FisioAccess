@@ -1,14 +1,13 @@
 import subprocess
+import socket
+
 
 def get_ip_address():
     try:
-        result = subprocess.run(['ip', '-4', 'addr', 'show', 'wlan0'], capture_output=True, text=True)
-        output = result.stdout
-        
-        for line in output.split('\n'):
-            if 'inet' in line:
-                ip = line.split()[1].split('/')[0]
-                return ip
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        local_ip = s.getsockname()[0]
+        s.close()
+        return local_ip
     except Exception as e:
-        print(f"Error getting IP address: {e}")
-    return "IP not found"
+        return f"Error al obtener la IP local: {str(e)}"
