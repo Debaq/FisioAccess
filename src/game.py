@@ -25,6 +25,7 @@ class Game:
         self.title_font = pygame.font.Font(FONT_PATH, 48)
 
         self.serial_handler = SerialHandler(SERIAL_PORT, BAUD_RATE)
+        self.serial_handler.connect()
         self.ip_address = get_ip_address()
         self.data = []
 
@@ -82,7 +83,7 @@ class Game:
         # if self.graph_app.draw_graph:
         #    new_value = self.serial_handler.get_data(True)
         #    self.graph_app.add_data_point(new_value)
-        self.data = self.serial_handler.get_data(True)
+        self.data = self.serial_handler.get_data(False)
 
     def draw(self, **kwargs):
         self.transparent_surface.fill((0, 0, 0, 0))

@@ -10,8 +10,8 @@ WIDTH = 1024
 HEIGHT = 600
 
 # Configuración del gráfico
-MAX_POINTS = 10000
-VISIBLE_POINTS = 1000
+MAX_POINTS = 500
+VISIBLE_POINTS = 200
 
 # Configuración serial
 SERIAL_PORT = '/dev/ttyACM0'
