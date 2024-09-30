@@ -36,6 +36,8 @@ class Game:
         }
 
         self.current_screen = self.screens['home']
+        self.ctrl_pressed = False
+        self.alt_pressed = False
 
     def measure_activate(self, state):
         try:
@@ -53,6 +55,22 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LCTRL or event.key == pygame.K_RCTRL:
+                    self.ctrl_pressed = True
+                elif event.key == pygame.K_LALT or event.key == pygame.K_RALT:
+                    self.alt_pressed = True
+                elif event.key == pygame.K_BACKSPACE:
+                    if self.ctrl_pressed and self.alt_pressed:
+                        print("Ctrl+Alt+Backspace pressed. Exiting game...")
+                        self.running = False
+                        return
+            elif event.type == pygame.KEYUP:
+                if event.key == pygame.K_LCTRL or event.key == pygame.K_RCTRL:
+                    self.ctrl_pressed = False
+                elif event.key == pygame.K_LALT or event.key == pygame.K_RALT:
+                    self.alt_pressed = False
+            
             self.current_screen.handle_events(event)
 
     def update(self):
