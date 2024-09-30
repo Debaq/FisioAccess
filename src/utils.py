@@ -19,3 +19,12 @@ def get_display_server():
         return 'B'  # Framebuffer is available
     else:
         return '?'  # Unknown or no graphical environment
+    
+    
+def get_cpu_temperature():
+    try:
+        with open('/sys/class/thermal/thermal_zone0/temp', 'r') as f:
+            temp = float(f.read().strip()) / 1000
+        return f"{temp:.1f}°C"
+    except Exception as e:
+        return f"Error: {str(e)}"

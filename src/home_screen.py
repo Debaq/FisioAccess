@@ -3,7 +3,7 @@ from theming import Theming
 from src.screen import Screen
 from src.button import Button
 from helper_qr import QRGenerator
-from src.utils import get_ip_address, get_display_server
+from src.utils import get_ip_address, get_display_server, get_cpu_temperature
 import pygame
 
 class HomeScreen(Screen):
@@ -43,10 +43,18 @@ class HomeScreen(Screen):
         # Draw pre-rendered IP and display info
         self.game.screen.blit(self.ip_display_surf, self.ip_display_rect)
 
-        # FPS counter (this needs to be updated each frame)
+        cpu_temp = get_cpu_temperature()
         fps = self.game.clock.get_fps()
-        fps_text = self.game.font.render(f"FPS: {int(fps)}", True, (255, 255, 255))
-        self.game.screen.blit(fps_text, (10, 10))
+
+        thm_text = Theming().get('text')
+        fps_temp_text = self.game.font.render(
+            f"FPS: {int(fps)} | CPU: {cpu_temp}", True, thm_text)
+        self.game.screen.blit(fps_temp_text, (10, 10))
+
+        # FPS counter (this needs to be updated each frame)
+        # fps = self.game.clock.get_fps()
+        # fps_text = self.game.font.render(f"FPS: {int(fps)}", True, (255, 255, 255))
+        # self.game.screen.blit(fps_text, (10, 10))
 
         # Draw vertical menu
         self.menu.draw()
