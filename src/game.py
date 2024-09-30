@@ -46,7 +46,7 @@ class Game:
         #pygame.mouse.set_cursor(cursor)  # O cualquier otro cursor que prefieras
          # Offset para ajustar la posición del toque
         self.touch_offset_x = 0
-        self.touch_offset_y = 0
+        self.touch_offset_y = -10
         self.touch_indicator = pygame.Surface((20, 20), pygame.SRCALPHA)
         pygame.draw.circle(self.touch_indicator, (255, 0, 0, 128), (10, 10), 10)
 
