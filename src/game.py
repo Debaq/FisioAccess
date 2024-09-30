@@ -27,7 +27,7 @@ class Game:
         self.title_font = pygame.font.Font(FONT_PATH, 48)
 
         self.serial_handler = SerialHandler(SERIAL_PORT, BAUD_RATE)
-        #self.serial_handler.connect()
+        self.serial_handler.connect()
         self.ip_address = get_ip_address()
         self.data = []
 
@@ -41,12 +41,12 @@ class Game:
         self.current_screen = self.screens['home']
         self.ctrl_pressed = False
         self.alt_pressed = False
-        pygame.mouse.set_cursor(cursors.arrow)  # O cualquier otro cursor que prefieras
+        #pygame.mouse.set_cursor(cursors.arrow)  # O cualquier otro cursor que prefieras
         #cursor = pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_CROSSHAIR)
         #pygame.mouse.set_cursor(cursor)  # O cualquier otro cursor que prefieras
          # Offset para ajustar la posición del toque
         self.touch_offset_x = 0
-        self.touch_offset_y = -10
+        self.touch_offset_y = 0
         self.touch_indicator = pygame.Surface((20, 20), pygame.SRCALPHA)
         pygame.draw.circle(self.touch_indicator, (255, 0, 0, 128), (10, 10), 10)
 
