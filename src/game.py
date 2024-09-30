@@ -44,6 +44,11 @@ class Game:
         pygame.mouse.set_cursor(cursors.arrow)  # O cualquier otro cursor que prefieras
         #cursor = pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_CROSSHAIR)
         #pygame.mouse.set_cursor(cursor)  # O cualquier otro cursor que prefieras
+         # Offset para ajustar la posición del toque
+        self.touch_offset_x = 0
+        self.touch_offset_y = 0
+        self.touch_indicator = pygame.Surface((20, 20), pygame.SRCALPHA)
+        pygame.draw.circle(self.touch_indicator, (255, 0, 0, 128), (10, 10), 10)
 
     def measure_activate(self, state):
         try:
@@ -61,24 +66,37 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LCTRL or event.key == pygame.K_RCTRL:
-                    self.ctrl_pressed = True
-                elif event.key == pygame.K_LALT or event.key == pygame.K_RALT:
-                    self.alt_pressed = True
-                elif event.key == pygame.K_BACKSPACE:
-                    if self.ctrl_pressed and self.alt_pressed:
-                        print("Ctrl+Alt+Backspace pressed. Exiting game...")
-                        self.running = False
-                        return
-            elif event.type == pygame.KEYUP:
-                if event.key == pygame.K_LCTRL or event.key == pygame.K_RCTRL:
-                    self.ctrl_pressed = False
-                elif event.key == pygame.K_LALT or event.key == pygame.K_RALT:
-                    self.alt_pressed = False
-            
-            self.current_screen.handle_events(event)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                # Ajustar la posición del clic
+                pos = (event.pos[0] + self.touch_offset_x, 
+                       event.pos[1] + self.touch_offset_y)
+                # Pasar el evento ajustado a la pantalla actual
+                adjusted_event = pygame.event.Event(pygame.MOUSEBUTTONDOWN, {'pos': pos, 'button': event.button})
+                self.current_screen.handle_events(adjusted_event)
+            elif event.type in (pygame.KEYDOWN, pygame.KEYUP):
+                self.handle_key_events(event)
+            else:
+                # Para otros tipos de eventos, pasarlos directamente
+                self.current_screen.handle_events(event)
 
+    def handle_key_events(self, event):
+        if event.type == pygame.KEYDOWN:
+            if event.key in (pygame.K_LCTRL, pygame.K_RCTRL):
+                self.ctrl_pressed = True
+            elif event.key in (pygame.K_LALT, pygame.K_RALT):
+                self.alt_pressed = True
+            elif event.key == pygame.K_BACKSPACE:
+                if self.ctrl_pressed and self.alt_pressed:
+                    print("Ctrl+Alt+Backspace pressed. Exiting game...")
+                    self.running = False
+                    return
+        elif event.type == pygame.KEYUP:
+            if event.key in (pygame.K_LCTRL, pygame.K_RCTRL):
+                self.ctrl_pressed = False
+            elif event.key in (pygame.K_LALT, pygame.K_RALT):
+                self.alt_pressed = False
+
+                
     def update(self):
         # revisar si se ha conectado algun sensor, aca debemos conocer el
         # puerto de conexión del esp32 o que este envie un string
@@ -94,6 +112,15 @@ class Game:
         self.transparent_surface.fill((0, 0, 0, 0))
 
         self.current_screen.draw(data=self.data)
+
+        # Dibujar el indicador de toque si se está tocando la pantalla
+        if pygame.mouse.get_pressed()[0]:  # Si se está presionando el botón izquierdo del mouse (o tocando la pantalla)
+            pos = pygame.mouse.get_pos()
+            self.screen.blit(self.touch_indicator, 
+                             (pos[0] - 10 + self.touch_offset_x, 
+                              pos[1] - 10 + self.touch_offset_y))
+
+        
         pygame.display.flip()
 
     def run(self):
