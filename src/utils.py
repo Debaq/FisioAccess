@@ -1,6 +1,6 @@
 import subprocess
 import socket
-
+import os
 
 def get_ip_address():
     try:
@@ -11,3 +11,11 @@ def get_ip_address():
         return local_ip
     except Exception as e:
         return f"Error al obtener la IP local: {str(e)}"
+
+def get_display_server():
+    if 'DISPLAY' in os.environ:
+        return 'Xo'  # Xorg is running
+    elif os.path.exists('/dev/fb0'):
+        return 'B'  # Framebuffer is available
+    else:
+        return '?'  # Unknown or no graphical environment

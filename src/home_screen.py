@@ -3,6 +3,7 @@ from theming import Theming
 from src.screen import Screen
 from src.button import Button
 from helper_qr import QRGenerator
+from src.utils import get_ip_address, get_display_server
 import pygame
 
 
@@ -27,13 +28,13 @@ class HomeScreen(Screen):
                                         (200, 200))
         self.game.screen.blit(qr, (800, 50))  # Centrar el QR en la pantalla
 
-        # Mostrar IP en el borde derecho
+        # Mostrar IP y tipo de display en el borde derecho
         thm_text = Theming().get('text')
-
-        ip_surf = self.game.font.render(
-            f"IP: {self.game.ip_address}", True, thm_text)
-        ip_rect = ip_surf.get_rect(topright=(self.game.WIDTH - 10, 10))
-        self.game.screen.blit(ip_surf, ip_rect)
+        display_server = get_display_server()
+        ip_display_surf = self.game.font.render(
+            f"IP: {self.game.ip_address} {display_server}", True, thm_text)
+        ip_display_rect = ip_display_surf.get_rect(topright=(self.game.WIDTH - 10, 10))
+        self.game.screen.blit(ip_display_surf, ip_display_rect)
 
         fps = self.game.clock.get_fps()
         fps_text = self.game.font.render(
@@ -48,7 +49,6 @@ class HomeScreen(Screen):
             pos = pygame.mouse.get_pos()
             # Maneja eventos del menú
             self.menu.handle_events(pos)
-
 
 class VerticalMenu:
     def __init__(self, game):
