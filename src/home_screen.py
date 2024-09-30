@@ -6,49 +6,56 @@ from helper_qr import QRGenerator
 from src.utils import get_ip_address, get_display_server
 import pygame
 
-
 class HomeScreen(Screen):
     def __init__(self, game):
         super().__init__(game)
-        self.menu = VerticalMenu(game)  # Mover la instancia del menú aquí
+        self.menu = VerticalMenu(game)
+        
+        # Generate QR code once
+        qr_gen = QRGenerator()
+        self.qr = qr_gen.generate_qr_surface("http://172.17.41.173:5000", (200, 200))
+        
+        # Pre-render title
+        thm_title = Theming().get('title_str')
+        self.title_surf = game.title_font.render(f"{NAMEAPP} v{VER}", True, thm_title)
+        self.title_rect = self.title_surf.get_rect(center=(game.WIDTH // 2, game.HEIGHT // 2))
+        
+        # Pre-render IP and display server info
+        self.display_server = get_display_server()
+        self.update_ip_display()
+
+    def update_ip_display(self):
+        thm_text = Theming().get('text')
+        self.ip_display_surf = self.game.font.render(
+            f"IP: {self.game.ip_address} {self.display_server}", True, thm_text)
+        self.ip_display_rect = self.ip_display_surf.get_rect(topright=(self.game.WIDTH - 10, 10))
 
     def draw(self, **kwargs):
         background = Theming().get('background')
-
         self.game.screen.fill(background)
-        # Título centrado
-        thm_title = Theming().get('title_str')
-        title_surf = self.game.title_font.render(
-            f"{NAMEAPP} v{VER}", True, thm_title)
-        title_rect = title_surf.get_rect(
-            center=(self.game.WIDTH // 2, self.game.HEIGHT // 2))
-        self.game.screen.blit(title_surf, title_rect)
-        qr_gen = QRGenerator()
-        qr = qr_gen.generate_qr_surface("http://172.17.41.173:5000",
-                                        (200, 200))
-        self.game.screen.blit(qr, (800, 50))  # Centrar el QR en la pantalla
 
-        # Mostrar IP y tipo de display en el borde derecho
-        thm_text = Theming().get('text')
-        display_server = get_display_server()
-        ip_display_surf = self.game.font.render(
-            f"IP: {self.game.ip_address} {display_server}", True, thm_text)
-        ip_display_rect = ip_display_surf.get_rect(topright=(self.game.WIDTH - 10, 10))
-        self.game.screen.blit(ip_display_surf, ip_display_rect)
+        # Draw pre-rendered title
+        self.game.screen.blit(self.title_surf, self.title_rect)
 
+        # Draw pre-generated QR
+        self.game.screen.blit(self.qr, (800, 50))
+
+        # Draw pre-rendered IP and display info
+        self.game.screen.blit(self.ip_display_surf, self.ip_display_rect)
+
+        # FPS counter (this needs to be updated each frame)
         fps = self.game.clock.get_fps()
-        fps_text = self.game.font.render(
-            f"FPS: {int(fps)}", True, (255, 255, 255))
+        fps_text = self.game.font.render(f"FPS: {int(fps)}", True, (255, 255, 255))
         self.game.screen.blit(fps_text, (10, 10))
 
-        # Dibujar el menú vertical
+        # Draw vertical menu
         self.menu.draw()
 
     def handle_events(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
-            # Maneja eventos del menú
             self.menu.handle_events(pos)
+
 
 class VerticalMenu:
     def __init__(self, game):
