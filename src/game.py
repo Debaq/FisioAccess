@@ -6,6 +6,8 @@ from src.utils import get_ip_address
 from src.eeg_screen import ECGScreen
 from src.home_screen import HomeScreen
 import pygame
+import pygame
+from pygame import cursors
 import sys
 import os
 
@@ -25,7 +27,7 @@ class Game:
         self.title_font = pygame.font.Font(FONT_PATH, 48)
 
         self.serial_handler = SerialHandler(SERIAL_PORT, BAUD_RATE)
-        self.serial_handler.connect()
+        #self.serial_handler.connect()
         self.ip_address = get_ip_address()
         self.data = []
 
@@ -39,6 +41,9 @@ class Game:
         self.current_screen = self.screens['home']
         self.ctrl_pressed = False
         self.alt_pressed = False
+        #pygame.mouse.set_cursor(cursors.arrow)  # O cualquier otro cursor que prefieras
+        cursor = pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_CROSSHAIR)
+        pygame.mouse.set_cursor(cursor)  # O cualquier otro cursor que prefieras
 
     def measure_activate(self, state):
         try:
@@ -83,7 +88,7 @@ class Game:
         # if self.graph_app.draw_graph:
         #    new_value = self.serial_handler.get_data(True)
         #    self.graph_app.add_data_point(new_value)
-        self.data = self.serial_handler.get_data(False)
+        self.data = self.serial_handler.get_data(True)
 
     def draw(self, **kwargs):
         self.transparent_surface.fill((0, 0, 0, 0))
