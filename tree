@@ -1,0 +1,33 @@
+[nick@p14s FisioAccess]$ tree -L 2
+.
+├── assets
+│   ├── fonts
+│   ├── icons
+│   ├── logo.dxf
+│   └── logo.svg
+├── config
+│   ├── settings.py
+│   └── themes.json
+├── LICENSE
+├── README.md
+├── requirements.txt
+├── src
+│   ├── button.py
+│   ├── dial.py
+│   ├── eeg_screen.py
+│   ├── eeg_simulator.py
+│   ├── game.py
+│   ├── graph_app.py
+│   ├── helper_qr.py
+│   ├── home_screen.py
+│   ├── Ip_helper.py
+│   ├── main.py
+│   ├── screen.py
+│   ├── serial_handler.py
+│   ├── slider.py
+│   ├── theming.py
+│   ├── tools_bar_graph.py
+│   ├── utils.py
+│   ├── widgets_helpers.py
+│   └── wifi_test_pygame.py
+└── test
