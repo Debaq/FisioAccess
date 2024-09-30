@@ -14,7 +14,7 @@ MAX_POINTS = 10000
 VISIBLE_POINTS = 1000
 
 # Configuración serial
-SERIAL_PORT = '/dev/ttyS2'
+SERIAL_PORT = '/dev/ttyACM0'
 BAUD_RATE = 115600
 
 # Rutas
