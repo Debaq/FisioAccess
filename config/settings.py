@@ -7,7 +7,7 @@ VER = 2.1
 
 # Configuración de la ventana
 WIDTH = 1024
-HEIGHT = 560
+HEIGHT = 600
 
 # Configuración del gráfico
 MAX_POINTS = 10000
