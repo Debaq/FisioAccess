@@ -41,9 +41,9 @@ class Game:
         self.current_screen = self.screens['home']
         self.ctrl_pressed = False
         self.alt_pressed = False
-        #pygame.mouse.set_cursor(cursors.arrow)  # O cualquier otro cursor que prefieras
-        cursor = pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_CROSSHAIR)
-        pygame.mouse.set_cursor(cursor)  # O cualquier otro cursor que prefieras
+        pygame.mouse.set_cursor(cursors.arrow)  # O cualquier otro cursor que prefieras
+        #cursor = pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_CROSSHAIR)
+        #pygame.mouse.set_cursor(cursor)  # O cualquier otro cursor que prefieras
 
     def measure_activate(self, state):
         try:
