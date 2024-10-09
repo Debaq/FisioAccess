@@ -5,7 +5,7 @@ from eeg_simulator import ECG_Simulator
 import time  # Necesario para el control de tiempo
 
 class SerialHandler:
-    def __init__(self, port_prefix='/dev/ttyACM', baud_rate=115200, buffer_size=1000, max_ports=10, command_interval=1.0):
+    def __init__(self, port_prefix='/dev/ttyACM', baud_rate=115200, buffer_size=1000, max_ports=10, command_interval=1):
         self.port_prefix = port_prefix
         self.baud_rate = baud_rate
         self.buffer = deque(maxlen=buffer_size)
@@ -16,24 +16,21 @@ class SerialHandler:
         self.max_ports = max_ports
         self.ecg_demo = ECG_Simulator(heart_rate=60, use_pacemaker=False)
         self.last_command_time = 0  # Para rastrear el último tiempo de envío de comando
-        self.command_interval = command_interval  # Intervalo mínimo entre comandos en segundos
+        self.command_interval = command_interval/1000  # Intervalo mínimo entre comandos en segundos
 
     def connect(self):
         for port_number in range(self.max_ports):
             port = f"{self.port_prefix}{port_number}"
-            print(port)
             try:
                 self.ser = serial.Serial(port, self.baud_rate, timeout=1)
-                print(f"Conexión serial establecida en {port}")
                 self.send_command("COMMAND=PRINT_MODE_A")  # Envía el comando para activar el modo de impresión
                 self.running = True
                 self.thread = threading.Thread(target=self._read_serial)
                 self.thread.start()
                 return True
             except serial.SerialException as e:
-                print(f"No se pudo conectar a {port}: {e}")
+                pass
         
-        print("No se encontró un puerto serial disponible.")
         return False
 
     def send_command(self, command):
@@ -41,7 +38,6 @@ class SerialHandler:
         if self.ser and self.ser.is_open:
             try:
                 self.ser.write((command + '\n').encode('utf-8'))
-                print(f"Comando enviado: {command}")
             except serial.SerialException as e:
                 print(f"Error al enviar comando: {e}")
 
@@ -63,16 +59,17 @@ class SerialHandler:
 
         # Envía el comando solo si ha pasado el intervalo de tiempo especificado
         current_time = time.time()
-        if not self.buffer and (current_time - self.last_command_time) >= self.command_interval:
-            self.send_command("COMMAND=PRINT_MODE_A")  # Envía el comando para activar el modo de impresión
-            self.last_command_time = current_time  # Actualiza el último tiempo de comando enviado
+        #if not self.buffer and (current_time - self.last_command_time) >= self.command_interval:
+        self.send_command("COMMAND=PRINT_MODE_A")  # Envía el comando para activar el modo de impresión
+        self.last_command_time = current_time  # Actualiza el último tiempo de comando enviado
 
         with self.lock:
             return self.buffer.popleft() if self.buffer else ""
     
     def connect_i2c(self):
         self.send_command("COMMAND=I2C_SEARCH")  # Envía el comando para activar el modo de impresión
-        
+        self.send_command("COMMAND=I2C_CONNECT=0x48")  # Envía el comando para activar el modo de impresión
+
 
     def close(self):
         self.running = False

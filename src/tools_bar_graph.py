@@ -25,8 +25,8 @@ class ToolsBar:
                    on_click=self.measure, enabled=False),
             Button(250, pos_buttons_y, 70, 30, "Marcar",
                    on_click=self.marks, enabled=False),
-            Button(315, pos_buttons_y, 70, 30, "Conectar",
-                   on_click=self.marks, enabled=True),
+            Button(330, pos_buttons_y, 50, 30, "Conn",
+                   on_click=self.connect, enabled=True),
         ]
         self.rect_x = 0
         self.rect_y = pos_bar_y
@@ -201,3 +201,8 @@ class ToolsBar:
         """Borra los datos de la muestra"""
         self.game.current_screen.graph_app.clear_data()
         self.data_available = False  # Indicar que no hay datos
+    
+    def connect(self):
+        """conecta el puerto serial al ads"""
+        print("conectando")
+        self.game.serial_handler.connect_i2c()

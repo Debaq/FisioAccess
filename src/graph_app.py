@@ -123,9 +123,18 @@ class GraphApp:
                     screen, grid_color, (self.margin_left, y), 
                     (WIDTH - self.margin_right, y), 1)
 
+    def cut_data(self, data):
+        data = data.rstrip(';')
+        valores = data.split(';')
+        values = valores[3]
+        val_0 = int(values.split(',')[0])
+        return val_0
+
     def draw_graph(self, screen, **kwargs):
         """Dibujar el gráfico escalado para que se ajuste a la pantalla."""
         value = kwargs["data"]
+        value = self.cut_data(value)
+        
         if self.played:
             self.add_data_point(value)
 
