@@ -26,10 +26,11 @@ class Game:
         self.font = pygame.font.Font(FONT_PATH, 16)
         self.title_font = pygame.font.Font(FONT_PATH, 48)
 
-        self.serial_handler = SerialHandler(SERIAL_PORT, BAUD_RATE)
+        self.serial_handler = SerialHandler()
         self.serial_handler.connect()
         self.ip_address = get_ip_address()
         self.data = []
+        self.data_serial_raw = None
 
         self.screens = {
             'home': HomeScreen(self),
@@ -106,12 +107,15 @@ class Game:
         # if self.graph_app.draw_graph:
         #    new_value = self.serial_handler.get_data(True)
         #    self.graph_app.add_data_point(new_value)
-        self.data = self.serial_handler.get_data(False)
+        data_serial_raw = self.serial_handler.get_data(False)
+        if data_serial_raw is not "":
+            self.data_serial_raw = self.serial_handler.get_data(False)
+
 
     def draw(self, **kwargs):
         self.transparent_surface.fill((0, 0, 0, 0))
 
-        self.current_screen.draw(data=self.data)
+        self.current_screen.draw(data=self.data_serial_raw)
 
         # Dibujar el indicador de toque si se está tocando la pantalla
         if pygame.mouse.get_pressed()[0]:  # Si se está presionando el botón izquierdo del mouse (o tocando la pantalla)

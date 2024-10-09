@@ -72,6 +72,12 @@ class ECGScreen(Screen):
         # dibujar los sliders
         self.slider_vertical.draw(self.game.screen)
         self.slider_horizontal.draw(self.game.screen)
+        
+        thm_text = Theming().get('text')
+        value = kwargs["data"]
+        Serial_info = self.game.font.render(
+            f"Serial: {value}", True, thm_text)
+        self.game.screen.blit(Serial_info, (200, 500))
 
         # pygame.draw.rect(self.game.transparent_surface, (255, 0, 0, 100),
         # self.cuadro)
