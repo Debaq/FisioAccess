@@ -4,6 +4,7 @@ from src.graph_app import GraphApp
 from src.slider import Slider
 from theming import Theming
 import pygame
+from src.utils import get_ip_address, get_display_server, get_cpu_temperature
 
 
 class ECGScreen(Screen):
@@ -84,8 +85,8 @@ class ECGScreen(Screen):
             f"Serial Info: {data_serial}", True, thm_text)
         Serial_info = self.game.font.render(
             f"Serial Raw: {data_info}", True, thm_text)
-        self.game.screen.blit(Serial_info, (400, 540))
-        self.game.screen.blit(Serial_raw, (400, 560))
+        self.game.screen.blit(Serial_info, (400, 550))
+        self.game.screen.blit(Serial_raw, (400, 570))
         
 
         # pygame.draw.rect(self.game.transparent_surface, (255, 0, 0, 100),

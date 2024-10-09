@@ -25,6 +25,8 @@ class ToolsBar:
                    on_click=self.measure, enabled=False),
             Button(250, pos_buttons_y, 70, 30, "Marcar",
                    on_click=self.marks, enabled=False),
+            Button(315, pos_buttons_y, 70, 30, "Conectar",
+                   on_click=self.marks, enabled=True),
         ]
         self.rect_x = 0
         self.rect_y = pos_bar_y

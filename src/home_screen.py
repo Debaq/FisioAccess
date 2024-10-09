@@ -58,8 +58,8 @@ class HomeScreen(Screen):
             f"Serial Info: {data_serial}", True, thm_text)
         Serial_info = self.game.font.render(
             f"Serial Raw: {data_info}", True, thm_text)
-        self.game.screen.blit(Serial_info, (400, 540))
-        self.game.screen.blit(Serial_raw, (400, 560))
+        self.game.screen.blit(Serial_info, (400, 550))
+        self.game.screen.blit(Serial_raw, (400, 570))
         
         # FPS counter (this needs to be updated each frame)
         # fps = self.game.clock.get_fps()
