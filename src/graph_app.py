@@ -124,10 +124,13 @@ class GraphApp:
                     (WIDTH - self.margin_right, y), 1)
 
     def cut_data(self, data):
-        data = data.rstrip(';')
-        valores = data.split(';')
-        values = valores[3]
-        val_0 = int(values.split(',')[0])
+        try:
+            data = data.rstrip(';')
+            valores = data.split(';')
+            values = valores[3]
+            val_0 = int(values.split(',')[0])
+        except Exception:
+            val_0 = 0
         return val_0
 
     def draw_graph(self, screen, **kwargs):
