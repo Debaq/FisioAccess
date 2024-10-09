@@ -51,11 +51,16 @@ class HomeScreen(Screen):
             f"FPS: {int(fps)} | CPU: {cpu_temp}", True, thm_text)
         self.game.screen.blit(fps_temp_text, (10, 10))
         
-        value = kwargs["data"]
+        data_serial = kwargs["data"]
+        data_info = kwargs["info"]
+        
+        Serial_raw = self.game.font.render(
+            f"Serial Info: {data_serial}", True, thm_text)
         Serial_info = self.game.font.render(
-            f"Serial: {value}", True, thm_text)
-        self.game.screen.blit(Serial_info, (200, 500))
-
+            f"Serial Raw: {data_info}", True, thm_text)
+        self.game.screen.blit(Serial_info, (400, 540))
+        self.game.screen.blit(Serial_raw, (400, 560))
+        
         # FPS counter (this needs to be updated each frame)
         # fps = self.game.clock.get_fps()
         # fps_text = self.game.font.render(f"FPS: {int(fps)}", True, (255, 255, 255))

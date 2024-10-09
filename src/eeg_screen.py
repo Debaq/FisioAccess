@@ -63,21 +63,30 @@ class ECGScreen(Screen):
         self.graph_app.draw_graph(self.game.screen, data=value)
         self.menu.draw()
 
-        # dibujar los fps
-        fps = self.game.clock.get_fps()
-        fps_text = self.game.font.render(
-            f"FPS: {int(fps)}", True, (255, 255, 255))
-        self.game.screen.blit(fps_text, (10, 10))
+
 
         # dibujar los sliders
         self.slider_vertical.draw(self.game.screen)
         self.slider_horizontal.draw(self.game.screen)
         
+        cpu_temp = get_cpu_temperature()
+        fps = self.game.clock.get_fps()
+
         thm_text = Theming().get('text')
-        value = kwargs["data"]
+        fps_temp_text = self.game.font.render(
+            f"FPS: {int(fps)} | CPU: {cpu_temp}", True, thm_text)
+        self.game.screen.blit(fps_temp_text, (10, 10))
+        
+        data_serial = kwargs["data"]
+        data_info = kwargs["info"]
+        
+        Serial_raw = self.game.font.render(
+            f"Serial Info: {data_serial}", True, thm_text)
         Serial_info = self.game.font.render(
-            f"Serial: {value}", True, thm_text)
-        self.game.screen.blit(Serial_info, (200, 500))
+            f"Serial Raw: {data_info}", True, thm_text)
+        self.game.screen.blit(Serial_info, (400, 540))
+        self.game.screen.blit(Serial_raw, (400, 560))
+        
 
         # pygame.draw.rect(self.game.transparent_surface, (255, 0, 0, 100),
         # self.cuadro)

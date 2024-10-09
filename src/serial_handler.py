@@ -69,6 +69,10 @@ class SerialHandler:
 
         with self.lock:
             return self.buffer.popleft() if self.buffer else ""
+    
+    def connect_i2c(self):
+        self.send_command("COMMAND=I2C_SEARCH")  # Envía el comando para activar el modo de impresión
+        
 
     def close(self):
         self.running = False

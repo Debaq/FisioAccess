@@ -30,6 +30,7 @@ class Game:
         self.serial_handler.connect()
         self.ip_address = get_ip_address()
         self.data = []
+        self.data_serial_info = None
         self.data_serial_raw = None
 
         self.screens = {
@@ -108,14 +109,17 @@ class Game:
         #    new_value = self.serial_handler.get_data(True)
         #    self.graph_app.add_data_point(new_value)
         data_serial_raw = self.serial_handler.get_data(False)
-        if data_serial_raw is not "":
-            self.data_serial_raw = self.serial_handler.get_data(False)
+        if data_serial_raw != "":
+            if data_serial_raw.startswith("INFO"):
+                self.data_serial_info = data_serial_raw
+            elif data_serial_raw.startswith("ECG"): 
+                self.data_serial_raw = data_serial_raw
 
 
     def draw(self, **kwargs):
         self.transparent_surface.fill((0, 0, 0, 0))
 
-        self.current_screen.draw(data=self.data_serial_raw)
+        self.current_screen.draw(data=self.data_serial_raw, info=self.data_serial_info)
 
         # Dibujar el indicador de toque si se está tocando la pantalla
         if pygame.mouse.get_pressed()[0]:  # Si se está presionando el botón izquierdo del mouse (o tocando la pantalla)
