@@ -108,12 +108,13 @@ class Game:
         # if self.graph_app.draw_graph:
         #    new_value = self.serial_handler.get_data(True)
         #    self.graph_app.add_data_point(new_value)
-        data_serial_raw = self.serial_handler.get_data(False)
-        if data_serial_raw != "":
-            if data_serial_raw.startswith("INFO"):
-                self.data_serial_info = data_serial_raw
-            elif data_serial_raw.startswith("ECG"): 
-                self.data_serial_raw = data_serial_raw
+        self.data_serial_raw = self.serial_handler.get_data(False)
+        
+#        if data_serial_raw != "":
+ #           if data_serial_raw.startswith("INFO"):
+ #               self.data_serial_info = data_serial_raw
+ #           elif data_serial_raw.startswith("ECG"): 
+ #               self.data_serial_raw = data_serial_raw
 
 
     def draw(self, **kwargs):

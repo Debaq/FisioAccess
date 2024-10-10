@@ -124,6 +124,7 @@ class GraphApp:
                     (WIDTH - self.margin_right, y), 1)
 
     def cut_data(self, data):
+        return data #aca el mal/vien funcionamiento
         try:
             data = data.rstrip(';')
             valores = data.split(';')
