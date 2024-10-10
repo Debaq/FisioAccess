@@ -35,6 +35,8 @@ class GraphApp:
         # Calcular el ancho y alto efectivos del área de dibujo
         self.graph_width = WIDTH - self.margin_left - self.margin_right
         self.graph_height = HEIGHT - self.margin_top - self.margin_bottom
+        
+        self.memory_last =  None
 
     def add_data_point(self, value):
         """
@@ -124,12 +126,14 @@ class GraphApp:
                     (WIDTH - self.margin_right, y), 1)
 
     def cut_data(self, data):
-        print(f"este es el dato: {data}")
+        #print(f"este es el dato: {data}")
         try:
-            return float(data) #aca el mal/vien funcionamiento
+            data = float(data)
+            self.memory_last = data
+            return data #aca el mal/vien funcionamiento
         except Exception:
-            print(f"este es un error, pon atención {data}")
-            return 0
+            #print(f"este es un error, pon atención {data}")
+            return self.memory_last
         try:
             data = data.rstrip(';')
             valores = data.split(';')
