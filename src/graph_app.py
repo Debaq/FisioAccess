@@ -124,7 +124,10 @@ class GraphApp:
                     (WIDTH - self.margin_right, y), 1)
 
     def cut_data(self, data):
-        return float(data) #aca el mal/vien funcionamiento
+        try:
+            return float(data) #aca el mal/vien funcionamiento
+        except Exception:
+            return 0
         try:
             data = data.rstrip(';')
             valores = data.split(';')
