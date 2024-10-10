@@ -127,7 +127,7 @@ class GraphApp:
         try:
             return float(data) #aca el mal/vien funcionamiento
         except Exception:
-            return 0
+            return None
         try:
             data = data.rstrip(';')
             valores = data.split(';')
@@ -142,7 +142,7 @@ class GraphApp:
         value = kwargs["data"]
         value = self.cut_data(value)
         
-        if self.played:
+        if self.played and value is not None:
             self.add_data_point(value)
 
         # Dibuja primero la cuadrícula
