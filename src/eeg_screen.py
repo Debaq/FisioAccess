@@ -29,7 +29,16 @@ class ECGScreen(Screen):
 
     def slider_callback(self, positions):
         """Función de callback que se llama al mover los sliders"""
-        print("Posiciones de los sliders:", positions)
+        slider, pos1, pos2 = positions
+        if slider == 'vertical':
+            print(self.posicion_a_voltaje())
+
+    def posicion_a_voltaje(self, pos1, pos2, posicion_min=83, posicion_max=428, vmin=0, vmax=1.98):
+        voltaje_sup = vmin + ((pos1 - posicion_min) / (posicion_max - posicion_min)) * (vmax - vmin)
+        voltaje_inf = vmin + ((pos2 - posicion_min) / (posicion_max - posicion_min)) * (vmax - vmin)
+        
+        voltaje = voltaje_sup - voltaje_inf
+        return voltaje
 
     def measure_activate(self, active=True):
         self.slider_vertical.hide(False)
