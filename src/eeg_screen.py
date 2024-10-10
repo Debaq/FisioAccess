@@ -32,6 +32,8 @@ class ECGScreen(Screen):
         slider, pos1, pos2 = positions
         if slider == 'vertical':
             print(self.posicion_a_voltaje(pos1, pos2))
+        else:
+            print(positions)
 
     def posicion_a_voltaje(self, pos1, pos2, posicion_min=83, posicion_max=428, vmin=0, vmax=1.86):
         voltaje_sup = vmin + ((pos1 - posicion_min) / (posicion_max - posicion_min)) * (vmax - vmin)
