@@ -42,7 +42,7 @@ class ECGScreen(Screen):
         voltaje = voltaje_inf - voltaje_sup
         return voltaje
 
-    def posicion_a_tiempo(self, pos1, pos2,, posicion_min=425, posicion_max=760, tiempo_min=0, tiempo_max=1000):
+    def posicion_a_tiempo(self, pos1, pos2, posicion_min=425, posicion_max=760, tiempo_min=0, tiempo_max=1000):
         tiempo1 = tiempo_min + ((pos1 - posicion_min) / (posicion_max - posicion_min)) * (tiempo_max - tiempo_min)
         tiempo2 = tiempo_min + ((pos2 - posicion_min) / (posicion_max - posicion_min)) * (tiempo_max - tiempo_min)
         tiempo = tiempo2 - tiempo1
