@@ -127,6 +127,7 @@ class GraphApp:
         try:
             return float(data) #aca el mal/vien funcionamiento
         except Exception:
+            print(f"este es un error, pon atención {data}")
             return None
         try:
             data = data.rstrip(';')
