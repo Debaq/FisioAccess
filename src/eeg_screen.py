@@ -33,7 +33,7 @@ class ECGScreen(Screen):
         if slider == 'vertical':
             print(self.posicion_a_voltaje(pos1, pos2))
         else:
-            print(positions)
+            print(self.posicion_a_tiempo(pos1, pos2))
 
     def posicion_a_voltaje(self, pos1, pos2, posicion_min=83, posicion_max=428, vmin=0, vmax=1.86):
         voltaje_sup = vmin + ((pos1 - posicion_min) / (posicion_max - posicion_min)) * (vmax - vmin)
@@ -41,6 +41,10 @@ class ECGScreen(Screen):
         
         voltaje = voltaje_inf - voltaje_sup
         return voltaje
+
+    def posicion_a_tiempo(self, pos, posicion_min=425, posicion_max=760, tiempo_min=0, tiempo_max=1000):
+        tiempo = tiempo_min + ((pos - posicion_min) / (posicion_max - posicion_min)) * (tiempo_max - tiempo_min)
+        return tiempo
 
     def measure_activate(self, active=True):
         self.slider_vertical.hide(False)
