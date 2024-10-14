@@ -99,7 +99,10 @@ class Game:
             elif event.key in (pygame.K_LALT, pygame.K_RALT):
                 self.alt_pressed = False
 
-                
+    def update_serial(self):
+        self.demo = False
+        self.data_serial_raw = None
+        
     def update(self):
         # revisar si se ha conectado algun sensor, aca debemos conocer el
         # puerto de conexión del esp32 o que este envie un string

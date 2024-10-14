@@ -26,7 +26,7 @@ class ToolsBar:
             Button(250, pos_buttons_y, 70, 30, "Marcar",
                    on_click=self.marks, enabled=False),
             Button(330, pos_buttons_y, 50, 30, "demo",
-                   on_click=self.demos, enabled=True),
+                   on_click=self.game.update_serial, enabled=True),
         ]
         self.rect_x = 0
         self.rect_y = pos_bar_y
@@ -202,7 +202,3 @@ class ToolsBar:
         self.game.current_screen.graph_app.clear_data()
         self.data_available = False  # Indicar que no hay datos
     
-    def demos(self):
-        """conecta el puerto serial al ads"""
-        print("conectando")
-        self.game.demo = True

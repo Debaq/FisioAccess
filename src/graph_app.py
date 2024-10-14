@@ -153,7 +153,6 @@ class GraphApp:
             self.add_data_point(value)
             post_data(value)
 
-
         # Dibuja primero la cuadrícula
         self.draw_grid(screen)
 

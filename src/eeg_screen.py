@@ -12,7 +12,7 @@ class ECGScreen(Screen):
         super().__init__(game)
         self.menu = ToolsBar(game)  # Mover la instancia del menú aquí
         self.graph_app = GraphApp()
-        self.slider_vertical = Slider(1000, 40, 0, 470, direction="vertical",
+        self.slider_vertical = Slider(1000, 40, 0, 510, direction="vertical",
                                       handles_visible=(True, False),
                                       handle_icon="caret-left",
                                       callback_function=self.slider_callback)
@@ -24,6 +24,8 @@ class ECGScreen(Screen):
 
         self.slider_vertical.hide()
         self.slider_horizontal.hide()
+        self.time_text = "0"
+        self.voltage_text = "0"
 
         # self.cuadro = pygame.Rect(0,0,100,400)
 
@@ -31,22 +33,24 @@ class ECGScreen(Screen):
         """Función de callback que se llama al mover los sliders"""
         slider, pos1, pos2 = positions
         if slider == 'vertical':
-            print(self.posicion_a_voltaje(pos1, pos2))
+            self.voltage_text = self.posicion_a_voltaje(pos1, pos2)
         else:
-            print(self.posicion_a_tiempo(pos1, pos2))
+            self.time_text = self.posicion_a_tiempo(pos1, pos2)
 
     def posicion_a_voltaje(self, pos1, pos2, posicion_min=83, posicion_max=428, vmin=0, vmax=1.86):
         voltaje_sup = vmin + ((pos1 - posicion_min) / (posicion_max - posicion_min)) * (vmax - vmin)
         voltaje_inf = vmin + ((pos2 - posicion_min) / (posicion_max - posicion_min)) * (vmax - vmin)
         
         voltaje = voltaje_inf - voltaje_sup
-        return voltaje
+        
+        return round(voltaje,2)
 
     def posicion_a_tiempo(self, pos1, pos2, posicion_min=425, posicion_max=760, tiempo_min=0, tiempo_max=1000):
         tiempo1 = tiempo_min + ((pos1 - posicion_min) / (posicion_max - posicion_min)) * (tiempo_max - tiempo_min)
         tiempo2 = tiempo_min + ((pos2 - posicion_min) / (posicion_max - posicion_min)) * (tiempo_max - tiempo_min)
         tiempo = tiempo2 - tiempo1
-        return tiempo
+        tiempo = (tiempo / 1000)/1.4
+        return round(tiempo, 2)
 
     def measure_activate(self, active=True):
         self.slider_vertical.hide(False)
@@ -104,7 +108,9 @@ class ECGScreen(Screen):
             f"Serial Raw: {data_info}", True, thm_text)
         self.game.screen.blit(Serial_info, (400, 550))
         self.game.screen.blit(Serial_raw, (400, 570))
-        
+               
+        mark_text = self.game.font.render(f"Tiempo: {str(self.time_text)}seg., Amplitud: {str(self.voltage_text)} uV.", True, thm_text)
+        self.game.screen.blit(mark_text, (400, 10))       
 
         # pygame.draw.rect(self.game.transparent_surface, (255, 0, 0, 100),
         # self.cuadro)
