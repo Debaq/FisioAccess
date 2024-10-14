@@ -108,7 +108,7 @@ class Game:
         # if self.graph_app.draw_graph:
         #    new_value = self.serial_handler.get_data(True)
         #    self.graph_app.add_data_point(new_value)
-        self.data_serial_raw = self.serial_handler.get_data(False)
+        self.data_serial_raw = self.serial_handler.get_data(True)
         
 #        if data_serial_raw != "":
  #           if data_serial_raw.startswith("INFO"):

@@ -2,6 +2,7 @@ from collections import deque
 import pygame
 from config.settings import MAX_POINTS, VISIBLE_POINTS, WIDTH, HEIGHT, GREEN
 from theming import Theming
+from api import post_data
 
 
 class GraphApp:
@@ -150,6 +151,8 @@ class GraphApp:
         
         if self.played and value is not None:
             self.add_data_point(value)
+            post_data(value)
+
 
         # Dibuja primero la cuadrícula
         self.draw_grid(screen)
