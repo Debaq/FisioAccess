@@ -5,6 +5,7 @@ from src.slider import Slider
 from theming import Theming
 import pygame
 from src.utils import get_ip_address, get_display_server, get_cpu_temperature
+import math
 
 
 class ECGScreen(Screen):
@@ -49,8 +50,24 @@ class ECGScreen(Screen):
         tiempo1 = tiempo_min + ((pos1 - posicion_min) / (posicion_max - posicion_min)) * (tiempo_max - tiempo_min)
         tiempo2 = tiempo_min + ((pos2 - posicion_min) / (posicion_max - posicion_min)) * (tiempo_max - tiempo_min)
         tiempo = tiempo2 - tiempo1
-        tiempo = (tiempo / 1000)/1.4
-        return round(tiempo, 2)
+        tiempo = (tiempo / 1000)*2
+        step_zoom = self.graph_app.zoom_state
+        tiempo = self.fx_time_zoom(tiempo, step_zoom)
+        return round(tiempo, 3)
+
+    def fx_time_zoom(self, actual_number, step):
+        factor = 1.2
+        number = actual_number
+        if step > 0:
+            for i in range(step):
+                number = number/factor
+        elif step == 0:
+            return number
+        elif step < 0:
+            for i in range(abs(step)):
+                number = number*factor
+        return number
+
 
     def measure_activate(self, active=True):
         self.slider_vertical.hide(False)

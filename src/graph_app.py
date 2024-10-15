@@ -38,6 +38,8 @@ class GraphApp:
         self.graph_height = HEIGHT - self.margin_top - self.margin_bottom
         
         self.memory_last =  None
+        self.uv_scale_1ms = None
+        self.zoom_state = 0
 
     def add_data_point(self, value):
         """
@@ -108,6 +110,7 @@ class GraphApp:
 
         # Divisiones para el eje X (1 ms por división)
         step = int(self.graph_width / (VISIBLE_POINTS / self.grid_ms_per_div))
+        self.uv_scale_1ms = step
         for x in range(self.margin_left, WIDTH - self.margin_right, step):
             pygame.draw.line(screen, grid_color, (x, self.margin_top),
                              (x, HEIGHT - self.margin_bottom), 1)
@@ -163,8 +166,7 @@ class GraphApp:
             min_value = min(visible_data)
 
             for i in range(1, len(visible_data)):
-                x1 = self.margin_left + \
-                    int((i-1) * self.graph_width / VISIBLE_POINTS)
+                x1 = self.margin_left + int((i-1) * self.graph_width / VISIBLE_POINTS)
                 y1 = HEIGHT - self.margin_bottom - \
                     int((visible_data[i-1] - min_value) * self.scale_factor)
                 x2 = self.margin_left + \
@@ -254,7 +256,13 @@ class GraphApp:
     def zoom_in(self):
         """Función para hacer zoom al gráfico."""
         self.scale_factor *= 1.2  # Incrementar el factor de escala
+        self.graph_width *= 1.2
+        self.zoom_state += 1
+        
+        
 
     def zoom_out(self):
         """Función para alejar el gráfico."""
         self.scale_factor /= 1.2  # Reducir el factor de escala
+        self.graph_width /= 1.2
+        self.zoom_state -= 1
