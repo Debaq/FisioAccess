@@ -81,7 +81,7 @@ class VerticalMenu:
         self.buttons = [
             Button(5, 20, 30, 30, "ECG", icon='heartbeat',
                    on_click=self.go_to_ecg),
-            Button(5, 55, 30, 30, "DIAL", icon='dashboard',
+            Button(5, 55, 30, 30, "Espiro", icon='breath',
                    on_click=self.go_to_dial)
             # Puedes añadir más botones aquí
         ]
