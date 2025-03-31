@@ -2,7 +2,8 @@ import sys
 import os
 from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import QTranslator, QLocale
-from ui.main_window import MainWindow
+from ui.main_window_impl import MainWindow
+
 
 def main():
     app = QApplication(sys.argv)
