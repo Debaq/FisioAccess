@@ -1,0 +1,23 @@
+"""
+Custom UI template - Modify this file to create your own interface
+Example:
+
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
+from PySide6.QtCore import Qt
+
+class Ui_MainWindow:
+    def setupUi(self, window):
+        central_widget = QWidget()
+        window.setCentralWidget(central_widget)
+        
+        layout = QVBoxLayout(central_widget)
+        
+        # Add your widgets here
+        welcome_label = QLabel("Your custom interface")
+        layout.addWidget(welcome_label)
+"""
+
+class Ui_MainWindow:
+    def setupUi(self, window):
+        # Add your UI setup code here
+        pass

@@ -1,0 +1,16 @@
+{
+    "app_name": "FisioAccess",
+    "window_title": "FisioAccess Application",
+    "version": "1.0.0",
+    "author": {
+        "name": "Vanessa",
+        "email": "vanessauribe858@gmail.com",
+        "company": "Uach"
+    },
+    "description": "Software para la toma de electrocardiograma",
+    "license": "MIT",
+    "window_size": {
+        "width": 800,
+        "height": 600
+    }
+}
