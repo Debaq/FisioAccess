@@ -54,17 +54,34 @@ class SerialDataHandler(QObject):
                 
                 # Crear diccionario de datos
                 data_dict = {
-                    't': t,
-                    'p': p,
-                    'f': f,
-                    'v': v
+                    't': t, #tiempo
+                    'p': p, #presion
+                    'f': f, #flujo
+                    'v': v  #volumen
                 }
                 
                 # Emitir los datos procesados
-                self.new_data.emit(data_dict)
+                #self.new_data.emit(data_dict)
+            elif len(values) == 2:
+                # Convertir valores a float
+                t, p = map(float, values)
+                # Validar que los demás valores sean números razonables
+                if not all(isinstance(x, (int, float)) for x in [p]):
+                    raise ValueError("Valores no numéricos detectados")
+                
+                # Crear diccionario de datos
+                data_dict = {
+                    't': t, #tiempo
+                    'p': p, #presion
+                    'f': p, #flujo
+                    'v': p  #volumen
+                }
+           
             else:
                 # Si no es el formato esperado, enviar a otro analizador
                 self.analizar_otro_string(data_string)
+                return
+            self.new_data.emit(data_dict)
                 
         except Exception as e:
             # Si hay error en el procesamiento, tratar como otro tipo de string
@@ -73,4 +90,5 @@ class SerialDataHandler(QObject):
     def analizar_otro_string(self, string):
         """Procesar strings que no coinciden con el formato esperado"""
         print(f"String no estándar recibido: {string}")
-        self.other_string.emit(string)
+
+        self.other_string.emit(string)  
