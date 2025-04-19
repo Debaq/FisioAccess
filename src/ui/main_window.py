@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'fisioaccessEaBXzq.ui'
+## Form generated from reading UI file 'mainpDnMDk.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.0
 ##
@@ -25,7 +25,7 @@ class Ui_Main(object):
     def setupUi(self, Main):
         if not Main.objectName():
             Main.setObjectName(u"Main")
-        Main.resize(1301, 755)
+        Main.resize(1301, 772)
         Main.setStyleSheet(u"/* Estilo general */\n"
 "QWidget {\n"
 "    background-color: #f5f5f5;\n"
@@ -1060,7 +1060,7 @@ class Ui_Main(object):
     # setupUi
 
     def retranslateUi(self, Main):
-        Main.setWindowTitle(QCoreApplication.translate("Main", u"FisioAccess v2015", None))
+        Main.setWindowTitle(QCoreApplication.translate("Main", u"FisioAccess v2025", None))
         self.pushButton.setText("")
         self.pushButton_2.setText("")
         self.pushButton_3.setText(QCoreApplication.translate("Main", u"O", None))
