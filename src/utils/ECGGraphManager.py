@@ -27,14 +27,6 @@ class ECGGraphManager(BaseGraphManager):
             "highpass": {
                 "cutoff": 0.16,
                 "order": 1
-            },
-            "notch50": {
-                "frequency": 50.0,
-                "q_factor": 1.00
-            },
-            "lowpass": {
-                "cutoff": 100.00,
-                "order": 2
             }
         }
                 
@@ -453,9 +445,9 @@ class ECGGraphManager(BaseGraphManager):
 
                 #print(y_values)
                 y_values_filter = self.filtro.filtrar(y_values)
-                print(f"Tipo de y_values_filter: {type(y_values_filter)}")
-                print(f"Primeros 5 valores originales: {y_values[:5]}")
-                print(f"Primeros 5 valores filtrados: {y_values_filter[:5]}")
+                #print(f"Tipo de y_values_filter: {type(y_values_filter)}")
+                #print(f"Primeros 5 valores originales: {y_values[:5]}")
+                #print(f"Primeros 5 valores filtrados: {y_values_filter[:5]}")
 
                 # Asegúrate de que y_values_filter sea una lista o array numpy
                 if not isinstance(y_values_filter, (list, np.ndarray)):

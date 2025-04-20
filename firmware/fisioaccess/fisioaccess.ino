@@ -7,6 +7,8 @@
 #include <Adafruit_ADS1X15.h>
 #include <Update.h>
 #include <EEPROM.h>
+#include "esp_wifi.h"
+#include "esp_log.h"
 
 // Versión del firmware
 #define FIRMWARE_VERSION "1.0.0"
@@ -101,6 +103,36 @@ void initHardware() {
   Serial.printf("Device ID: %s\n", deviceID);
   Serial.printf("Device Name: %s\n", config.deviceName);
   Serial.println("-----------------------------------------\n");
+}
+
+// Convertir código de razón de reinicio a cadena descriptiva
+const char* getResetReasonString(esp_reset_reason_t reason) {
+  switch (reason) {
+    case ESP_RST_UNKNOWN:
+      return "Desconocida";
+    case ESP_RST_POWERON:
+      return "Encendido";
+    case ESP_RST_EXT:
+      return "Reset externo";
+    case ESP_RST_SW:
+      return "Reset por software";
+    case ESP_RST_PANIC:
+      return "Excepción/Pánico";
+    case ESP_RST_INT_WDT:
+      return "Watchdog interno";
+    case ESP_RST_TASK_WDT:
+      return "Watchdog de tarea";
+    case ESP_RST_WDT:
+      return "Watchdog";
+    case ESP_RST_DEEPSLEEP:
+      return "Despertar de sueño profundo";
+    case ESP_RST_BROWNOUT:
+      return "Brownout";
+    case ESP_RST_SDIO:
+      return "Reset SDIO";
+    default:
+      return "Otro";
+  }
 }
 
 // Función para detectar dispositivos I2C
@@ -298,13 +330,62 @@ void readSerialValues(JsonObject &serial) {
 
 // Crear información de estado del sistema
 void createStatusInfo(JsonObject &status) {
+  // Información básica del dispositivo
   status["device_id"] = deviceID;
   status["device_name"] = config.deviceName;
   status["uptime"] = millis() / 1000;
   status["firmware"] = FIRMWARE_VERSION;
+  
+  // Información de memoria
   status["free_memory"] = ESP.getFreeHeap();
+  status["min_free_memory"] = ESP.getMinFreeHeap();
+  status["free_sketch_space"] = ESP.getFreeSketchSpace();
+  status["sketch_size"] = ESP.getSketchSize();
+  
+  // Información de CPU y temperatura
   status["cpu_freq"] = ESP.getCpuFreqMHz();
   status["temperature"] = temperatureRead(); // Temperatura interna del ESP32
+  
+  // Información de energía y sistema
+  esp_reset_reason_t resetReason = esp_reset_reason();
+  status["reset_reason"] = (uint8_t)resetReason;
+  status["reset_reason_str"] = getResetReasonString(resetReason);
+  
+  #ifdef CONFIG_FREERTOS_USE_STATS_FORMATTING_FUNCTIONS
+  status["task_count"] = uxTaskGetNumberOfTasks();
+  #endif
+  
+  // Variables de configuración
+  status["sample_interval"] = sampleInterval;
+  status["streaming_enabled"] = streamingEnabled;
+  status["ads_connected"] = adsConnected;
+  status["wifi_connected"] = wifiConnected;
+  status["ap_active"] = apActive;
+  status["espnow_active"] = espNowActive;
+  status["active_sensors"] = config.activeSensors;
+  
+  // Información WiFi adicional
+  if (wifiConnected || apActive) {
+    uint8_t mac[6];
+    WiFi.macAddress(mac);
+    char macStr[18];
+    sprintf(macStr, "%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+    status["mac_address"] = macStr;
+    status["wifi_channel"] = WiFi.channel();
+    
+    int8_t power;
+    esp_err_t err = esp_wifi_get_max_tx_power(&power);
+
+    float dbm = power * 0.25;
+
+    status["tx_power"] = dbm;
+
+  }
+  
+  // Información adicional sobre almacenamiento
+  status["flash_size"] = ESP.getFlashChipSize() / 1024; // KB
+  status["eeprom_size"] = EEPROM_SIZE;
+  status["flash_speed"] = ESP.getFlashChipSpeed() / 1000000; // MHz
 }
 
 // Crear información de WiFi

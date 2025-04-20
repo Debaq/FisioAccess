@@ -26,7 +26,7 @@ class MainWindow(QMainWindow, Ui_Main):
 
         # Inicializar los gráficos
         self.graph = ECGGraphManager()
-        self.graph.set_active_subkeys(['gpio2'])  # O cualquier subclave que quieras visualizar
+        self.graph.set_active_subkeys(['gpio2', 'gpio4'])  # O cualquier subclave que quieras visualizar
 
         self.graph_layout.addWidget(self.graph)
 
@@ -49,12 +49,13 @@ class MainWindow(QMainWindow, Ui_Main):
             if objeto.objectName().startswith("btn_test_"):
                 objeto.clicked.connect(self.reconnect_graph)
 
+        self.fs = 200
+
     def reconnect_graph(self):
         button = self.sender()
         self.limpiar_layout(self.graph_layout)
         if button.objectName() == "btn_test_ecg":
             self.graph = ECGGraphManager()
-
             self.graph_layout.addWidget(self.graph)
         elif button.objectName() == "btn_test_spiro":
             self.graph = SpirometryGraphManager()
@@ -105,13 +106,7 @@ class MainWindow(QMainWindow, Ui_Main):
         except Exception as e:
             print(f"Error al conectar serial_handler.data_received: {str(e)}")
 
-        # Verificar la conexión del data_handler
-        try:
-            self.data_handler.new_data_json.connect(self.graph.update_data)
-            print("Señal new_data_json conectada exitosamente a graph_handler")
-        except Exception as e:
-            print(f"Error al conectar data_handler.new_data_json: {str(e)}")
-        
+
         self.btn_start.setEnabled(False)
         self.btn_start.clicked.connect(self.start_read)
         print("Señal de botón start conectada")
@@ -122,6 +117,14 @@ class MainWindow(QMainWindow, Ui_Main):
     @Slot()
     def command_into(self, value):
         status = value["status"]
+        interval = status["sample_interval"]
+        fs = 1000 / interval
+        if self.fs != fs:
+            self.fs = fs
+            self.spin_fs.setValue(fs)
+
+
+
 
 
     @Slot()
@@ -129,6 +132,16 @@ class MainWindow(QMainWindow, Ui_Main):
         self.btn_start.setText("Detener")
         self.btn_start.clicked.disconnect(self.start_read)
         self.btn_start.clicked.connect(self.stop_read)
+        try:
+            self.data_handler.new_data_json.connect(self.graph.update_data)
+            print("Señal new_data_json conectada exitosamente a graph_handler")
+        except Exception as e:
+            print(f"Error al conectar data_handler.new_data_json: {str(e)}")
+        
+
+
+
+    def start_read_serial(self):
         try:
             self.serial_handler.start_reading()
 
@@ -188,8 +201,9 @@ class MainWindow(QMainWindow, Ui_Main):
                     self.statusbar.showMessage(f"Conectado a {port}")
                     self.serial_list.setEnabled(False)
                     self.btn_connect.setText("Desconectar")
-                    self.serial_handler.write_data(('{"cmd": "get_status"}'))
-
+                    self.start_read_serial()
+                    self.serial_handler.write_data(('{"cmd": "set_sample_rate", "interval": 1}'))
+                    time.sleep(1)
                     self.serial_handler.write_data(('{"cmd": "start_stream"}'))
 
                     
@@ -207,6 +221,7 @@ class MainWindow(QMainWindow, Ui_Main):
             try:
                 if self.serial_handler:
                     self.serial_handler.write_data(('{"cmd": "stop_stream"}'))
+                    time.sleep(1)
                     self.serial_handler.close()
                 self.statusbar.showMessage("Desconectado")
                 # Habilitar combo box después de desconectar
@@ -283,7 +298,16 @@ class MainWindow(QMainWindow, Ui_Main):
         
     @Slot()
     def stop_read(self):
-        self.graph_handler.stop_record()
+        self.btn_start.setText("Iniciar")
+        self.btn_start.clicked.disconnect(self.stop_read)
+        self.btn_start.clicked.connect(self.start_read)
+        try:
+            self.data_handler.new_data_json.disconnect(self.graph.update_data)
+            print("Señal new_data_json conectada exitosamente a graph_handler")
+        except Exception as e:
+            print(f"Error al conectar data_handler.new_data_json: {str(e)}")
+        
+
 
     @Slot()
     def reset_data(self):

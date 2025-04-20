@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainiRvLAt.ui'
+## Form generated from reading UI file 'mainwoTmOB.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.0
 ##
@@ -769,6 +769,9 @@ class Ui_Main(object):
 
         self.spin_fs = QSpinBox(self.tab_1)
         self.spin_fs.setObjectName(u"spin_fs")
+        self.spin_fs.setMinimum(100)
+        self.spin_fs.setMaximum(1000)
+        self.spin_fs.setSingleStep(100)
 
         self.gridLayout_2.addWidget(self.spin_fs, 1, 1, 1, 2)
 

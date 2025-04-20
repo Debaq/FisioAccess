@@ -1046,20 +1046,30 @@ QComboBox {
                 </widget>
                </item>
                <item row="2" column="3">
-                <widget class="QCheckBox" name="checkBox">
+                <widget class="QCheckBox" name="check_continue_record">
                  <property name="text">
                   <string>Continua</string>
                  </property>
                 </widget>
                </item>
                <item row="2" column="1" colspan="2">
-                <widget class="QSpinBox" name="spinBox"/>
+                <widget class="QSpinBox" name="spin_time_record"/>
                </item>
                <item row="1" column="1" colspan="2">
-                <widget class="QSpinBox" name="spinBox_2"/>
+                <widget class="QSpinBox" name="spin_fs">
+                 <property name="minimum">
+                  <number>100</number>
+                 </property>
+                 <property name="maximum">
+                  <number>1000</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>100</number>
+                 </property>
+                </widget>
                </item>
                <item row="3" column="1" colspan="2">
-                <widget class="QSlider" name="horizontalSlider">
+                <widget class="QSlider" name="slider_amplitude">
                  <property name="orientation">
                   <enum>Qt::Orientation::Horizontal</enum>
                  </property>
