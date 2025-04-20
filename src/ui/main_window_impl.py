@@ -72,21 +72,37 @@ class MainWindow(QMainWindow, Ui_Main):
         
         # Verificar si se alcanzó el tiempo límite configurado
         max_time = self.spin_time_record.value()
-        
+        no_stop = self.spin_time_record.value()
+
         # Si el tiempo actual supera o iguala el tiempo máximo configurado, detener la adquisición
-        if time_value >= max_time:
-            try:
-                # Detener la actualización del gráfico
-                self.data_handler.new_data_json.disconnect(self.graph.update_data)
-                self.statusbar.showMessage(f"Adquisición detenida automáticamente al alcanzar límite en t={time_value:.2f}s")
-                
-                # Cambiar el estado del botón si es necesario
-                if self.btn_start.text() == "Detener":
-                    self.btn_start.setText("Iniciar")
-                    self.btn_start.clicked.disconnect(self.stop_read)
-                    self.btn_start.clicked.connect(self.start_read)
-            except Exception as e:
-                print(f"Error al desconectar la señal: {str(e)}")
+        if no_stop == 0:
+            if time_value >= max_time:
+                try:
+                    # Detener la actualización del gráfico
+                    self.data_handler.new_data_json.disconnect(self.graph.update_data)
+                    self.statusbar.showMessage(f"Adquisición detenida automáticamente al alcanzar límite en t={time_value:.2f}s")
+                    
+                    # Cambiar el estado del botón si es necesario
+                    if self.btn_start.text() == "Detener":
+                        self.btn_start.setText("Iniciar")
+                        self.btn_start.clicked.disconnect(self.stop_read)
+                        self.btn_start.clicked.connect(self.start_read)
+                except Exception as e:
+                    print(f"Error al desconectar la señal: {str(e)}")
+        else:
+            if time_value >= 600:
+                try:
+                    # Detener la actualización del gráfico
+                    self.data_handler.new_data_json.disconnect(self.graph.update_data)
+                    self.statusbar.showMessage("Adquisición detenida automáticamente al alcanzar límite en totoal")
+                                        # Cambiar el estado del botón si es necesario
+                    if self.btn_start.text() == "Detener":
+                        self.btn_start.setText("Iniciar")
+                        self.btn_start.clicked.disconnect(self.stop_read)
+                        self.btn_start.clicked.connect(self.start_read)
+                except Exception as e:
+                    print(f"Error al desconectar la señal: {str(e)}")
+                            
 
     def windows_time(self, value):
         if value >= 60:

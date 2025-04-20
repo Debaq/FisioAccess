@@ -76,7 +76,7 @@ class DataManager:
             # Resetear el tiempo inicial para que el próximo dato comience desde cero + offset
             self.initial_time = None
         self.record = True
-        
+
     def add_data_point(self, new_data):
         """
         Añade un punto de datos al conjunto correspondiente.
@@ -102,7 +102,7 @@ class DataManager:
                     self.display_data[key].append(new_data[key])
 
             # Mantener solo los últimos 1000 puntos (configurable)
-            max_points = 1000
+            max_points = 10000
             for key in self.display_data:
                 if len(self.display_data[key]) > max_points:
                     self.display_data[key] = self.display_data[key][-max_points:]
