@@ -179,7 +179,6 @@ class MainWindow(QMainWindow, Ui_Main):
                     self.statusbar.showMessage(f"Conectado a {port}")
                     self.serial_list.setEnabled(False)
                     self.btn_connect.setText("Desconectar")
-                    #init = self.data_handler.send_command('{"cmd": "start_stream"}')
                     self.serial_handler.write_data(('{"cmd": "start_stream"}'))
                     self.btn_start.setEnabled(True)
                 
@@ -194,6 +193,7 @@ class MainWindow(QMainWindow, Ui_Main):
         else:
             try:
                 if self.serial_handler:
+                    self.serial_handler.write_data(('{"cmd": "stop_stream"}'))
                     self.serial_handler.close()
                 self.statusbar.showMessage("Desconectado")
                 # Habilitar combo box después de desconectar
