@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainwoTmOB.ui'
+## Form generated from reading UI file 'mainJgVXTh.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.0
 ##
@@ -15,11 +15,12 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFrame,
-    QGridLayout, QGroupBox, QHBoxLayout, QLabel,
-    QMainWindow, QMenuBar, QPushButton, QSizePolicy,
-    QSlider, QSpacerItem, QSpinBox, QStatusBar,
-    QTabWidget, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QAbstractScrollArea, QApplication, QCheckBox, QComboBox,
+    QDoubleSpinBox, QFrame, QGridLayout, QGroupBox,
+    QHBoxLayout, QLabel, QMainWindow, QMenuBar,
+    QPushButton, QScrollArea, QSizePolicy, QSlider,
+    QSpacerItem, QSpinBox, QStatusBar, QTabWidget,
+    QVBoxLayout, QWidget)
 
 class Ui_Main(object):
     def setupUi(self, Main):
@@ -764,6 +765,10 @@ class Ui_Main(object):
 
         self.spin_time_record = QSpinBox(self.tab_1)
         self.spin_time_record.setObjectName(u"spin_time_record")
+        self.spin_time_record.setMinimum(60)
+        self.spin_time_record.setMaximum(600)
+        self.spin_time_record.setSingleStep(5)
+        self.spin_time_record.setValue(60)
 
         self.gridLayout_2.addWidget(self.spin_time_record, 2, 1, 1, 2)
 
@@ -792,12 +797,6 @@ class Ui_Main(object):
 
         self.gridLayout_4 = QGridLayout()
         self.gridLayout_4.setObjectName(u"gridLayout_4")
-        self.pushButton_29 = QPushButton(self.tab_1)
-        self.pushButton_29.setObjectName(u"pushButton_29")
-        self.pushButton_29.setStyleSheet(u"background-color: rgb(255, 204, 0);")
-
-        self.gridLayout_4.addWidget(self.pushButton_29, 1, 1, 1, 1)
-
         self.btn_start = QPushButton(self.tab_1)
         self.btn_start.setObjectName(u"btn_start")
         self.btn_start.setStyleSheet(u"background-color: #66cc66;")
@@ -815,15 +814,15 @@ class Ui_Main(object):
 
         self.gridLayout_4.addWidget(self.label_9, 2, 0, 1, 1)
 
-        self.label_10 = QLabel(self.tab_1)
-        self.label_10.setObjectName(u"label_10")
+        self.lbl_time_count = QLabel(self.tab_1)
+        self.lbl_time_count.setObjectName(u"lbl_time_count")
 
-        self.gridLayout_4.addWidget(self.label_10, 2, 1, 1, 1)
+        self.gridLayout_4.addWidget(self.lbl_time_count, 2, 1, 1, 1)
 
-        self.label_11 = QLabel(self.tab_1)
-        self.label_11.setObjectName(u"label_11")
+        self.lbl_state = QLabel(self.tab_1)
+        self.lbl_state.setObjectName(u"lbl_state")
 
-        self.gridLayout_4.addWidget(self.label_11, 2, 2, 1, 1)
+        self.gridLayout_4.addWidget(self.lbl_state, 2, 2, 1, 1)
 
         self.label_8 = QLabel(self.tab_1)
         self.label_8.setObjectName(u"label_8")
@@ -1032,6 +1031,298 @@ class Ui_Main(object):
         self.tabWidget.addTab(self.tab_3, "")
         self.tab_4 = QWidget()
         self.tab_4.setObjectName(u"tab_4")
+        self.verticalLayout_15 = QVBoxLayout(self.tab_4)
+        self.verticalLayout_15.setObjectName(u"verticalLayout_15")
+        self.verticalLayout_15.setContentsMargins(0, 0, 0, 0)
+        self.scrollArea = QScrollArea(self.tab_4)
+        self.scrollArea.setObjectName(u"scrollArea")
+        self.scrollArea.setFrameShape(QFrame.Shape.NoFrame)
+        self.scrollArea.setLineWidth(0)
+        self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.scrollArea.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContentsOnFirstShow)
+        self.scrollArea.setWidgetResizable(False)
+        self.scrollArea.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.scrollAreaWidgetContents = QWidget()
+        self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -252, 409, 761))
+        self.verticalLayout_16 = QVBoxLayout(self.scrollAreaWidgetContents)
+        self.verticalLayout_16.setObjectName(u"verticalLayout_16")
+        self.verticalLayout_16.setContentsMargins(0, 0, 9, 60)
+        self.gridLayoutFilters = QGridLayout()
+        self.gridLayoutFilters.setObjectName(u"gridLayoutFilters")
+        self.spinBoxBandPassOrder = QSpinBox(self.scrollAreaWidgetContents)
+        self.spinBoxBandPassOrder.setObjectName(u"spinBoxBandPassOrder")
+        self.spinBoxBandPassOrder.setMinimum(1)
+        self.spinBoxBandPassOrder.setMaximum(10)
+        self.spinBoxBandPassOrder.setValue(4)
+
+        self.gridLayoutFilters.addWidget(self.spinBoxBandPassOrder, 15, 1, 1, 1)
+
+        self.spinBoxNotch50QFactor = QDoubleSpinBox(self.scrollAreaWidgetContents)
+        self.spinBoxNotch50QFactor.setObjectName(u"spinBoxNotch50QFactor")
+        self.spinBoxNotch50QFactor.setMinimum(1.000000000000000)
+        self.spinBoxNotch50QFactor.setMaximum(100.000000000000000)
+        self.spinBoxNotch50QFactor.setValue(30.000000000000000)
+
+        self.gridLayoutFilters.addWidget(self.spinBoxNotch50QFactor, 8, 1, 1, 1)
+
+        self.labelHighPass = QLabel(self.scrollAreaWidgetContents)
+        self.labelHighPass.setObjectName(u"labelHighPass")
+        self.labelHighPass.setTextFormat(Qt.TextFormat.MarkdownText)
+
+        self.gridLayoutFilters.addWidget(self.labelHighPass, 0, 0, 1, 1)
+
+        self.labelHighPassOrder = QLabel(self.scrollAreaWidgetContents)
+        self.labelHighPassOrder.setObjectName(u"labelHighPassOrder")
+
+        self.gridLayoutFilters.addWidget(self.labelHighPassOrder, 2, 0, 1, 1)
+
+        self.spinBoxNotch50Frequency = QDoubleSpinBox(self.scrollAreaWidgetContents)
+        self.spinBoxNotch50Frequency.setObjectName(u"spinBoxNotch50Frequency")
+        self.spinBoxNotch50Frequency.setMinimum(49.000000000000000)
+        self.spinBoxNotch50Frequency.setMaximum(51.000000000000000)
+        self.spinBoxNotch50Frequency.setValue(50.000000000000000)
+
+        self.gridLayoutFilters.addWidget(self.spinBoxNotch50Frequency, 7, 1, 1, 1)
+
+        self.checkBoxMedian = QCheckBox(self.scrollAreaWidgetContents)
+        self.checkBoxMedian.setObjectName(u"checkBoxMedian")
+
+        self.gridLayoutFilters.addWidget(self.checkBoxMedian, 16, 1, 1, 1)
+
+        self.labelMedianWindowSize = QLabel(self.scrollAreaWidgetContents)
+        self.labelMedianWindowSize.setObjectName(u"labelMedianWindowSize")
+
+        self.gridLayoutFilters.addWidget(self.labelMedianWindowSize, 17, 0, 1, 1)
+
+        self.labelMovingAverage = QLabel(self.scrollAreaWidgetContents)
+        self.labelMovingAverage.setObjectName(u"labelMovingAverage")
+        self.labelMovingAverage.setTextFormat(Qt.TextFormat.MarkdownText)
+
+        self.gridLayoutFilters.addWidget(self.labelMovingAverage, 18, 0, 1, 1)
+
+        self.checkBoxNotch50 = QCheckBox(self.scrollAreaWidgetContents)
+        self.checkBoxNotch50.setObjectName(u"checkBoxNotch50")
+
+        self.gridLayoutFilters.addWidget(self.checkBoxNotch50, 6, 1, 1, 1)
+
+        self.checkBoxMovingAverage = QCheckBox(self.scrollAreaWidgetContents)
+        self.checkBoxMovingAverage.setObjectName(u"checkBoxMovingAverage")
+
+        self.gridLayoutFilters.addWidget(self.checkBoxMovingAverage, 18, 1, 1, 1)
+
+        self.labelGlobal = QLabel(self.scrollAreaWidgetContents)
+        self.labelGlobal.setObjectName(u"labelGlobal")
+        self.labelGlobal.setTextFormat(Qt.TextFormat.MarkdownText)
+
+        self.gridLayoutFilters.addWidget(self.labelGlobal, 20, 0, 1, 1)
+
+        self.labelBandPassOrder = QLabel(self.scrollAreaWidgetContents)
+        self.labelBandPassOrder.setObjectName(u"labelBandPassOrder")
+
+        self.gridLayoutFilters.addWidget(self.labelBandPassOrder, 15, 0, 1, 1)
+
+        self.spinBoxNotch60Frequency = QDoubleSpinBox(self.scrollAreaWidgetContents)
+        self.spinBoxNotch60Frequency.setObjectName(u"spinBoxNotch60Frequency")
+        self.spinBoxNotch60Frequency.setMinimum(59.000000000000000)
+        self.spinBoxNotch60Frequency.setMaximum(61.000000000000000)
+        self.spinBoxNotch60Frequency.setValue(60.000000000000000)
+
+        self.gridLayoutFilters.addWidget(self.spinBoxNotch60Frequency, 10, 1, 1, 1)
+
+        self.checkBoxLowPass = QCheckBox(self.scrollAreaWidgetContents)
+        self.checkBoxLowPass.setObjectName(u"checkBoxLowPass")
+
+        self.gridLayoutFilters.addWidget(self.checkBoxLowPass, 3, 1, 1, 1)
+
+        self.labelLowPassCutoff = QLabel(self.scrollAreaWidgetContents)
+        self.labelLowPassCutoff.setObjectName(u"labelLowPassCutoff")
+
+        self.gridLayoutFilters.addWidget(self.labelLowPassCutoff, 4, 0, 1, 1)
+
+        self.labelNotch50Frequency = QLabel(self.scrollAreaWidgetContents)
+        self.labelNotch50Frequency.setObjectName(u"labelNotch50Frequency")
+
+        self.gridLayoutFilters.addWidget(self.labelNotch50Frequency, 7, 0, 1, 1)
+
+        self.spinBoxHighPassOrder = QSpinBox(self.scrollAreaWidgetContents)
+        self.spinBoxHighPassOrder.setObjectName(u"spinBoxHighPassOrder")
+        self.spinBoxHighPassOrder.setMinimum(1)
+        self.spinBoxHighPassOrder.setMaximum(10)
+        self.spinBoxHighPassOrder.setValue(4)
+
+        self.gridLayoutFilters.addWidget(self.spinBoxHighPassOrder, 2, 1, 1, 1)
+
+        self.labelBandPass = QLabel(self.scrollAreaWidgetContents)
+        self.labelBandPass.setObjectName(u"labelBandPass")
+        self.labelBandPass.setTextFormat(Qt.TextFormat.MarkdownText)
+
+        self.gridLayoutFilters.addWidget(self.labelBandPass, 12, 0, 1, 1)
+
+        self.spinBoxMovingAverageWindowSize = QSpinBox(self.scrollAreaWidgetContents)
+        self.spinBoxMovingAverageWindowSize.setObjectName(u"spinBoxMovingAverageWindowSize")
+        self.spinBoxMovingAverageWindowSize.setMinimum(1)
+        self.spinBoxMovingAverageWindowSize.setMaximum(50)
+        self.spinBoxMovingAverageWindowSize.setValue(5)
+
+        self.gridLayoutFilters.addWidget(self.spinBoxMovingAverageWindowSize, 19, 1, 1, 1)
+
+        self.labelMovingAverageWindowSize = QLabel(self.scrollAreaWidgetContents)
+        self.labelMovingAverageWindowSize.setObjectName(u"labelMovingAverageWindowSize")
+
+        self.gridLayoutFilters.addWidget(self.labelMovingAverageWindowSize, 19, 0, 1, 1)
+
+        self.spinBoxLowPassCutoff = QDoubleSpinBox(self.scrollAreaWidgetContents)
+        self.spinBoxLowPassCutoff.setObjectName(u"spinBoxLowPassCutoff")
+        self.spinBoxLowPassCutoff.setMinimum(1.000000000000000)
+        self.spinBoxLowPassCutoff.setMaximum(500.000000000000000)
+        self.spinBoxLowPassCutoff.setValue(100.000000000000000)
+
+        self.gridLayoutFilters.addWidget(self.spinBoxLowPassCutoff, 4, 1, 1, 1)
+
+        self.labelBandPassLowCutoff = QLabel(self.scrollAreaWidgetContents)
+        self.labelBandPassLowCutoff.setObjectName(u"labelBandPassLowCutoff")
+
+        self.gridLayoutFilters.addWidget(self.labelBandPassLowCutoff, 13, 0, 1, 1)
+
+        self.labelNotch60QFactor = QLabel(self.scrollAreaWidgetContents)
+        self.labelNotch60QFactor.setObjectName(u"labelNotch60QFactor")
+
+        self.gridLayoutFilters.addWidget(self.labelNotch60QFactor, 11, 0, 1, 1)
+
+        self.labelBandPassHighCutoff = QLabel(self.scrollAreaWidgetContents)
+        self.labelBandPassHighCutoff.setObjectName(u"labelBandPassHighCutoff")
+
+        self.gridLayoutFilters.addWidget(self.labelBandPassHighCutoff, 14, 0, 1, 1)
+
+        self.spinBoxNotch60QFactor = QDoubleSpinBox(self.scrollAreaWidgetContents)
+        self.spinBoxNotch60QFactor.setObjectName(u"spinBoxNotch60QFactor")
+        self.spinBoxNotch60QFactor.setMinimum(1.000000000000000)
+        self.spinBoxNotch60QFactor.setMaximum(100.000000000000000)
+        self.spinBoxNotch60QFactor.setValue(30.000000000000000)
+
+        self.gridLayoutFilters.addWidget(self.spinBoxNotch60QFactor, 11, 1, 1, 1)
+
+        self.checkBoxNotch60 = QCheckBox(self.scrollAreaWidgetContents)
+        self.checkBoxNotch60.setObjectName(u"checkBoxNotch60")
+
+        self.gridLayoutFilters.addWidget(self.checkBoxNotch60, 9, 1, 1, 1)
+
+        self.labelNotch50QFactor = QLabel(self.scrollAreaWidgetContents)
+        self.labelNotch50QFactor.setObjectName(u"labelNotch50QFactor")
+
+        self.gridLayoutFilters.addWidget(self.labelNotch50QFactor, 8, 0, 1, 1)
+
+        self.labelNotch60 = QLabel(self.scrollAreaWidgetContents)
+        self.labelNotch60.setObjectName(u"labelNotch60")
+        self.labelNotch60.setTextFormat(Qt.TextFormat.MarkdownText)
+
+        self.gridLayoutFilters.addWidget(self.labelNotch60, 9, 0, 1, 1)
+
+        self.labelLowPass = QLabel(self.scrollAreaWidgetContents)
+        self.labelLowPass.setObjectName(u"labelLowPass")
+        self.labelLowPass.setTextFormat(Qt.TextFormat.MarkdownText)
+
+        self.gridLayoutFilters.addWidget(self.labelLowPass, 3, 0, 1, 1)
+
+        self.labelLowPassOrder = QLabel(self.scrollAreaWidgetContents)
+        self.labelLowPassOrder.setObjectName(u"labelLowPassOrder")
+
+        self.gridLayoutFilters.addWidget(self.labelLowPassOrder, 5, 0, 1, 1)
+
+        self.checkBoxHighPass = QCheckBox(self.scrollAreaWidgetContents)
+        self.checkBoxHighPass.setObjectName(u"checkBoxHighPass")
+
+        self.gridLayoutFilters.addWidget(self.checkBoxHighPass, 0, 1, 1, 1)
+
+        self.labelNotch60Frequency = QLabel(self.scrollAreaWidgetContents)
+        self.labelNotch60Frequency.setObjectName(u"labelNotch60Frequency")
+
+        self.gridLayoutFilters.addWidget(self.labelNotch60Frequency, 10, 0, 1, 1)
+
+        self.labelMedian = QLabel(self.scrollAreaWidgetContents)
+        self.labelMedian.setObjectName(u"labelMedian")
+        self.labelMedian.setTextFormat(Qt.TextFormat.MarkdownText)
+
+        self.gridLayoutFilters.addWidget(self.labelMedian, 16, 0, 1, 1)
+
+        self.spinBoxMedianWindowSize = QSpinBox(self.scrollAreaWidgetContents)
+        self.spinBoxMedianWindowSize.setObjectName(u"spinBoxMedianWindowSize")
+        self.spinBoxMedianWindowSize.setMinimum(3)
+        self.spinBoxMedianWindowSize.setMaximum(21)
+        self.spinBoxMedianWindowSize.setSingleStep(2)
+        self.spinBoxMedianWindowSize.setValue(5)
+
+        self.gridLayoutFilters.addWidget(self.spinBoxMedianWindowSize, 17, 1, 1, 1)
+
+        self.checkBoxBandPass = QCheckBox(self.scrollAreaWidgetContents)
+        self.checkBoxBandPass.setObjectName(u"checkBoxBandPass")
+
+        self.gridLayoutFilters.addWidget(self.checkBoxBandPass, 12, 1, 1, 1)
+
+        self.labelNotch50 = QLabel(self.scrollAreaWidgetContents)
+        self.labelNotch50.setObjectName(u"labelNotch50")
+        self.labelNotch50.setTextFormat(Qt.TextFormat.MarkdownText)
+
+        self.gridLayoutFilters.addWidget(self.labelNotch50, 6, 0, 1, 1)
+
+        self.spinBoxBandPassLowCutoff = QDoubleSpinBox(self.scrollAreaWidgetContents)
+        self.spinBoxBandPassLowCutoff.setObjectName(u"spinBoxBandPassLowCutoff")
+        self.spinBoxBandPassLowCutoff.setMinimum(0.100000000000000)
+        self.spinBoxBandPassLowCutoff.setMaximum(100.000000000000000)
+        self.spinBoxBandPassLowCutoff.setValue(1.000000000000000)
+
+        self.gridLayoutFilters.addWidget(self.spinBoxBandPassLowCutoff, 13, 1, 1, 1)
+
+        self.spinBoxBandPassHighCutoff = QDoubleSpinBox(self.scrollAreaWidgetContents)
+        self.spinBoxBandPassHighCutoff.setObjectName(u"spinBoxBandPassHighCutoff")
+        self.spinBoxBandPassHighCutoff.setMinimum(1.000000000000000)
+        self.spinBoxBandPassHighCutoff.setMaximum(200.000000000000000)
+        self.spinBoxBandPassHighCutoff.setValue(40.000000000000000)
+
+        self.gridLayoutFilters.addWidget(self.spinBoxBandPassHighCutoff, 14, 1, 1, 1)
+
+        self.spinBoxLowPassOrder = QSpinBox(self.scrollAreaWidgetContents)
+        self.spinBoxLowPassOrder.setObjectName(u"spinBoxLowPassOrder")
+        self.spinBoxLowPassOrder.setMinimum(1)
+        self.spinBoxLowPassOrder.setMaximum(10)
+        self.spinBoxLowPassOrder.setValue(4)
+
+        self.gridLayoutFilters.addWidget(self.spinBoxLowPassOrder, 5, 1, 1, 1)
+
+        self.spinBoxHighPassCutoff = QDoubleSpinBox(self.scrollAreaWidgetContents)
+        self.spinBoxHighPassCutoff.setObjectName(u"spinBoxHighPassCutoff")
+        self.spinBoxHighPassCutoff.setMinimum(0.100000000000000)
+        self.spinBoxHighPassCutoff.setMaximum(100.000000000000000)
+        self.spinBoxHighPassCutoff.setValue(0.500000000000000)
+
+        self.gridLayoutFilters.addWidget(self.spinBoxHighPassCutoff, 1, 1, 1, 1)
+
+        self.labelHighPassCutoff = QLabel(self.scrollAreaWidgetContents)
+        self.labelHighPassCutoff.setObjectName(u"labelHighPassCutoff")
+
+        self.gridLayoutFilters.addWidget(self.labelHighPassCutoff, 1, 0, 1, 1)
+
+        self.spinBoxSamplingFrequency = QDoubleSpinBox(self.scrollAreaWidgetContents)
+        self.spinBoxSamplingFrequency.setObjectName(u"spinBoxSamplingFrequency")
+        self.spinBoxSamplingFrequency.setMinimum(100.000000000000000)
+        self.spinBoxSamplingFrequency.setMaximum(10000.000000000000000)
+        self.spinBoxSamplingFrequency.setValue(1000.000000000000000)
+
+        self.gridLayoutFilters.addWidget(self.spinBoxSamplingFrequency, 21, 1, 1, 1)
+
+        self.labelSamplingFrequency = QLabel(self.scrollAreaWidgetContents)
+        self.labelSamplingFrequency.setObjectName(u"labelSamplingFrequency")
+
+        self.gridLayoutFilters.addWidget(self.labelSamplingFrequency, 21, 0, 1, 1)
+
+
+        self.verticalLayout_16.addLayout(self.gridLayoutFilters)
+
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+
+        self.verticalLayout_15.addWidget(self.scrollArea)
+
         self.tabWidget.addTab(self.tab_4, "")
         self.tab_5 = QWidget()
         self.tab_5.setObjectName(u"tab_5")
@@ -1096,12 +1387,11 @@ class Ui_Main(object):
         self.pushButton_26.setText(QCoreApplication.translate("Main", u"Manual", None))
         self.check_continue_record.setText(QCoreApplication.translate("Main", u"Continua", None))
         self.label_2.setText(QCoreApplication.translate("Main", u"### Configuraci\u00f3n de Adquisici\u00f3n", None))
-        self.pushButton_29.setText(QCoreApplication.translate("Main", u"Pausar", None))
         self.btn_start.setText(QCoreApplication.translate("Main", u"Iniciar", None))
-        self.btn_clear.setText(QCoreApplication.translate("Main", u"Detener", None))
+        self.btn_clear.setText(QCoreApplication.translate("Main", u"Limpiar", None))
         self.label_9.setText(QCoreApplication.translate("Main", u"Tiempo :", None))
-        self.label_10.setText(QCoreApplication.translate("Main", u"00:00:00", None))
-        self.label_11.setText(QCoreApplication.translate("Main", u"Estado: Detenicdo", None))
+        self.lbl_time_count.setText(QCoreApplication.translate("Main", u"00:00", None))
+        self.lbl_state.setText(QCoreApplication.translate("Main", u"Estado: Detenicdo", None))
         self.label_8.setText(QCoreApplication.translate("Main", u"### control de Adquisici\u00f3n", None))
         self.pushButton_32.setText(QCoreApplication.translate("Main", u"Exportar", None))
         self.label_13.setText(QCoreApplication.translate("Main", u"ID Usuario :", None))
@@ -1133,6 +1423,35 @@ class Ui_Main(object):
         self.label_23.setText(QCoreApplication.translate("Main", u"### An\u00e1lisis Autom\u00e1tico", None))
         self.label_24.setText(QCoreApplication.translate("Main", u"### Estad\u00edsticas y Resultados", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), QCoreApplication.translate("Main", u"An\u00e1lisis", None))
+        self.labelHighPass.setText(QCoreApplication.translate("Main", u"### HighPassFilter", None))
+        self.labelHighPassOrder.setText(QCoreApplication.translate("Main", u"Orden:", None))
+        self.checkBoxMedian.setText(QCoreApplication.translate("Main", u"Activar", None))
+        self.labelMedianWindowSize.setText(QCoreApplication.translate("Main", u"Tama\u00f1o de ventana:", None))
+        self.labelMovingAverage.setText(QCoreApplication.translate("Main", u"### MovingAverageFilter", None))
+        self.checkBoxNotch50.setText(QCoreApplication.translate("Main", u"Activar", None))
+        self.checkBoxMovingAverage.setText(QCoreApplication.translate("Main", u"Activar", None))
+        self.labelGlobal.setText(QCoreApplication.translate("Main", u"### Configuraci\u00f3n Global", None))
+        self.labelBandPassOrder.setText(QCoreApplication.translate("Main", u"Orden:", None))
+        self.checkBoxLowPass.setText(QCoreApplication.translate("Main", u"Activar", None))
+        self.labelLowPassCutoff.setText(QCoreApplication.translate("Main", u"Cutoff (Hz):", None))
+        self.labelNotch50Frequency.setText(QCoreApplication.translate("Main", u"Frecuencia (Hz):", None))
+        self.labelBandPass.setText(QCoreApplication.translate("Main", u"### BandPassFilter", None))
+        self.labelMovingAverageWindowSize.setText(QCoreApplication.translate("Main", u"Tama\u00f1o de ventana:", None))
+        self.labelBandPassLowCutoff.setText(QCoreApplication.translate("Main", u"Cutoff inferior (Hz):", None))
+        self.labelNotch60QFactor.setText(QCoreApplication.translate("Main", u"Factor Q:", None))
+        self.labelBandPassHighCutoff.setText(QCoreApplication.translate("Main", u"Cutoff superior (Hz):", None))
+        self.checkBoxNotch60.setText(QCoreApplication.translate("Main", u"Activar", None))
+        self.labelNotch50QFactor.setText(QCoreApplication.translate("Main", u"Factor Q:", None))
+        self.labelNotch60.setText(QCoreApplication.translate("Main", u"### NotchFilter 60Hz", None))
+        self.labelLowPass.setText(QCoreApplication.translate("Main", u"### LowPassFilter", None))
+        self.labelLowPassOrder.setText(QCoreApplication.translate("Main", u"Orden:", None))
+        self.checkBoxHighPass.setText(QCoreApplication.translate("Main", u"Activar", None))
+        self.labelNotch60Frequency.setText(QCoreApplication.translate("Main", u"Frecuencia (Hz):", None))
+        self.labelMedian.setText(QCoreApplication.translate("Main", u"### MedianFilter", None))
+        self.checkBoxBandPass.setText(QCoreApplication.translate("Main", u"Activar", None))
+        self.labelNotch50.setText(QCoreApplication.translate("Main", u"### NotchFilter 50Hz", None))
+        self.labelHighPassCutoff.setText(QCoreApplication.translate("Main", u"Cutoff (Hz):", None))
+        self.labelSamplingFrequency.setText(QCoreApplication.translate("Main", u"Frecuencia de muestreo (Hz):", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), QCoreApplication.translate("Main", u"Filtros", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_5), QCoreApplication.translate("Main", u"Informes", None))
     # retranslateUi

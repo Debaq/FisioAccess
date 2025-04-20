@@ -935,7 +935,7 @@ QComboBox {
             </sizepolicy>
            </property>
            <property name="currentIndex">
-            <number>0</number>
+            <number>2</number>
            </property>
            <widget class="QWidget" name="tab_1">
             <attribute name="title">
@@ -1053,20 +1053,7 @@ QComboBox {
                 </widget>
                </item>
                <item row="2" column="1" colspan="2">
-                <widget class="QSpinBox" name="spin_time_record">
-                 <property name="minimum">
-                  <number>60</number>
-                 </property>
-                 <property name="maximum">
-                  <number>600</number>
-                 </property>
-                 <property name="singleStep">
-                  <number>5</number>
-                 </property>
-                 <property name="value">
-                  <number>60</number>
-                 </property>
-                </widget>
+                <widget class="QSpinBox" name="spin_time_record"/>
                </item>
                <item row="1" column="1" colspan="2">
                 <widget class="QSpinBox" name="spin_fs">
@@ -1102,6 +1089,16 @@ QComboBox {
              </item>
              <item>
               <layout class="QGridLayout" name="gridLayout_4">
+               <item row="1" column="1">
+                <widget class="QPushButton" name="pushButton_29">
+                 <property name="styleSheet">
+                  <string notr="true">background-color: rgb(255, 204, 0);</string>
+                 </property>
+                 <property name="text">
+                  <string>Pausar</string>
+                 </property>
+                </widget>
+               </item>
                <item row="1" column="0">
                 <widget class="QPushButton" name="btn_start">
                  <property name="styleSheet">
@@ -1118,7 +1115,7 @@ QComboBox {
                   <string notr="true">background-color: rgb(244, 67, 54);</string>
                  </property>
                  <property name="text">
-                  <string>Limpiar</string>
+                  <string>Detener</string>
                  </property>
                 </widget>
                </item>
@@ -1130,9 +1127,9 @@ QComboBox {
                 </widget>
                </item>
                <item row="2" column="1">
-                <widget class="QLabel" name="lbl_time_count">
+                <widget class="QLabel" name="label_10">
                  <property name="text">
-                  <string>00:00</string>
+                  <string>00:00:00</string>
                  </property>
                 </widget>
                </item>
@@ -1427,31 +1424,16 @@ QComboBox {
              </property>
              <item>
               <widget class="QScrollArea" name="scrollArea">
-               <property name="frameShape">
-                <enum>QFrame::Shape::NoFrame</enum>
-               </property>
-               <property name="lineWidth">
-                <number>0</number>
-               </property>
-               <property name="horizontalScrollBarPolicy">
-                <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
-               </property>
-               <property name="sizeAdjustPolicy">
-                <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustToContentsOnFirstShow</enum>
-               </property>
                <property name="widgetResizable">
-                <bool>false</bool>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                <bool>true</bool>
                </property>
                <widget class="QWidget" name="scrollAreaWidgetContents">
                 <property name="geometry">
                  <rect>
                   <x>0</x>
-                  <y>-252</y>
-                  <width>409</width>
-                  <height>761</height>
+                  <y>0</y>
+                  <width>424</width>
+                  <height>509</height>
                  </rect>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_16">
@@ -1462,422 +1444,146 @@ QComboBox {
                   <number>0</number>
                  </property>
                  <property name="rightMargin">
-                  <number>9</number>
+                  <number>0</number>
                  </property>
                  <property name="bottomMargin">
-                  <number>60</number>
+                  <number>0</number>
                  </property>
                  <item>
                   <layout class="QGridLayout" name="gridLayoutFilters">
-                   <item row="15" column="1">
-                    <widget class="QSpinBox" name="spinBoxBandPassOrder">
-                     <property name="minimum">
-                      <number>1</number>
-                     </property>
-                     <property name="maximum">
-                      <number>10</number>
-                     </property>
-                     <property name="value">
-                      <number>4</number>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="8" column="1">
-                    <widget class="QDoubleSpinBox" name="spinBoxNotch50QFactor">
-                     <property name="minimum">
-                      <double>1.000000000000000</double>
-                     </property>
-                     <property name="maximum">
-                      <double>100.000000000000000</double>
-                     </property>
-                     <property name="value">
-                      <double>30.000000000000000</double>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="0">
-                    <widget class="QLabel" name="labelHighPass">
-                     <property name="text">
-                      <string>### HighPassFilter</string>
-                     </property>
-                     <property name="textFormat">
-                      <enum>Qt::TextFormat::MarkdownText</enum>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="0">
-                    <widget class="QLabel" name="labelHighPassOrder">
-                     <property name="text">
-                      <string>Orden:</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="7" column="1">
-                    <widget class="QDoubleSpinBox" name="spinBoxNotch50Frequency">
-                     <property name="minimum">
-                      <double>49.000000000000000</double>
-                     </property>
-                     <property name="maximum">
-                      <double>51.000000000000000</double>
-                     </property>
-                     <property name="value">
-                      <double>50.000000000000000</double>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="16" column="1">
-                    <widget class="QCheckBox" name="checkBoxMedian">
-                     <property name="text">
-                      <string>Activar</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="17" column="0">
-                    <widget class="QLabel" name="labelMedianWindowSize">
-                     <property name="text">
-                      <string>Tamaño de ventana:</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="18" column="0">
-                    <widget class="QLabel" name="labelMovingAverage">
-                     <property name="text">
-                      <string>### MovingAverageFilter</string>
-                     </property>
-                     <property name="textFormat">
-                      <enum>Qt::TextFormat::MarkdownText</enum>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="6" column="1">
-                    <widget class="QCheckBox" name="checkBoxNotch50">
-                     <property name="text">
-                      <string>Activar</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="18" column="1">
-                    <widget class="QCheckBox" name="checkBoxMovingAverage">
-                     <property name="text">
-                      <string>Activar</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="20" column="0">
-                    <widget class="QLabel" name="labelGlobal">
-                     <property name="text">
-                      <string>### Configuración Global</string>
-                     </property>
-                     <property name="textFormat">
-                      <enum>Qt::TextFormat::MarkdownText</enum>
-                     </property>
-                    </widget>
-                   </item>
                    <item row="15" column="0">
-                    <widget class="QLabel" name="labelBandPassOrder">
+                    <widget class="QLabel" name="label_33">
                      <property name="text">
-                      <string>Orden:</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="10" column="1">
-                    <widget class="QDoubleSpinBox" name="spinBoxNotch60Frequency">
-                     <property name="minimum">
-                      <double>59.000000000000000</double>
-                     </property>
-                     <property name="maximum">
-                      <double>61.000000000000000</double>
-                     </property>
-                     <property name="value">
-                      <double>60.000000000000000</double>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="3" column="1">
-                    <widget class="QCheckBox" name="checkBoxLowPass">
-                     <property name="text">
-                      <string>Activar</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="4" column="0">
-                    <widget class="QLabel" name="labelLowPassCutoff">
-                     <property name="text">
-                      <string>Cutoff (Hz):</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="7" column="0">
-                    <widget class="QLabel" name="labelNotch50Frequency">
-                     <property name="text">
-                      <string>Frecuencia (Hz):</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="1">
-                    <widget class="QSpinBox" name="spinBoxHighPassOrder">
-                     <property name="minimum">
-                      <number>1</number>
-                     </property>
-                     <property name="maximum">
-                      <number>10</number>
-                     </property>
-                     <property name="value">
-                      <number>4</number>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="12" column="0">
-                    <widget class="QLabel" name="labelBandPass">
-                     <property name="text">
-                      <string>### BandPassFilter</string>
-                     </property>
-                     <property name="textFormat">
-                      <enum>Qt::TextFormat::MarkdownText</enum>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="19" column="1">
-                    <widget class="QSpinBox" name="spinBoxMovingAverageWindowSize">
-                     <property name="minimum">
-                      <number>1</number>
-                     </property>
-                     <property name="maximum">
-                      <number>50</number>
-                     </property>
-                     <property name="value">
-                      <number>5</number>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="19" column="0">
-                    <widget class="QLabel" name="labelMovingAverageWindowSize">
-                     <property name="text">
-                      <string>Tamaño de ventana:</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="4" column="1">
-                    <widget class="QDoubleSpinBox" name="spinBoxLowPassCutoff">
-                     <property name="minimum">
-                      <double>1.000000000000000</double>
-                     </property>
-                     <property name="maximum">
-                      <double>500.000000000000000</double>
-                     </property>
-                     <property name="value">
-                      <double>100.000000000000000</double>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="13" column="0">
-                    <widget class="QLabel" name="labelBandPassLowCutoff">
-                     <property name="text">
-                      <string>Cutoff inferior (Hz):</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="11" column="0">
-                    <widget class="QLabel" name="labelNotch60QFactor">
-                     <property name="text">
-                      <string>Factor Q:</string>
+                      <string>TextLabel</string>
                      </property>
                     </widget>
                    </item>
                    <item row="14" column="0">
-                    <widget class="QLabel" name="labelBandPassHighCutoff">
+                    <widget class="QLabel" name="label_32">
                      <property name="text">
-                      <string>Cutoff superior (Hz):</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="11" column="1">
-                    <widget class="QDoubleSpinBox" name="spinBoxNotch60QFactor">
-                     <property name="minimum">
-                      <double>1.000000000000000</double>
-                     </property>
-                     <property name="maximum">
-                      <double>100.000000000000000</double>
-                     </property>
-                     <property name="value">
-                      <double>30.000000000000000</double>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="9" column="1">
-                    <widget class="QCheckBox" name="checkBoxNotch60">
-                     <property name="text">
-                      <string>Activar</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="8" column="0">
-                    <widget class="QLabel" name="labelNotch50QFactor">
-                     <property name="text">
-                      <string>Factor Q:</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="9" column="0">
-                    <widget class="QLabel" name="labelNotch60">
-                     <property name="text">
-                      <string>### NotchFilter 60Hz</string>
-                     </property>
-                     <property name="textFormat">
-                      <enum>Qt::TextFormat::MarkdownText</enum>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="3" column="0">
-                    <widget class="QLabel" name="labelLowPass">
-                     <property name="text">
-                      <string>### LowPassFilter</string>
-                     </property>
-                     <property name="textFormat">
-                      <enum>Qt::TextFormat::MarkdownText</enum>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="5" column="0">
-                    <widget class="QLabel" name="labelLowPassOrder">
-                     <property name="text">
-                      <string>Orden:</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="1">
-                    <widget class="QCheckBox" name="checkBoxHighPass">
-                     <property name="text">
-                      <string>Activar</string>
+                      <string>TextLabel</string>
                      </property>
                     </widget>
                    </item>
                    <item row="10" column="0">
-                    <widget class="QLabel" name="labelNotch60Frequency">
+                    <widget class="QLabel" name="label_30">
                      <property name="text">
-                      <string>Frecuencia (Hz):</string>
+                      <string>TextLabel</string>
                      </property>
                     </widget>
                    </item>
-                   <item row="16" column="0">
-                    <widget class="QLabel" name="labelMedian">
+                   <item row="8" column="0">
+                    <widget class="QLabel" name="label_35">
                      <property name="text">
-                      <string>### MedianFilter</string>
-                     </property>
-                     <property name="textFormat">
-                      <enum>Qt::TextFormat::MarkdownText</enum>
+                      <string>### NotchFilter 50Hz</string>
                      </property>
                     </widget>
                    </item>
-                   <item row="17" column="1">
-                    <widget class="QSpinBox" name="spinBoxMedianWindowSize">
-                     <property name="minimum">
-                      <number>3</number>
-                     </property>
-                     <property name="maximum">
-                      <number>21</number>
-                     </property>
-                     <property name="singleStep">
-                      <number>2</number>
-                     </property>
-                     <property name="value">
-                      <number>5</number>
+                   <item row="6" column="1">
+                    <widget class="QSpinBox" name="spinBox_4"/>
+                   </item>
+                   <item row="11" column="0">
+                    <widget class="QLabel" name="label_31">
+                     <property name="text">
+                      <string>TextLabel</string>
                      </property>
                     </widget>
+                   </item>
+                   <item row="2" column="1">
+                    <widget class="QSpinBox" name="spinBox"/>
+                   </item>
+                   <item row="7" column="0">
+                    <widget class="QLabel" name="label_29">
+                     <property name="text">
+                      <string>orden</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="label_25">
+                     <property name="text">
+                      <string>### HighPassFilter</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="4" column="0">
+                    <widget class="QLabel" name="label_34">
+                     <property name="text">
+                      <string>### LowPassFilter</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="7" column="1">
+                    <widget class="QSpinBox" name="spinBox_5"/>
+                   </item>
+                   <item row="15" column="1">
+                    <widget class="QSpinBox" name="spinBox_9"/>
+                   </item>
+                   <item row="6" column="0">
+                    <widget class="QLabel" name="label_28">
+                     <property name="text">
+                      <string>cutoff</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="12" column="0">
+                    <widget class="QLabel" name="label_36">
+                     <property name="text">
+                      <string>### NotchFilter 60Hz</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="11" column="1">
+                    <widget class="QSpinBox" name="spinBox_7"/>
+                   </item>
+                   <item row="3" column="1">
+                    <widget class="QSpinBox" name="spinBox_2"/>
+                   </item>
+                   <item row="10" column="1">
+                    <widget class="QSpinBox" name="spinBox_6"/>
+                   </item>
+                   <item row="2" column="0">
+                    <widget class="QLabel" name="label_26">
+                     <property name="text">
+                      <string>cutoff</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="3" column="0">
+                    <widget class="QLabel" name="label_27">
+                     <property name="text">
+                      <string>orden</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="14" column="1">
+                    <widget class="QSpinBox" name="spinBox_8"/>
                    </item>
                    <item row="12" column="1">
-                    <widget class="QCheckBox" name="checkBoxBandPass">
+                    <widget class="QCheckBox" name="checkBox_4">
                      <property name="text">
                       <string>Activar</string>
                      </property>
                     </widget>
                    </item>
-                   <item row="6" column="0">
-                    <widget class="QLabel" name="labelNotch50">
+                   <item row="8" column="1">
+                    <widget class="QCheckBox" name="checkBox_3">
                      <property name="text">
-                      <string>### NotchFilter 50Hz</string>
-                     </property>
-                     <property name="textFormat">
-                      <enum>Qt::TextFormat::MarkdownText</enum>
+                      <string>Activar</string>
                      </property>
                     </widget>
                    </item>
-                   <item row="13" column="1">
-                    <widget class="QDoubleSpinBox" name="spinBoxBandPassLowCutoff">
-                     <property name="minimum">
-                      <double>0.100000000000000</double>
-                     </property>
-                     <property name="maximum">
-                      <double>100.000000000000000</double>
-                     </property>
-                     <property name="value">
-                      <double>1.000000000000000</double>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="14" column="1">
-                    <widget class="QDoubleSpinBox" name="spinBoxBandPassHighCutoff">
-                     <property name="minimum">
-                      <double>1.000000000000000</double>
-                     </property>
-                     <property name="maximum">
-                      <double>200.000000000000000</double>
-                     </property>
-                     <property name="value">
-                      <double>40.000000000000000</double>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="5" column="1">
-                    <widget class="QSpinBox" name="spinBoxLowPassOrder">
-                     <property name="minimum">
-                      <number>1</number>
-                     </property>
-                     <property name="maximum">
-                      <number>10</number>
-                     </property>
-                     <property name="value">
-                      <number>4</number>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="1">
-                    <widget class="QDoubleSpinBox" name="spinBoxHighPassCutoff">
-                     <property name="minimum">
-                      <double>0.100000000000000</double>
-                     </property>
-                     <property name="maximum">
-                      <double>100.000000000000000</double>
-                     </property>
-                     <property name="value">
-                      <double>0.500000000000000</double>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="0">
-                    <widget class="QLabel" name="labelHighPassCutoff">
+                   <item row="4" column="1">
+                    <widget class="QCheckBox" name="checkBox_2">
                      <property name="text">
-                      <string>Cutoff (Hz):</string>
+                      <string>Activar</string>
                      </property>
                     </widget>
                    </item>
-                   <item row="21" column="1">
-                    <widget class="QDoubleSpinBox" name="spinBoxSamplingFrequency">
-                     <property name="minimum">
-                      <double>100.000000000000000</double>
-                     </property>
-                     <property name="maximum">
-                      <double>10000.000000000000000</double>
-                     </property>
-                     <property name="value">
-                      <double>1000.000000000000000</double>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="21" column="0">
-                    <widget class="QLabel" name="labelSamplingFrequency">
+                   <item row="0" column="1">
+                    <widget class="QCheckBox" name="checkBox">
                      <property name="text">
-                      <string>Frecuencia de muestreo (Hz):</string>
+                      <string>Activar</string>
                      </property>
                     </widget>
                    </item>

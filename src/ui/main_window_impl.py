@@ -9,6 +9,7 @@ from utils.FileHandler import FileHandler
 
 from utils.SpirometryGraphManager import SpirometryGraphManager
 from utils.ECGGraphManager import ECGGraphManager
+from utils.FilterManager import FilterManager
 
 import time
 
@@ -26,8 +27,8 @@ class MainWindow(QMainWindow, Ui_Main):
 
         # Inicializar los gráficos
         self.graph = ECGGraphManager()
-        self.graph.set_active_subkeys(['gpio2', 'gpio4'])  # O cualquier subclave que quieras visualizar
-
+        self.graph.set_active_subkeys(['gpio2'])  # O cualquier subclave que quieras visualizar
+        self.graph.window_limit_reached.connect(self.on_window_limit_reached)
         self.graph_layout.addWidget(self.graph)
 
 
@@ -50,19 +51,64 @@ class MainWindow(QMainWindow, Ui_Main):
                 objeto.clicked.connect(self.reconnect_graph)
 
         self.fs = 200
+                # Crear y configurar el gestor de filtros
+        self.filter_manager = FilterManager(self)
+        
+        # Conectar la señal configurationChanged a nuestro método
+        self.filter_manager.configurationChanged.connect(self.on_filter_config_changed)
+        
+        self.spin_time_record.setValue(60)
+        self.spin_time_record.valueChanged.connect(self.windows_time)
+        
+    @Slot(float)
+    def on_window_limit_reached(self, time_value):
+        """Maneja el evento cuando se recibe una actualización del tiempo del gráfico"""
+        # Actualizar el reloj en formato MM:SS
+        minutes = int(time_value) // 60
+        seconds = int(time_value) % 60
+        time_str = f"{minutes:02d}:{seconds:02d}"
+        self.lbl_time_count.setText(time_str)
+        
+        # Verificar si se alcanzó el tiempo límite configurado
+        max_time = self.spin_time_record.value()
+        
+        # Si el tiempo actual supera o iguala el tiempo máximo configurado, detener la adquisición
+        if time_value >= max_time:
+            try:
+                # Detener la actualización del gráfico
+                self.data_handler.new_data_json.disconnect(self.graph.update_data)
+                self.statusbar.showMessage(f"Adquisición detenida automáticamente al alcanzar límite en t={time_value:.2f}s")
+                
+                # Cambiar el estado del botón si es necesario
+                if self.btn_start.text() == "Detener":
+                    self.btn_start.setText("Iniciar")
+                    self.btn_start.clicked.disconnect(self.stop_read)
+                    self.btn_start.clicked.connect(self.start_read)
+            except Exception as e:
+                print(f"Error al desconectar la señal: {str(e)}")
+
+    def windows_time(self, value):
+        self.graph.set_time_graph(value)
+
+    
+    def on_filter_config_changed(self, param):
+        self.graph.set_filters(param=param)
 
     def reconnect_graph(self):
         button = self.sender()
         self.limpiar_layout(self.graph_layout)
         if button.objectName() == "btn_test_ecg":
             self.graph = ECGGraphManager()
+            # Reconectar la señal de límite de ventana
+            self.graph.window_limit_reached.connect(self.on_window_limit_reached)
             self.graph_layout.addWidget(self.graph)
         elif button.objectName() == "btn_test_spiro":
             self.graph = SpirometryGraphManager()
+            # Verificar si SpirometryGraphManager también tiene esta señal
+            if hasattr(self.graph, 'window_limit_reached'):
+                self.graph.window_limit_reached.connect(self.on_window_limit_reached)
             self.graph_layout.addWidget(self.graph)
 
-
-            #QPushButton.text
     def limpiar_layout(self, layout):
         while layout.count():
             item = layout.takeAt(0)
@@ -123,23 +169,19 @@ class MainWindow(QMainWindow, Ui_Main):
             self.fs = fs
             self.spin_fs.setValue(fs)
 
-
-
-
-
     @Slot()
     def start_read(self):
         self.btn_start.setText("Detener")
         self.btn_start.clicked.disconnect(self.start_read)
         self.btn_start.clicked.connect(self.stop_read)
+        self.lbl_state.setText("Grabando")
         try:
+            # Continuar desde el último tiempo guardado
+            self.graph.data_manager.resume()
             self.data_handler.new_data_json.connect(self.graph.update_data)
-            print("Señal new_data_json conectada exitosamente a graph_handler")
+            print("Adquisición reanudada - continuando desde tiempo anterior")
         except Exception as e:
             print(f"Error al conectar data_handler.new_data_json: {str(e)}")
-        
-
-
 
     def start_read_serial(self):
         try:
@@ -301,12 +343,16 @@ class MainWindow(QMainWindow, Ui_Main):
         self.btn_start.setText("Iniciar")
         self.btn_start.clicked.disconnect(self.stop_read)
         self.btn_start.clicked.connect(self.start_read)
+        self.lbl_state.setText("Detenido")
+
         try:
             self.data_handler.new_data_json.disconnect(self.graph.update_data)
-            print("Señal new_data_json conectada exitosamente a graph_handler")
+            # Guardar el estado de tiempo actual para continuar después
+            self.graph.data_manager.pause()
+            print("Adquisición pausada - tiempo guardado para continuación")
         except Exception as e:
-            print(f"Error al conectar data_handler.new_data_json: {str(e)}")
-        
+            print(f"Error al desconectar la señal: {str(e)}")
+            
 
 
     @Slot()

@@ -36,6 +36,10 @@ class DataManager:
         # Tiempo inicial para calibración
         self.initial_time = None
         
+        # Para manejar pausas y continuaciones
+        self.time_offset = 0.0
+        self.last_pause_time = None
+        
         # Bandera para control de grabación
         self.record = True
         
@@ -44,7 +48,7 @@ class DataManager:
 
     def calibrate_time(self, time_value):
         """
-        Calibra el tiempo relativo.
+        Calibra el tiempo relativo, permitiendo pausas y continuaciones.
         
         Args:
             time_value: Valor de tiempo a calibrar
@@ -54,8 +58,25 @@ class DataManager:
         """
         if self.initial_time is None:
             self.initial_time = time_value
-        return (time_value - self.initial_time) / 1000.0
+            
+        # Aplicar el tiempo relativo con el offset acumulado
+        return ((time_value - self.initial_time) / 1000.0) + self.time_offset
 
+    def pause(self):
+        """Pausa la grabación y guarda el tiempo actual"""
+        if self.record and self.display_data['timestamp']:
+            self.last_pause_time = self.display_data['timestamp'][-1]
+        self.record = False
+
+    def resume(self):
+        """Reanuda la grabación desde el último tiempo guardado"""
+        if not self.record and self.last_pause_time is not None:
+            # Guardar el offset actual
+            self.time_offset = self.last_pause_time
+            # Resetear el tiempo inicial para que el próximo dato comience desde cero + offset
+            self.initial_time = None
+        self.record = True
+        
     def add_data_point(self, new_data):
         """
         Añade un punto de datos al conjunto correspondiente.
@@ -97,16 +118,21 @@ class DataManager:
             self.display_data[key] = []
             
         self.initial_time = None
+        self.time_offset = 0.0  # También resetear el offset
+        self.last_pause_time = None
         self.record = True
         self.metadata = {}
 
     def start_record(self):
-        """Inicia la grabación de datos"""
-        self.record = True
+        """Inicia o reanuda la grabación de datos"""
+        if not self.record:
+            self.resume()
+        else:
+            self.record = True
 
     def stop_record(self):
         """Detiene la grabación de datos"""
-        self.record = False
+        self.pause()
 
     def get_min_max(self, data_type):
         """

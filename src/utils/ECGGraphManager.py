@@ -2,11 +2,14 @@ import pyqtgraph as pg
 from PySide6.QtCore import Slot
 import numpy as np
 from utils.filters import FILTERS
+from PySide6.QtCore import Signal, Slot
 
 
 from utils.BaseGraphManager import BaseGraphManager, DataManager
 
 class ECGGraphManager(BaseGraphManager):
+    window_limit_reached = Signal(float)  # El parámetro es el tiempo en el que se alcanzó el límite
+
     """
     Gestor de gráficos específico para la visualización de datos de electrocardiograma (ECG).
     """
@@ -15,22 +18,28 @@ class ECGGraphManager(BaseGraphManager):
         self.LIMIT_MIN = 0
         self.LIMIT_MAX = 60
         # Tamaño inicial del ROI (en segundos)
-        self.roi_size = 5
+        self.roi_size = 20
         # Bandera para controlar si es la primera actualización
         self.first_update = True
+        # Flag para mover automáticamente el ROI con la curva
+        self.roi_automatic = True
+        # Flag para el crecimiento indefinido del gráfico
+        self.no_stop_graph = False
         # Llamar al constructor de la clase base después de definir las constantes
         super().__init__(parent, layout_type='vertical')
         self.filtro = FILTERS(fs=1000)
 
         # Configurar filtros con parámetros básicos
         configuracion = {
-            "lowpass": {"cutoff": 30.0, "order": 2},  # Usar orden más bajo para estabilidad
-            "notch50": {"frequency": 50.0, "q_factor": 30},
-            "movingaverage": {"window_size": 5}  # Más suavizado para compensar
         }
                 
         # Aplicar configuración
         self.filtro.set_param(configuracion)
+        self.limit_signal_emitted = False
+        
+    def set_filters(self, param):
+        self.filtro.set_param(param)
+        self.update_plots()
 
     def setup_data_manager(self):
         """Inicializa el gestor de datos con configuración mínima para ECG"""
@@ -138,6 +147,66 @@ class ECGGraphManager(BaseGraphManager):
         # Conectar la señal de cambio de región para monitorear movimientos del ROI
         self.roi.sigRegionChanged.connect(self.maintain_roi_size)
         self.roi.sigRegionChanged.connect(self.update_roi)
+        self.roi.sigRegionChangeFinished.connect(self.on_roi_manually_moved)
+
+
+    def on_roi_manually_moved(self):
+        """Desactiva el movimiento automático cuando el usuario mueve el ROI manualmente"""
+        self.roi_automatic = False
+        # Notificación opcional para debugging
+        # print("ROI movido manualmente. Movimiento automático desactivado.")
+
+    def set_time_graph(self, time, no_stop=False):
+        """
+        Establece el tiempo total que muestra el gráfico de ritmo
+        
+        Args:
+            time (float): Tiempo total en segundos para mostrar en el gráfico
+            no_stop (bool): Si es True, el gráfico crece indefinidamente
+        """
+        if no_stop:
+            # Activar modo de crecimiento indefinido
+            self.no_stop_graph = True
+            # En este modo no importa el valor de time, el gráfico crecerá
+            # a medida que lleguen nuevos datos
+        else:
+            # Desactivar modo de crecimiento indefinido
+            self.no_stop_graph = False
+            # Resetear el flag de señal emitida
+            self.limit_signal_emitted = False
+            # Actualizar el límite máximo del gráfico
+            self.LIMIT_MAX = time
+            # Asegurarse de que el tamaño del ROI no exceda el nuevo límite
+            if self.roi_size > self.LIMIT_MAX:
+                self.roi_size = self.LIMIT_MAX
+            
+            # Actualizar los límites del ROI
+            self.roi.setBounds([self.LIMIT_MIN, self.LIMIT_MAX])
+            
+            # Ajustar el rango visible del gráfico de ritmo
+            self.rhythm_plot.setXRange(0, self.LIMIT_MAX)
+            
+            # Si el tamaño del ROI cambió, actualizar la región
+            current_min, current_max = self.roi.getRegion()
+            if current_max - current_min != self.roi_size or current_max > self.LIMIT_MAX:
+                # Recalcular manteniendo la posición relativa
+                ratio = current_min / (self.LIMIT_MAX - self.roi_size) if self.LIMIT_MAX != self.roi_size else 0
+                new_min = ratio * (self.LIMIT_MAX - self.roi_size)
+                new_max = new_min + self.roi_size
+                
+                # Asegurar que está dentro de los límites
+                if new_max > self.LIMIT_MAX:
+                    new_max = self.LIMIT_MAX
+                    new_min = new_max - self.roi_size
+                
+                # Actualizar región
+                self.roi.blockSignals(True)
+                self.roi.setRegion([new_min, new_max])
+                self.roi.blockSignals(False)
+                
+                # Actualizar el gráfico principal
+                self.update_roi()
+
 
     def maintain_roi_size(self):
         """Asegura que el ROI mantenga un tamaño fijo al ser movido"""
@@ -218,6 +287,10 @@ class ECGGraphManager(BaseGraphManager):
         # Aplicar esos límites al gráfico principal manteniendo el tamaño fijo
         self.ecg_plot.setXRange(min_x, max_x, padding=0)
         
+        # Asegurar que las líneas de medición estén visibles dentro del nuevo rango
+        # si se han movido fuera de la vista
+        self.keep_markers_in_view(min_x, max_x)
+        
         # NO volver a llamar a update_plots aquí para evitar recursión y cambios inesperados
         # La actualización de los datos se hará desde el método principal update_plots
 
@@ -267,6 +340,71 @@ class ECGGraphManager(BaseGraphManager):
             plot.getAxis('left').setPen('k')
             plot.getAxis('bottom').setTextPen('k')
             plot.getAxis('left').setTextPen('k')
+
+    def keep_markers_in_view(self, min_x, max_x):
+        """
+        Asegura que las líneas de medición permanezcan visibles cuando se mueve el ROI.
+        Si una línea sobrepasa la ventana por la izquierda, se coloca en el extremo izquierdo.
+        Si sobrepasa por la derecha, se coloca en el extremo derecho.
+        
+        Args:
+            min_x (float): Límite inferior del ROI
+            max_x (float): Límite superior del ROI
+        """
+        # Obtener las posiciones actuales de las líneas
+        pos1 = self.qrs_line1.value()
+        pos2 = self.qrs_line2.value()
+        
+        # Margen pequeño para no colocar exactamente en el borde
+        margin = (max_x - min_x) * 0.05
+        left_edge = min_x + margin
+        right_edge = max_x - margin
+        
+        # Comprobar y corregir la posición de la primera línea
+        if pos1 < min_x:
+            # Si sobrepasa por la izquierda, colocarla en el borde izquierdo
+            self.qrs_line1.blockSignals(True)
+            self.qrs_line1.setValue(left_edge)
+            self.qrs_line1.blockSignals(False)
+        elif pos1 > max_x:
+            # Si sobrepasa por la derecha, colocarla en el borde derecho
+            self.qrs_line1.blockSignals(True)
+            self.qrs_line1.setValue(right_edge)
+            self.qrs_line1.blockSignals(False)
+        
+        # Comprobar y corregir la posición de la segunda línea
+        if pos2 < min_x:
+            # Si sobrepasa por la izquierda, colocarla en el borde izquierdo
+            self.qrs_line2.blockSignals(True)
+            self.qrs_line2.setValue(left_edge)
+            self.qrs_line2.blockSignals(False)
+        elif pos2 > max_x:
+            # Si sobrepasa por la derecha, colocarla en el borde derecho
+            self.qrs_line2.blockSignals(True)
+            self.qrs_line2.setValue(right_edge)
+            self.qrs_line2.blockSignals(False)
+        
+        # Si las líneas terminan en la misma posición, separarlas ligeramente
+        if abs(self.qrs_line1.value() - self.qrs_line2.value()) < 0.0001:
+            separation = (max_x - min_x) * 0.1  # 10% del ancho visible
+            
+            self.qrs_line1.blockSignals(True)
+            self.qrs_line2.blockSignals(True)
+            
+            # Si ambas están al borde izquierdo
+            if abs(self.qrs_line1.value() - left_edge) < 0.0001:
+                self.qrs_line1.setValue(left_edge)
+                self.qrs_line2.setValue(left_edge + separation)
+            # Si ambas están al borde derecho
+            elif abs(self.qrs_line1.value() - right_edge) < 0.0001:
+                self.qrs_line1.setValue(right_edge - separation)
+                self.qrs_line2.setValue(right_edge)
+            
+            self.qrs_line1.blockSignals(False)
+            self.qrs_line2.blockSignals(False)
+        
+        # Actualizar la información de intervalos
+        self.update_interval_info()
 
     def setup_markers(self):
         """Configurar los marcadores para ECG"""
@@ -404,7 +542,6 @@ class ECGGraphManager(BaseGraphManager):
         # Obtener los límites de la región seleccionada para filtrar datos
         min_x, max_x = self.roi.getRegion()
 
-
         # Asegurar que siempre sea lista
         subkeys = self.active_subkey if isinstance(self.active_subkey, list) else [self.active_subkey]
         # Si no hay subclaves activas, no hay nada que mostrar
@@ -472,9 +609,6 @@ class ECGGraphManager(BaseGraphManager):
 
         self.update_view_range()
 
-    
-
-
         # ------- GRAFICAR EN rhythm_plot (solo primera curva, sin offset) --------
         if subkeys:  # Si hay al menos una subclave activa
             first_subkey = subkeys[0]
@@ -488,8 +622,54 @@ class ECGGraphManager(BaseGraphManager):
                     
             self.rhythm_curve.setData(x=timestamps, y=y_values_rhythm)
         
-        # Mantener el rango X fijo según el ROI
-        self.ecg_plot.setXRange(min_x, max_x, padding=0)
+        # MODIFICACIÓN: Emitir la señal window_limit_reached en cada actualización
+        if timestamps:
+            current_time = timestamps[-1]
+            self.window_limit_reached.emit(current_time)
+        
+        # Manejar el comportamiento del gráfico de ritmo según no_stop_graph
+        if self.no_stop_graph and timestamps:
+            # Si estamos en modo no_stop, ajustar el límite máximo al tiempo más reciente
+            max_time = timestamps[-1]
+            if max_time > self.LIMIT_MAX:
+                # Actualizar el límite máximo y los límites del ROI
+                self.LIMIT_MAX = max_time + 5  # Agregar un pequeño margen
+                self.roi.setBounds([self.LIMIT_MIN, self.LIMIT_MAX])
+                # Ajustar el rango visible del gráfico de ritmo
+                self.rhythm_plot.setXRange(0, self.LIMIT_MAX)
+        # Eliminamos la condición para emitir la señal, ya que ahora se emite siempre
+
+        # Mover automáticamente el ROI con la curva si está activado
+        if self.roi_automatic and timestamps:
+            last_time = timestamps[-1]
+            
+            # Si el último tiempo está cerca del límite del ROI o lo supera
+            if last_time > max_x - (self.roi_size * 0.1):  # Cuando estamos a menos del 10% del final
+                # Calcular la nueva posición del ROI manteniendolo a la derecha
+                new_min = max(last_time - self.roi_size * 0.9, self.LIMIT_MIN)  # Mantener el último punto en el 90% del ROI
+                new_max = new_min + self.roi_size
+                
+                # Asegurar que no exceda los límites
+                if new_max > self.LIMIT_MAX:
+                    new_max = self.LIMIT_MAX
+                    new_min = new_max - self.roi_size
+                
+                # Actualizar la posición del ROI sin disparar señales
+                self.roi.blockSignals(True)
+                self.roi.setRegion([new_min, new_max])
+                self.roi.blockSignals(False)
+                
+                # Actualizar el rango X del gráfico principal
+                self.ecg_plot.setXRange(new_min, new_max, padding=0)
+                
+                # También actualizar las posiciones de los marcadores cuando el ROI se mueve automáticamente
+                self.keep_markers_in_view(new_min, new_max)
+            else:
+                # Mantener el rango X fijo según el ROI actual
+                self.ecg_plot.setXRange(min_x, max_x, padding=0)
+        else:
+            # Si no está en modo automático, mantener el rango X fijo según el ROI
+            self.ecg_plot.setXRange(min_x, max_x, padding=0)
         
         # Actualizar etiquetas si aplica
         self.update_interval_info()
@@ -501,8 +681,6 @@ class ECGGraphManager(BaseGraphManager):
             label = "Multicanal ECG"
             
         self.ecg_plot.setLabel('left', label, 'mV')
-
-
 
     def set_active_subkeys(self, subkeys):
         """

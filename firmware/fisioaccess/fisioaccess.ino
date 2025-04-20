@@ -73,6 +73,11 @@ void initHardware() {
   // Inicializar SPI
   SPI.begin();
   
+  // Configurar pines analógicos como INPUT
+  pinMode(2, INPUT);
+  pinMode(3, INPUT);
+  pinMode(4, INPUT);
+
   // Generar ID desde la dirección MAC
   uint8_t mac[6];
   WiFi.macAddress(mac);
