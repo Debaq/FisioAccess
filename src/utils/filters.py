@@ -20,6 +20,43 @@ class Filter(ABC):
     def process_sample(self, sample):
         """Procesa una muestra individual"""
         pass
+    
+    # Métodos de utilidad para las subclases que usan coeficientes IIR
+    def _safe_process_iir(self, data, b, a, zi):
+        """Método seguro para procesar datos con filtros IIR"""
+        try:
+            # Verificar si zi está en un rango razonable
+            if np.any(np.abs(zi) > 1e6):
+                # Reiniciar zi si se ha vuelto muy grande
+                zi = signal.lfilter_zi(b, a)
+            
+            # Usar un factor de escala pequeño y seguro
+            filtered_data, new_zi = signal.lfilter(b, a, data, zi=zi * 0.1)
+            return filtered_data, new_zi
+        except Exception as e:
+            # En caso de fallo, reiniciar el estado y procesar sin estado inicial
+            print(f"Error en filtro IIR: {e}, reiniciando estado")
+            zi = signal.lfilter_zi(b, a)
+            filtered_data = signal.lfilter(b, a, data)
+            return filtered_data, zi
+    
+    def _safe_process_sample_iir(self, sample, b, a, zi):
+        """Método seguro para procesar una muestra con filtros IIR"""
+        try:
+            # Verificar si zi está en un rango razonable
+            if np.any(np.abs(zi) > 1e6):
+                # Reiniciar zi si se ha vuelto muy grande
+                zi = signal.lfilter_zi(b, a)
+            
+            # Procesar una única muestra
+            filtered_sample, new_zi = signal.lfilter(b, a, [sample], zi=zi)
+            return filtered_sample[0], new_zi
+        except Exception as e:
+            # En caso de fallo, reiniciar el estado y procesar sin estado inicial
+            print(f"Error en filtro IIR (muestra): {e}, reiniciando estado")
+            zi = signal.lfilter_zi(b, a)
+            filtered_sample = signal.lfilter(b, a, [sample])
+            return filtered_sample[0], zi
 
 # Implementación de filtros específicos
 class HighPassFilter(Filter):
@@ -44,17 +81,17 @@ class HighPassFilter(Filter):
         if self.b is None or self.a is None:
             raise ValueError("El filtro debe ser configurado antes de procesar datos")
         
-        # Procesar todo el lote de datos
-        filtered_data, self.zi = signal.lfilter(self.b, self.a, data, zi=self.zi*data[0])
+        # Usar el método seguro de la clase base
+        filtered_data, self.zi = self._safe_process_iir(data, self.b, self.a, self.zi)
         return filtered_data
     
     def process_sample(self, sample):
         if self.b is None or self.a is None:
             raise ValueError("El filtro debe ser configurado antes de procesar datos")
         
-        # Procesar una única muestra
-        filtered_sample, self.zi = signal.lfilter(self.b, self.a, [sample], zi=self.zi)
-        return filtered_sample[0]
+        # Usar el método seguro de la clase base
+        filtered_sample, self.zi = self._safe_process_sample_iir(sample, self.b, self.a, self.zi)
+        return filtered_sample
 
 class LowPassFilter(Filter):
     def __init__(self):
@@ -78,17 +115,17 @@ class LowPassFilter(Filter):
         if self.b is None or self.a is None:
             raise ValueError("El filtro debe ser configurado antes de procesar datos")
         
-        # Procesar todo el lote de datos
-        filtered_data, self.zi = signal.lfilter(self.b, self.a, data, zi=self.zi*data[0])
+        # Usar el método seguro de la clase base
+        filtered_data, self.zi = self._safe_process_iir(data, self.b, self.a, self.zi)
         return filtered_data
     
     def process_sample(self, sample):
         if self.b is None or self.a is None:
             raise ValueError("El filtro debe ser configurado antes de procesar datos")
         
-        # Procesar una única muestra
-        filtered_sample, self.zi = signal.lfilter(self.b, self.a, [sample], zi=self.zi)
-        return filtered_sample[0]
+        # Usar el método seguro de la clase base
+        filtered_sample, self.zi = self._safe_process_sample_iir(sample, self.b, self.a, self.zi)
+        return filtered_sample
 
 class NotchFilter(Filter):
     def __init__(self):
@@ -113,17 +150,17 @@ class NotchFilter(Filter):
         if self.b is None or self.a is None:
             raise ValueError("El filtro debe ser configurado antes de procesar datos")
         
-        # Procesar todo el lote de datos
-        filtered_data, self.zi = signal.lfilter(self.b, self.a, data, zi=self.zi*data[0])
+        # Usar el método seguro de la clase base
+        filtered_data, self.zi = self._safe_process_iir(data, self.b, self.a, self.zi)
         return filtered_data
     
     def process_sample(self, sample):
         if self.b is None or self.a is None:
             raise ValueError("El filtro debe ser configurado antes de procesar datos")
         
-        # Procesar una única muestra
-        filtered_sample, self.zi = signal.lfilter(self.b, self.a, [sample], zi=self.zi)
-        return filtered_sample[0]
+        # Usar el método seguro de la clase base
+        filtered_sample, self.zi = self._safe_process_sample_iir(sample, self.b, self.a, self.zi)
+        return filtered_sample
 
 class BandPassFilter(Filter):
     def __init__(self):
@@ -156,17 +193,17 @@ class BandPassFilter(Filter):
         if self.b is None or self.a is None:
             raise ValueError("El filtro debe ser configurado antes de procesar datos")
         
-        # Procesar todo el lote de datos
-        filtered_data, self.zi = signal.lfilter(self.b, self.a, data, zi=self.zi*data[0])
+        # Usar el método seguro de la clase base
+        filtered_data, self.zi = self._safe_process_iir(data, self.b, self.a, self.zi)
         return filtered_data
     
     def process_sample(self, sample):
         if self.b is None or self.a is None:
             raise ValueError("El filtro debe ser configurado antes de procesar datos")
         
-        # Procesar una única muestra
-        filtered_sample, self.zi = signal.lfilter(self.b, self.a, [sample], zi=self.zi)
-        return filtered_sample[0]
+        # Usar el método seguro de la clase base
+        filtered_sample, self.zi = self._safe_process_sample_iir(sample, self.b, self.a, self.zi)
+        return filtered_sample
 
 class MedianFilter(Filter):
     def __init__(self):
@@ -187,32 +224,48 @@ class MedianFilter(Filter):
         if self.window_size is None:
             raise ValueError("El filtro debe ser configurado antes de procesar datos")
         
-        # Usar la función median_filter de scipy para procesamiento por lotes
-        filtered_data = median_filter(data, size=self.window_size)
-        
-        # Actualizar el buffer con las últimas muestras para mantener continuidad
-        if len(data) >= self.window_size:
-            self.buffer = deque(data[-self.window_size:], maxlen=self.window_size)
-        else:
-            # Si los datos son muy cortos, solo tomamos lo que podamos
-            for sample in data:
-                self.buffer.append(sample)
-        
-        return filtered_data
+        try:
+            # Usar la función median_filter de scipy para procesamiento por lotes
+            filtered_data = median_filter(data, size=self.window_size)
+            
+            # Actualizar el buffer con las últimas muestras para mantener continuidad
+            if len(data) >= self.window_size:
+                self.buffer = deque(data[-self.window_size:], maxlen=self.window_size)
+            else:
+                # Si los datos son muy cortos, solo tomamos lo que podamos
+                self.buffer.clear()
+                for sample in data:
+                    self.buffer.append(sample)
+            
+            return filtered_data
+            
+        except Exception as e:
+            print(f"Error en filtro de mediana: {e}")
+            # En caso de error, devolver los datos originales
+            self.buffer = deque(maxlen=self.window_size)
+            return data
     
     def process_sample(self, sample):
         if self.buffer is None:
             raise ValueError("El filtro debe ser configurado antes de procesar datos")
         
-        # Añadir la nueva muestra al buffer
-        self.buffer.append(sample)
-        
-        # Si el buffer no está lleno, devolvemos la muestra original
-        if len(self.buffer) < self.window_size:
+        try:
+            # Añadir la nueva muestra al buffer
+            self.buffer.append(sample)
+            
+            # Si el buffer no está lleno, devolvemos la muestra original
+            if len(self.buffer) < self.window_size:
+                return sample
+            
+            # Calcular la mediana del buffer actual
+            return np.median(list(self.buffer))
+            
+        except Exception as e:
+            print(f"Error en filtro de mediana (muestra): {e}")
+            # En caso de error, reiniciar buffer y devolver la muestra original
+            self.buffer = deque(maxlen=self.window_size)
+            self.buffer.append(sample)
             return sample
-        
-        # Calcular la mediana del buffer actual
-        return np.median(list(self.buffer))
 
 class MovingAverageFilter(Filter):
     def __init__(self):
@@ -235,38 +288,57 @@ class MovingAverageFilter(Filter):
         if self.buffer is None:
             raise ValueError("El filtro debe ser configurado antes de procesar datos")
         
-        # Para procesar un lote completo, usamos convolución con núcleo uniforme
-        kernel = np.ones(self.window_size) / self.window_size
-        filtered_data = np.convolve(data, kernel, mode='same')
-        
-        # Actualizar el buffer con las últimas muestras para mantener continuidad
-        if len(data) >= self.window_size:
-            self.buffer = deque(data[-self.window_size:], maxlen=self.window_size)
-            self.sum = sum(self.buffer)
-        else:
-            # Si los datos son muy cortos, solo tomamos lo que podamos
+        try:
+            # Para procesar un lote completo, usamos convolución con núcleo uniforme
+            kernel = np.ones(self.window_size) / self.window_size
+            filtered_data = np.convolve(data, kernel, mode='same')
+            
+            # Actualizar el buffer con las últimas muestras para mantener continuidad
+            if len(data) >= self.window_size:
+                self.buffer = deque(data[-self.window_size:], maxlen=self.window_size)
+                self.sum = sum(self.buffer)
+            else:
+                # Si los datos son muy cortos, solo tomamos lo que podamos
+                self.buffer.clear()
+                self.sum = 0
+                for sample in data:
+                    self.buffer.append(sample)
+                    self.sum += sample
+            
+            return filtered_data
+            
+        except Exception as e:
+            print(f"Error en filtro de media móvil: {e}")
+            # En caso de error, intentar un enfoque más simple
             self.buffer.clear()
             self.sum = 0
-            for sample in data:
-                self.buffer.append(sample)
-                self.sum += sample
-        
-        return filtered_data
+            # Devolver los datos originales
+            return data
     
     def process_sample(self, sample):
         if self.buffer is None:
             raise ValueError("El filtro debe ser configurado antes de procesar datos")
         
-        # Si el buffer está lleno, restamos el valor que sale
-        if len(self.buffer) == self.window_size:
-            self.sum -= self.buffer[0]
-        
-        # Añadir la nueva muestra al buffer y a la suma
-        self.buffer.append(sample)
-        self.sum += sample
-        
-        # Calcular el promedio
-        return self.sum / len(self.buffer)
+        try:
+            # Si el buffer está lleno, restamos el valor que sale
+            if len(self.buffer) == self.window_size:
+                self.sum -= self.buffer[0]
+            
+            # Añadir la nueva muestra al buffer y a la suma
+            self.buffer.append(sample)
+            self.sum += sample
+            
+            # Calcular el promedio
+            return self.sum / len(self.buffer)
+            
+        except Exception as e:
+            print(f"Error en filtro de media móvil (muestra): {e}")
+            # En caso de error, reiniciar buffer y devolver la muestra original
+            self.buffer.clear()
+            self.sum = 0
+            self.buffer.append(sample)
+            self.sum = sample
+            return sample
 
 # Clase gestora de filtros
 class FILTERS:

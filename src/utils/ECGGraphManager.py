@@ -22,14 +22,15 @@ class ECGGraphManager(BaseGraphManager):
         super().__init__(parent, layout_type='vertical')
         self.filtro = FILTERS(fs=1000)
 
-        # Configurar filtros
+        # Configurar filtros con parámetros básicos
         configuracion = {
-
+            "lowpass": {"cutoff": 30.0, "order": 2},  # Usar orden más bajo para estabilidad
+            "notch50": {"frequency": 50.0, "q_factor": 30},
+            "movingaverage": {"window_size": 5}  # Más suavizado para compensar
         }
                 
         # Aplicar configuración
         self.filtro.set_param(configuracion)
-
 
     def setup_data_manager(self):
         """Inicializa el gestor de datos con configuración mínima para ECG"""
@@ -420,56 +421,55 @@ class ECGGraphManager(BaseGraphManager):
         channel_spacing = 3000  # mV entre canales
 
         # Luego actualizar y mostrar solo las curvas activas
+        # Para cada canal activo
         for idx, subkey in enumerate(subkeys):
             if subkey in self.ecg_curves:
                 # Aplicar offset vertical
                 offset = idx * channel_spacing
 
+                # Extraer valores para este canal
                 y_values = []
                 for a in analog_raw:
                     if isinstance(a, dict) and subkey in a:
-                        # Convertir el valor raw a mV
+                        # Convertir valor raw a mV
                         raw_value = a[subkey]
                         mv_value = self.convert_raw_to_mv(raw_value)
-                        y_values.append(mv_value + offset)
+                        y_values.append(mv_value)  # No sumamos el offset todavía
                     else:
-                        y_values.append(offset)
-
-                # Normalizar los datos antes de filtrar
-                y_values_normalized = [y/1000.0 for y in y_values]  # Convertir a valores más pequeños
-                y_values_filter = self.filtro.filtrar(y_values_normalized)
-                y_values_filter = y_values_filter * 1000.0  # Volver a escalar después del filtrado
-
-                #print(y_values)
-                y_values_filter = self.filtro.filtrar(y_values)
-                #print(f"Tipo de y_values_filter: {type(y_values_filter)}")
-                #print(f"Primeros 5 valores originales: {y_values[:5]}")
-                #print(f"Primeros 5 valores filtrados: {y_values_filter[:5]}")
-
-                # Asegúrate de que y_values_filter sea una lista o array numpy
-                if not isinstance(y_values_filter, (list, np.ndarray)):
-                    y_values_filter = np.array(y_values_filter)
-                #y_values_filter = y_values
-                #print(y_values)
-
-                # Actualizar curva con todos los datos
-                self.ecg_curves[subkey].setData(x=timestamps, y=y_values_filter)
-                self.ecg_curves[subkey].setVisible(True)
+                        y_values.append(0)  # Valor predeterminado si no hay dato
                 
-                # Actualizar etiqueta al final
-                if len(timestamps) > 0 and len(y_values_filter) > 0 and subkey in self.channel_labels:
-                    # Buscar el último punto visible dentro del ROI
-                    last_visible_idx = -1
-                    for i in range(len(timestamps)-1, -1, -1):
-                        if min_x <= timestamps[i] <= max_x:
-                            last_visible_idx = i
-                            break
+                # Verificar si hay datos y asegurar que están en un rango razonable
+                if len(y_values) >= 10:
+                    # Limitar valores extremos que podrían causar desbordamientos
+                    y_values = np.array(y_values)
+                    # Detectar y limitar valores atípicos
+                    mean_val = np.mean(y_values)
+                    std_val = np.std(y_values)
+                    # Limitar valores a ±5 desviaciones estándar
+                    upper_limit = mean_val + 5 * std_val
+                    lower_limit = mean_val - 5 * std_val
+                    y_values = np.clip(y_values, lower_limit, upper_limit)
                     
-                    # Si hay punto visible, mostrar etiqueta
-                    if last_visible_idx >= 0:
-                        self.channel_labels[subkey].setPos(timestamps[last_visible_idx], y_values_filter[last_visible_idx])
-                        self.channel_labels[subkey].setVisible(True)
-        
+                    try:
+                        # Aplicar filtros con manejo de errores mejorado
+                        y_values_filter = self.filtro.filtrar(y_values)
+                        # Verificar si el resultado tiene valores válidos
+                        if np.any(np.isnan(y_values_filter)) or np.any(np.isinf(y_values_filter)):
+                            raise ValueError("Filtrado produjo valores no válidos")
+                        # Aplicar offset después del filtrado
+                        y_values_with_offset = y_values_filter + offset
+                    except Exception as e:
+                        print(f"Error al filtrar datos del canal {subkey}: {e}")
+                        # Si falla el filtrado, usar datos originales con offset
+                        y_values_with_offset = y_values + offset
+                else:
+                    # Si no hay suficientes datos, usar valores sin filtrar
+                    y_values_with_offset = np.array(y_values) + offset
+                
+                # Actualizar curva con todos los datos
+                self.ecg_curves[subkey].setData(x=timestamps, y=y_values_with_offset)
+                self.ecg_curves[subkey].setVisible(True)
+
         self.update_view_range()
 
     
