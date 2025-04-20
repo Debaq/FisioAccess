@@ -1,6 +1,8 @@
 import pyqtgraph as pg
 from PySide6.QtCore import Slot
 import numpy as np
+from utils.filters import FILTERS
+
 
 from utils.BaseGraphManager import BaseGraphManager, DataManager
 
@@ -18,6 +20,27 @@ class ECGGraphManager(BaseGraphManager):
         self.first_update = True
         # Llamar al constructor de la clase base después de definir las constantes
         super().__init__(parent, layout_type='vertical')
+        self.filtro = FILTERS(fs=1000)
+
+        # Configurar filtros
+        configuracion = {
+            "highpass": {
+                "cutoff": 0.16,
+                "order": 1
+            },
+            "notch50": {
+                "frequency": 50.0,
+                "q_factor": 1.00
+            },
+            "lowpass": {
+                "cutoff": 100.00,
+                "order": 2
+            }
+        }
+                
+        # Aplicar configuración
+        self.filtro.set_param(configuracion)
+
 
     def setup_data_manager(self):
         """Inicializa el gestor de datos con configuración mínima para ECG"""
@@ -423,7 +446,10 @@ class ECGGraphManager(BaseGraphManager):
                     else:
                         y_values.append(offset)
 
-                
+                #print(y_values)
+                y_values_filter = self.filtro.filtrar(y_values)
+                #print(y_values)
+
                 # Actualizar curva con todos los datos
                 self.ecg_curves[subkey].setData(x=timestamps, y=y_values)
                 self.ecg_curves[subkey].setVisible(True)
@@ -445,7 +471,7 @@ class ECGGraphManager(BaseGraphManager):
 
                     y_max = max(y_values) if y_values else 0
                     y_min = min(y_values) if y_values else 0
-                    print(f"Rango de valores para {subkey}: {y_min} a {y_max}")
+                    #print(f"Rango de valores para {subkey}: {y_min} a {y_max}")
                     self.ecg_plot.setYRange(y_min - 1, y_max + 1)
 
 

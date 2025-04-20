@@ -179,6 +179,8 @@ class MainWindow(QMainWindow, Ui_Main):
                     self.statusbar.showMessage(f"Conectado a {port}")
                     self.serial_list.setEnabled(False)
                     self.btn_connect.setText("Desconectar")
+                    #init = self.data_handler.send_command('{"cmd": "start_stream"}')
+                    self.serial_handler.write_data(('{"cmd": "start_stream"}'))
                     self.btn_start.setEnabled(True)
                 
                 else:

@@ -269,7 +269,7 @@ class MovingAverageFilter(Filter):
         return self.sum / len(self.buffer)
 
 # Clase gestora de filtros
-class FILTROS:
+class FILTERS:
     def __init__(self, fs=1000):
         self.fs = fs  # Frecuencia de muestreo
         self.filter_mapping = {
@@ -337,7 +337,7 @@ if __name__ == "__main__":
     data_raw = data + noise_50hz + noise_highfreq
     
     # Crear gestor de filtros
-    filtro = FILTROS(fs=fs)
+    filtro = FILTERS(fs=fs)
     
     # Configurar filtros
     configuracion = {
