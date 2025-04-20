@@ -59,6 +59,7 @@ class MainWindow(QMainWindow, Ui_Main):
         
         self.spin_time_record.setValue(60)
         self.spin_time_record.valueChanged.connect(self.windows_time)
+        self.check_continue_record.stateChanged.connect(self.windows_time)
         
     @Slot(float)
     def on_window_limit_reached(self, time_value):
@@ -88,8 +89,17 @@ class MainWindow(QMainWindow, Ui_Main):
                 print(f"Error al desconectar la señal: {str(e)}")
 
     def windows_time(self, value):
-        self.graph.set_time_graph(value)
+        if value >= 60:
+            self.graph.set_time_graph(value)
+        elif value == 0:
+            val = self.spin_time_record.value()
+            self.graph.set_time_graph(val, False)
+            self.spin_time_record.setEnabled(True)
 
+        elif value == 2:
+            val = self.spin_time_record.value()
+            self.graph.set_time_graph(val, True)
+            self.spin_time_record.setEnabled(False)
     
     def on_filter_config_changed(self, param):
         self.graph.set_filters(param=param)
