@@ -29,6 +29,10 @@ class ECGGraphManager(BaseGraphManager):
         self.data_manager.metadata['qrs_intervals'] = []
         self.data_manager.metadata['heart_rate'] = 0
 
+    def convert_raw_to_mv(self, raw_value):
+        """Convierte valores raw del ADC (0-4095) a milivoltios (0-3300)"""
+        return (raw_value * 3300.0) / 4095.0  # 3300 mV = 3.3V
+
     def setup_graphs(self):
         """Configurar los widgets de gráficos para ECG"""
         # Crear el widget principal para el ECG
@@ -42,9 +46,11 @@ class ECGGraphManager(BaseGraphManager):
         
         # Establecer límites en el eje Y
         view_box = self.ecg_plot.getViewBox()
-        view_box.setLimits(yMin=-3, yMax=4000)  # Valores ajustados para múltiples canales con offset
-        view_box.setYRange(-2, 10, padding=0)
-        
+        #view_box.setLimits(yMin=-3, yMax=4000)  # Valores ajustados para múltiples canales con offset
+        #view_box.setYRange(-2, 10, padding=0)
+        self.update_view_range()
+
+
         # Desactivar autoRange para el eje X para evitar cambios inesperados
         view_box.disableAutoRange(axis=pg.ViewBox.XAxis)
         
@@ -69,6 +75,31 @@ class ECGGraphManager(BaseGraphManager):
         
         # Añadir ROI al gráfico de ritmo
         self.setup_roi()
+
+    def update_view_range(self):
+        """Ajusta dinámicamente el rango de visualización según el número de canales activos"""
+        # Determinar cuántos canales están activos
+        subkeys = self.active_subkey if isinstance(self.active_subkey, list) else [self.active_subkey]
+        num_channels = len(subkeys)
+        
+        # Calcular el rango base para un solo canal (0-3300 mV)
+        base_range = 3300  # mV para un canal
+        
+        # Calcular el offset entre canales (separación vertical)
+        channel_offset = 3000  # mV de separación entre canales
+        
+        # Calcular el rango total necesario
+        total_range = (num_channels * base_range) + ((num_channels - 1) * channel_offset)
+        
+        # Añadir margen adicional
+        margin = 500  # mV de margen
+        
+        # Configurar el ViewBox
+        view_box = self.ecg_plot.getViewBox()
+        view_box.setLimits(yMin=-margin, yMax=total_range + margin)
+        view_box.setYRange(-margin, total_range + margin, padding=0)
+        
+        print(f"ViewBox ajustado para {num_channels} canales: {-margin} a {total_range + margin} mV")
 
     def setup_roi(self):
         """Configurar la región de interés (ROI) en el gráfico de ritmo como un intervalo de tamaño fijo"""
@@ -367,31 +398,31 @@ class ECGGraphManager(BaseGraphManager):
         if not subkeys:
             return
             
-
-
         # Primero ocultar todas las curvas y etiquetas
-        #for gpio_name, curve in self.ecg_curves.items():
-        #    curve.setVisible(False)
-        #    if gpio_name in self.channel_labels:
-        #        self.channel_labels[gpio_name].setVisible(False)
-        
+        for gpio_name, curve in self.ecg_curves.items():
+            curve.setVisible(False)
+            if gpio_name in self.channel_labels:
+                self.channel_labels[gpio_name].setVisible(False)
+            
+        num_channels = len(subkeys)
+        channel_spacing = 3000  # mV entre canales
+
         # Luego actualizar y mostrar solo las curvas activas
         for idx, subkey in enumerate(subkeys):
             if subkey in self.ecg_curves:
                 # Aplicar offset vertical
-                offset = idx * 3
-                offset = 0
-                
+                offset = idx * channel_spacing
 
-        
-
-                # Obtener datos para esta subclave
                 y_values = []
                 for a in analog_raw:
                     if isinstance(a, dict) and subkey in a:
-                        y_values.append(a[subkey] + offset)
+                        # Convertir el valor raw a mV
+                        raw_value = a[subkey]
+                        mv_value = self.convert_raw_to_mv(raw_value)
+                        y_values.append(mv_value + offset)
                     else:
-                        y_values.append(offset)  # Valor predeterminado si no hay dato
+                        y_values.append(offset)
+
                 
                 # Actualizar curva con todos los datos
                 self.ecg_curves[subkey].setData(x=timestamps, y=y_values)
@@ -465,6 +496,10 @@ class ECGGraphManager(BaseGraphManager):
             
         # Actualizar los gráficos con las nuevas subclaves activas
         self.update_plots()
+
+    
+        # Ajustar el rango de visualización para los canales activos
+        self.update_view_range()
 
     def set_leads(self, lead_names):
         """

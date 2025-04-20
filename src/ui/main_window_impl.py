@@ -23,7 +23,7 @@ class MainWindow(QMainWindow, Ui_Main):
  
         # Inicializar los gráficos
         self.graph = ECGGraphManager()
-        self.graph.set_active_subkeys(['gpio2','gpio4'])  # O cualquier subclave que quieras visualizar
+        self.graph.set_active_subkeys(['gpio2'])  # O cualquier subclave que quieras visualizar
 
         self.graph_layout.addWidget(self.graph)
 
