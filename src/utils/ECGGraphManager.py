@@ -24,10 +24,7 @@ class ECGGraphManager(BaseGraphManager):
 
         # Configurar filtros
         configuracion = {
-            "highpass": {
-                "cutoff": 0.16,
-                "order": 1
-            }
+
         }
                 
         # Aplicar configuración
