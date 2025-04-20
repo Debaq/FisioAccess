@@ -122,7 +122,7 @@ class ECGGraphManager(BaseGraphManager):
         view_box.setLimits(yMin=-margin, yMax=total_range + margin)
         view_box.setYRange(-margin, total_range + margin, padding=0)
         
-        print(f"ViewBox ajustado para {num_channels} canales: {-margin} a {total_range + margin} mV")
+        #print(f"ViewBox ajustado para {num_channels} canales: {-margin} a {total_range + margin} mV")
 
     def setup_roi(self):
         """Configurar la región de interés (ROI) en el gráfico de ritmo como un intervalo de tamaño fijo"""
@@ -446,16 +446,29 @@ class ECGGraphManager(BaseGraphManager):
                     else:
                         y_values.append(offset)
 
+                # Normalizar los datos antes de filtrar
+                y_values_normalized = [y/1000.0 for y in y_values]  # Convertir a valores más pequeños
+                y_values_filter = self.filtro.filtrar(y_values_normalized)
+                y_values_filter = y_values_filter * 1000.0  # Volver a escalar después del filtrado
+
                 #print(y_values)
                 y_values_filter = self.filtro.filtrar(y_values)
+                print(f"Tipo de y_values_filter: {type(y_values_filter)}")
+                print(f"Primeros 5 valores originales: {y_values[:5]}")
+                print(f"Primeros 5 valores filtrados: {y_values_filter[:5]}")
+
+                # Asegúrate de que y_values_filter sea una lista o array numpy
+                if not isinstance(y_values_filter, (list, np.ndarray)):
+                    y_values_filter = np.array(y_values_filter)
+                #y_values_filter = y_values
                 #print(y_values)
 
                 # Actualizar curva con todos los datos
-                self.ecg_curves[subkey].setData(x=timestamps, y=y_values)
+                self.ecg_curves[subkey].setData(x=timestamps, y=y_values_filter)
                 self.ecg_curves[subkey].setVisible(True)
                 
                 # Actualizar etiqueta al final
-                if timestamps and y_values and subkey in self.channel_labels:
+                if len(timestamps) > 0 and len(y_values_filter) > 0 and subkey in self.channel_labels:
                     # Buscar el último punto visible dentro del ROI
                     last_visible_idx = -1
                     for i in range(len(timestamps)-1, -1, -1):
@@ -465,15 +478,12 @@ class ECGGraphManager(BaseGraphManager):
                     
                     # Si hay punto visible, mostrar etiqueta
                     if last_visible_idx >= 0:
-                        self.channel_labels[subkey].setPos(timestamps[last_visible_idx], y_values[last_visible_idx])
+                        self.channel_labels[subkey].setPos(timestamps[last_visible_idx], y_values_filter[last_visible_idx])
                         self.channel_labels[subkey].setVisible(True)
         
+        self.update_view_range()
 
-                    y_max = max(y_values) if y_values else 0
-                    y_min = min(y_values) if y_values else 0
-                    #print(f"Rango de valores para {subkey}: {y_min} a {y_max}")
-                    self.ecg_plot.setYRange(y_min - 1, y_max + 1)
-
+    
 
 
         # ------- GRAFICAR EN rhythm_plot (solo primera curva, sin offset) --------

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainpDnMDk.ui'
+## Form generated from reading UI file 'mainiRvLAt.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.0
 ##
@@ -757,26 +757,26 @@ class Ui_Main(object):
 
         self.gridLayout_2.addWidget(self.pushButton_26, 5, 2, 1, 1)
 
-        self.checkBox = QCheckBox(self.tab_1)
-        self.checkBox.setObjectName(u"checkBox")
+        self.check_continue_record = QCheckBox(self.tab_1)
+        self.check_continue_record.setObjectName(u"check_continue_record")
 
-        self.gridLayout_2.addWidget(self.checkBox, 2, 3, 1, 1)
+        self.gridLayout_2.addWidget(self.check_continue_record, 2, 3, 1, 1)
 
-        self.spinBox = QSpinBox(self.tab_1)
-        self.spinBox.setObjectName(u"spinBox")
+        self.spin_time_record = QSpinBox(self.tab_1)
+        self.spin_time_record.setObjectName(u"spin_time_record")
 
-        self.gridLayout_2.addWidget(self.spinBox, 2, 1, 1, 2)
+        self.gridLayout_2.addWidget(self.spin_time_record, 2, 1, 1, 2)
 
-        self.spinBox_2 = QSpinBox(self.tab_1)
-        self.spinBox_2.setObjectName(u"spinBox_2")
+        self.spin_fs = QSpinBox(self.tab_1)
+        self.spin_fs.setObjectName(u"spin_fs")
 
-        self.gridLayout_2.addWidget(self.spinBox_2, 1, 1, 1, 2)
+        self.gridLayout_2.addWidget(self.spin_fs, 1, 1, 1, 2)
 
-        self.horizontalSlider = QSlider(self.tab_1)
-        self.horizontalSlider.setObjectName(u"horizontalSlider")
-        self.horizontalSlider.setOrientation(Qt.Orientation.Horizontal)
+        self.slider_amplitude = QSlider(self.tab_1)
+        self.slider_amplitude.setObjectName(u"slider_amplitude")
+        self.slider_amplitude.setOrientation(Qt.Orientation.Horizontal)
 
-        self.gridLayout_2.addWidget(self.horizontalSlider, 3, 1, 1, 2)
+        self.gridLayout_2.addWidget(self.slider_amplitude, 3, 1, 1, 2)
 
         self.label_2 = QLabel(self.tab_1)
         self.label_2.setObjectName(u"label_2")
@@ -1091,7 +1091,7 @@ class Ui_Main(object):
         self.btn_reset.setText(QCoreApplication.translate("Main", u"Reset", None))
         self.pushButton_25.setText(QCoreApplication.translate("Main", u"Auto", None))
         self.pushButton_26.setText(QCoreApplication.translate("Main", u"Manual", None))
-        self.checkBox.setText(QCoreApplication.translate("Main", u"Continua", None))
+        self.check_continue_record.setText(QCoreApplication.translate("Main", u"Continua", None))
         self.label_2.setText(QCoreApplication.translate("Main", u"### Configuraci\u00f3n de Adquisici\u00f3n", None))
         self.pushButton_29.setText(QCoreApplication.translate("Main", u"Pausar", None))
         self.btn_start.setText(QCoreApplication.translate("Main", u"Iniciar", None))

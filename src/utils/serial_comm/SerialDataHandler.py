@@ -29,6 +29,7 @@ class SerialDataHandler(QObject):
             
             # Verificar si es una respuesta a comando (tiene cmd_received)
             if 'cmd_received' in json_data:
+                print("entro un comando")
                 self.command_response.emit(json_data)
                 return
             

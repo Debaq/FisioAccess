@@ -10,6 +10,8 @@ from utils.FileHandler import FileHandler
 from utils.SpirometryGraphManager import SpirometryGraphManager
 from utils.ECGGraphManager import ECGGraphManager
 
+import time
+
 class MainWindow(QMainWindow, Ui_Main):
     def __init__(self):
         super().__init__()
@@ -20,7 +22,8 @@ class MainWindow(QMainWindow, Ui_Main):
         # Inicializar el manejador serial
         self.serial_handler = SerialHandler()
         self.data_handler = SerialDataHandler()
- 
+        self.data_handler.new_data_json.connect(self.command_into)
+
         # Inicializar los gráficos
         self.graph = ECGGraphManager()
         self.graph.set_active_subkeys(['gpio2'])  # O cualquier subclave que quieras visualizar
@@ -117,6 +120,11 @@ class MainWindow(QMainWindow, Ui_Main):
 
  
     @Slot()
+    def command_into(self, value):
+        status = value["status"]
+
+
+    @Slot()
     def start_read(self):
         self.btn_start.setText("Detener")
         self.btn_start.clicked.disconnect(self.start_read)
@@ -176,10 +184,15 @@ class MainWindow(QMainWindow, Ui_Main):
                 self.serial_handler.data_received_serial.connect(self.data_handler.analisis_input_serial)
                 
                 if self.serial_handler.open():
+
                     self.statusbar.showMessage(f"Conectado a {port}")
                     self.serial_list.setEnabled(False)
                     self.btn_connect.setText("Desconectar")
+                    self.serial_handler.write_data(('{"cmd": "get_status"}'))
+
                     self.serial_handler.write_data(('{"cmd": "start_stream"}'))
+
+                    
                     self.btn_start.setEnabled(True)
                 
                 else:
