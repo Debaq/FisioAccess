@@ -1,32 +1,16 @@
 from PySide6.QtCore import QObject, Signal, Slot
+import json
 
 class SerialDataHandler(QObject):
-    # Señal para nuevos datos procesados
-    new_data = Signal(dict)
-    # Señal para strings no estándar
-    other_string = Signal(str)
+    # Señal para datos JSON procesados
+    new_data_json = Signal(dict)
+    # Señal para respuestas a comandos
+    command_response = Signal(dict)
+    # Señal para errores y mensajes no JSON
+    error_message = Signal(str)
     
     def __init__(self):
         super().__init__()
-    
-    def validate_time(self, time_value):
-        """
-        Validar el valor del tiempo.
-        
-        Args:
-            time_value (float): Valor de tiempo a validar
-            
-        Returns:
-            bool: True si el tiempo es válido, False en caso contrario
-        """
-        # Convertir a string para contar dígitos
-        time_str = str(abs(time_value))
-        
-        # Remover el punto decimal para contar dígitos
-        digits = time_str.replace('.', '')
-        
-        # Verificar que tenga al menos 4 dígitos
-        return len(digits) >= 4
     
     @Slot(str)
     def analisis_input_serial(self, data_string):
@@ -34,61 +18,47 @@ class SerialDataHandler(QObject):
         try:
             # Limpiar el string
             data_string = data_string.strip()
-            # Verificar si es el formato esperado
-            values = data_string.split(',')
-     
-            if len(values) == 4:
-                # Convertir valores a float
-                t, p, f, v = map(float, values)
-                
-                # Validar el tiempo
-                if not self.validate_time(t):
-                    error_msg = f"Valor de tiempo inválido ({t}): debe tener al menos 4 dígitos"
-                    self.other_string.emit(error_msg)
-                    print(error_msg)
-                    return
-                
-                # Validar que los demás valores sean números razonables
-                if not all(isinstance(x, (int, float)) for x in [p, f, v]):
-                    raise ValueError("Valores no numéricos detectados")
-                
-                # Crear diccionario de datos
-                data_dict = {
-                    't': t, #tiempo
-                    'p': p, #presion
-                    'f': f, #flujo
-                    'v': v  #volumen
-                }
-                
-                # Emitir los datos procesados
-                #self.new_data.emit(data_dict)
-            elif len(values) == 2:
-                # Convertir valores a float
-                t, p = map(float, values)
-                # Validar que los demás valores sean números razonables
-                if not all(isinstance(x, (int, float)) for x in [p]):
-                    raise ValueError("Valores no numéricos detectados")
-                
-                # Crear diccionario de datos
-                data_dict = {
-                    't': t, #tiempo
-                    'p': p, #presion
-                    'f': p, #flujo
-                    'v': p  #volumen
-                }
-           
-            else:
-                # Si no es el formato esperado, enviar a otro analizador
-                self.analizar_otro_string(data_string)
+            
+            # Intentar parsear como JSON
+            try:
+                json_data = json.loads(data_string)
+            except json.JSONDecodeError:
+                # Si no es JSON, emitir como error
+                self.error_message.emit(f"Formato inválido (no es JSON): {data_string}")
                 return
-            self.new_data.emit(data_dict)
+            
+            # Verificar si es una respuesta a comando (tiene cmd_received)
+            if 'cmd_received' in json_data:
+                self.command_response.emit(json_data)
+                return
+            
+            # Verificar si es una lectura de datos (tiene timestamp)
+            if 'timestamp' in json_data:
+                self.new_data_json.emit(json_data)
+                return
                 
+            # Si llegamos aquí, es un JSON que no reconocemos
+            self.error_message.emit(f"JSON con formato desconocido: {data_string}")
+            
         except Exception as e:
-            # Si hay error en el procesamiento, tratar como otro tipo de string
-            self.analizar_otro_string(f"Error procesando: {data_string}, {str(e)}")
+            # Si hay error en el procesamiento
+            self.error_message.emit(f"Error procesando: {data_string}, {str(e)}")
     
-    def analizar_otro_string(self, string):
-        """Procesar strings que no coinciden con el formato esperado"""
-        print(f"String no estándar recibido: {string}")
-
-        self.other_string.emit(string)  
+    def send_command(self, command_dict):
+        """
+        Prepara un comando para enviar al dispositivo
+        
+        Args:
+            command_dict (dict): Diccionario con el comando a enviar
+            
+        Returns:
+            str: Comando en formato JSON con salto de línea
+        """
+        try:
+            # Convertir diccionario a JSON
+            command_json = json.dumps(command_dict)
+            # Añadir salto de línea requerido por el dispositivo
+            return command_json + "\n"
+        except Exception as e:
+            self.error_message.emit(f"Error preparando comando: {str(e)}")
+            return None

@@ -13,7 +13,19 @@ class DataManager:
         Inicializa un gestor de datos con los tipos de datos especificados.
         
         Args:
-            data_types (list): Lista de tipos de datos a gestionar (p.ej. ['t', 'p', 'f', 'v'])
+            data_types (list): Lista de tipos de datos a gestionar (p.ej. ['timestamp', 'p', 'f', 'v'])
+            {
+            'analog': {'gpio2': 2810, 'gpio3': 3024, 'gpio4': 2669}, 
+            'espnow': {'status': 'inactive'}, 
+            'i2c': {'ads1115': None}, 
+            'serial': {'data': 'No secondary serial data', 'port': 'UART0'}, 
+            'spi': {'device1': {'register1': 413, 'register2': 484}}, 
+            'status': {
+                    'cpu_freq': 160, 'device_id': '000000000000', 
+                    'device_name': 'ESP32_000000', 'firmware': '1.0.0', 
+                    'free_memory': 256700, 'temperature': 45.2, 'uptime': 423}, 
+            'timestamp': 423249, 
+            'wifi': {'status': 'disconnected'}}
         """
         # Datos originales para almacenamiento
         self.data = {data_type: [] for data_type in data_types}
@@ -53,19 +65,19 @@ class DataManager:
         """
         if not self.record:
             return
-
         try:
             # Actualizar datos originales
+            
             for key in new_data:
                 if key in self.data:
                     self.data[key].append(new_data[key])
 
             # Actualizar datos de visualización
-            if 't' in new_data and 't' in self.display_data:
-                self.display_data['t'].append(self.calibrate_time(new_data['t']))
+            if 'timestamp' in new_data and 'timestamp' in self.display_data:
+                self.display_data['timestamp'].append(self.calibrate_time(new_data['timestamp']))
                 
             for key in new_data:
-                if key != 't' and key in self.display_data:
+                if key != 'timestamp' and key in self.display_data:
                     self.display_data[key].append(new_data[key])
 
             # Mantener solo los últimos 1000 puntos (configurable)
@@ -123,6 +135,7 @@ class DataManager:
         Returns:
             float: Valor interpolado de Y en la posición X, o None si no se puede obtener
         """
+        print(f"los datos que se piden son: {x_data_type} - {y_data_type} - {x_pos}")
         if (not self.display_data[x_data_type] or 
             not self.display_data[y_data_type] or
             len(self.display_data[x_data_type]) != len(self.display_data[y_data_type])):
@@ -192,7 +205,7 @@ class BaseGraphManager(QWidget):
         Inicializa el gestor de datos.
         A implementar en las subclases con los tipos de datos específicos.
         """
-        self.data_manager = DataManager(['t'])
+        self.data_manager = DataManager(['timestamp'])
         
     def setup_graphs(self):
         """

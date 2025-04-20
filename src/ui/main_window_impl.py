@@ -22,9 +22,10 @@ class MainWindow(QMainWindow, Ui_Main):
         self.data_handler = SerialDataHandler()
  
         # Inicializar los gráficos
-        self.spirometer_graph = SpirometryGraphManager()
-        self.ecg_graph = ECGGraphManager()
-        self.graph_layout.addWidget(self.ecg_graph)
+        self.graph = ECGGraphManager()
+        self.graph.set_active_subkeys(['gpio2','gpio4'])  # O cualquier subclave que quieras visualizar
+
+        self.graph_layout.addWidget(self.graph)
 
 
         # Configurar el timer para actualizar la lista de puertos
@@ -49,9 +50,12 @@ class MainWindow(QMainWindow, Ui_Main):
         button = self.sender()
         self.limpiar_layout(self.graph_layout)
         if button.objectName() == "btn_test_ecg":
-            self.graph_layout.addWidget(self.ecg_graph)
+            self.graph = ECGGraphManager()
+
+            self.graph_layout.addWidget(self.graph)
         elif button.objectName() == "btn_test_spiro":
-            self.graph_layout.addWidget(self.spirometer_graph)
+            self.graph = SpirometryGraphManager()
+            self.graph_layout.addWidget(self.graph)
 
 
             #QPushButton.text
@@ -91,7 +95,7 @@ class MainWindow(QMainWindow, Ui_Main):
             try:
                 self.serial_handler.data_received_serial.disconnect(self.data_handler.analisis_input_serial)
             except:
-                pass
+                print("error al desconectar")
             
             # Reconectar la señal
             self.serial_handler.data_received_serial.connect(self.data_handler.analisis_input_serial)
@@ -100,10 +104,10 @@ class MainWindow(QMainWindow, Ui_Main):
 
         # Verificar la conexión del data_handler
         try:
-            self.data_handler.new_data.connect(self.graph_handler.update_data)
-            print("Señal new_data conectada exitosamente a graph_handler")
+            self.data_handler.new_data_json.connect(self.graph.update_data)
+            print("Señal new_data_json conectada exitosamente a graph_handler")
         except Exception as e:
-            print(f"Error al conectar data_handler.new_data: {str(e)}")
+            print(f"Error al conectar data_handler.new_data_json: {str(e)}")
         
         self.btn_start.setEnabled(False)
         self.btn_start.clicked.connect(self.start_read)

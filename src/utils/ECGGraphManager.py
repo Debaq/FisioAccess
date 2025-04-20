@@ -14,13 +14,17 @@ class ECGGraphManager(BaseGraphManager):
         self.LIMIT_MAX = 60
         # Tamaño inicial del ROI (en segundos)
         self.roi_size = 5
+        # Bandera para controlar si es la primera actualización
+        self.first_update = True
         # Llamar al constructor de la clase base después de definir las constantes
         super().__init__(parent, layout_type='vertical')
 
     def setup_data_manager(self):
         """Inicializa el gestor de datos con configuración mínima para ECG"""
         # Por defecto solo gestionamos tiempo y una derivación
-        self.data_manager = DataManager(['t', 'ecg'])
+        self.data_manager = DataManager(['timestamp', 'analog'])
+        self.analog_subkeys = ['gpio2', 'gpio3', 'gpio4']
+        self.active_subkey = self.analog_subkeys  # Por defecto, todos los canales están activos
         # Metadatos específicos para ECG
         self.data_manager.metadata['qrs_intervals'] = []
         self.data_manager.metadata['heart_rate'] = 0
@@ -38,8 +42,11 @@ class ECGGraphManager(BaseGraphManager):
         
         # Establecer límites en el eje Y
         view_box = self.ecg_plot.getViewBox()
-        view_box.setLimits(yMin=-3, yMax=3)  # Valores típicos para ECG en mV
-        view_box.setYRange(-2, 2, padding=0)
+        view_box.setLimits(yMin=-3, yMax=4000)  # Valores ajustados para múltiples canales con offset
+        view_box.setYRange(-2, 10, padding=0)
+        
+        # Desactivar autoRange para el eje X para evitar cambios inesperados
+        view_box.disableAutoRange(axis=pg.ViewBox.XAxis)
         
         # Configurar el fondo del gráfico
         self.ecg_widget.setBackground('w')
@@ -164,24 +171,48 @@ class ECGGraphManager(BaseGraphManager):
         # Obtener los límites de la región seleccionada
         min_x, max_x = self.roi.getRegion()
         
-        # Aplicar esos límites al gráfico principal
+        # Aplicar esos límites al gráfico principal manteniendo el tamaño fijo
         self.ecg_plot.setXRange(min_x, max_x, padding=0)
+        
+        # NO volver a llamar a update_plots aquí para evitar recursión y cambios inesperados
+        # La actualización de los datos se hará desde el método principal update_plots
 
     def setup_curve_styles(self):
         """Configurar las curvas de los gráficos para ECG"""
         # Por defecto solo tenemos una derivación
-        self.leads = ['ecg']
-        self.lead_colors = ['r']
+        self.leads = ['analog']
+        self.lead_colors = ['r', 'g', 'b', 'm', 'c', 'y', 'k']
         
         # Derivación activa (por defecto la única disponible)
-        self.active_lead = 'ecg'
+        self.active_lead = 'analog'
         
-        # Curva principal para la derivación activa
-        self.ecg_curve = self.ecg_plot.plot(
-            pen=pg.mkPen('r', width=2)
-        )
+        # Definir el número máximo de GPIOs que podríamos tener
+        max_gpios = 3 # Por ejemplo, gpio2 hasta gpio9
         
-        # Curva para el ritmo (misma derivación)
+        # Crear diccionarios para almacenar todas las curvas y etiquetas
+        self.ecg_curves = {}
+        self.channel_labels = {}
+        
+        # Crear curvas para todos los posibles GPIOs
+        for i in range(max_gpios):
+            gpio_name = f'gpio{i+2}'  # Empezando desde gpio2
+
+            # Crear curva con su propio color
+            pen = pg.mkPen(color=self.lead_colors[i % len(self.lead_colors)], width=2)
+            curve = self.ecg_plot.plot([], [], pen=pen, name=gpio_name)
+            self.ecg_curves[gpio_name] = curve
+
+            # Inicialmente ocultar todas las curvas
+            #curve.setVisible(True) #cambiar a False <<<<<<<<<<<<<<ojo
+            
+            # Crear etiqueta para este canal (inicialmente oculta)
+            label = pg.TextItem(text=gpio_name, color=self.lead_colors[i % len(self.lead_colors)], anchor=(0, 0.5))
+            self.ecg_plot.addItem(label)
+            #label.setVisible(False) <<<<<<<<<<<<<<<<<<<ojo
+            self.channel_labels[gpio_name] = label
+        
+        
+        # Curva para el ritmo (primera subkey por defecto)
         self.rhythm_curve = self.rhythm_plot.plot(
             pen=pg.mkPen('b', width=2)
         )
@@ -239,64 +270,201 @@ class ECGGraphManager(BaseGraphManager):
     def update_interval_info(self):
         """Actualizar la información de los intervalos QRS"""
         try:
-            # Obtener valores x (tiempos)
+            # Solo aplica si hay al menos una subclave activa
+            if not self.active_subkey or (isinstance(self.active_subkey, list) and len(self.active_subkey) == 0):
+                self.qrs_label.setText('')
+                self.hr_label.setText('')
+                return
+
             x1 = self.qrs_line1.value()
             x2 = self.qrs_line2.value()
-            
-            # Calcular intervalo RR en segundos
             rr_interval = abs(x2 - x1)
-            
-            # Calcular frecuencia cardíaca a partir del intervalo RR
-            if rr_interval > 0:
-                heart_rate = 60 / rr_interval  # HR = 60 / RR (en segundos)
-            else:
-                heart_rate = 0
-            
-            # Actualizar metadatos
+            heart_rate = 60 / rr_interval if rr_interval > 0 else 0
             self.data_manager.metadata['heart_rate'] = heart_rate
-            
-            # Verificar que la derivación activa existe
-            if self.active_lead in self.data_manager.display_data:
-                # Obtener valores y (amplitud)
-                y1 = self.data_manager.get_y_value_at_x('t', self.active_lead, x1)
-                y2 = self.data_manager.get_y_value_at_x('t', self.active_lead, x2)
-                
-                # Posicionar etiquetas
-                x_mid = min(x1, x2) + rr_interval/2
-                y_position = self.ecg_plot.getViewBox().viewRange()[1][1] * 0.9
-                
-                # Actualizar etiquetas
-                self.qrs_label.setPos(x_mid, y_position)
-                self.qrs_label.setText(
-                    f'RR: {rr_interval*1000:.0f} ms\n'
-                    f'HR: {heart_rate:.0f} bpm'
-                )
-                
-                # Actualizar etiqueta de frecuencia cardíaca en la esquina
-                self.hr_label.setPos(self.ecg_plot.getViewBox().viewRange()[0][0], 
-                                    self.ecg_plot.getViewBox().viewRange()[1][1] * 0.8)
-                self.hr_label.setText(f'Heart Rate: {heart_rate:.0f} bpm')
-            
+
+            # Obtener subclave para análisis (primera si es lista)
+            analysis_key = self.active_subkey[0] if isinstance(self.active_subkey, list) else self.active_subkey
+
+            # Posicionar etiquetas
+            x_mid = min(x1, x2) + rr_interval / 2
+            y_position = self.ecg_plot.getViewBox().viewRange()[1][1] * 0.9
+
+            self.qrs_label.setPos(x_mid, y_position)
+            self.qrs_label.setText(
+                f'RR: {rr_interval*1000:.0f} ms\nHR: {heart_rate:.0f} bpm'
+            )
+
+            self.hr_label.setPos(
+                self.ecg_plot.getViewBox().viewRange()[0][0],
+                self.ecg_plot.getViewBox().viewRange()[1][1] * 0.8
+            )
+            self.hr_label.setText(f'Heart Rate: {heart_rate:.0f} bpm')
+
         except Exception as e:
             print(f"Error actualizando intervalos: {e}")
 
+    def get_subvalue_at_x(self, x_pos, subkey=None):
+        """
+        Interpola el valor para una subclave específica de 'analog' en un tiempo dado.
+        
+        Args:
+            x_pos (float): Posición en el tiempo para interpolar
+            subkey (str, optional): Subclave específica a interpolar. Por defecto, usa la primera activa.
+            
+        Returns:
+            float: Valor interpolado, None si no es posible
+        """
+        timestamps = self.data_manager.display_data['timestamp']
+        analog_data = self.data_manager.display_data['analog']
+
+        if not timestamps or not analog_data:
+            return None
+            
+        # Determinar qué subclave usar
+        if subkey is None:
+            if isinstance(self.active_subkey, list) and self.active_subkey:
+                subkey = self.active_subkey[0]
+            else:
+                subkey = self.active_subkey
+        
+        x_data = np.array(timestamps)
+        
+        # Extraer valores para la subclave específica
+        y_data = np.array([
+            a.get(subkey, 0) if isinstance(a, dict) else 0
+            for a in analog_data
+        ])
+
+        if x_pos < x_data[0] or x_pos > x_data[-1]:
+            return None
+
+        idx = np.searchsorted(x_data, x_pos)
+        if idx > 0 and idx < len(x_data):
+            x0, x1 = x_data[idx-1], x_data[idx]
+            y0, y1 = y_data[idx-1], y_data[idx]
+
+            if x1 == x0:
+                return y0
+            return y0 + (y1 - y0) * (x_pos - x0) / (x1 - x0)
+        
+        return None
+
     def update_plots(self):
-        """Actualizar los gráficos de ECG"""
-        if len(self.data_manager.display_data['t']) > 0:
-            # Actualizar gráfico principal con la derivación activa
-            self.ecg_curve.setData(
-                x=self.data_manager.display_data['t'],
-                y=self.data_manager.display_data[self.active_lead]
-            )
+        """Actualiza los gráficos de ECG con los datos actuales"""
+        if len(self.data_manager.display_data['timestamp']) == 0:
+            return
+
+        timestamps = self.data_manager.display_data['timestamp']
+        analog_raw = self.data_manager.display_data['analog']
+        
+        # Obtener los límites de la región seleccionada para filtrar datos
+        min_x, max_x = self.roi.getRegion()
+
+
+        # Asegurar que siempre sea lista
+        subkeys = self.active_subkey if isinstance(self.active_subkey, list) else [self.active_subkey]
+        # Si no hay subclaves activas, no hay nada que mostrar
+        if not subkeys:
+            return
             
-            # Actualizar gráfico de ritmo con la misma derivación
-            self.rhythm_curve.setData(
-                x=self.data_manager.display_data['t'],
-                y=self.data_manager.display_data[self.active_lead]
-            )
+
+
+        # Primero ocultar todas las curvas y etiquetas
+        #for gpio_name, curve in self.ecg_curves.items():
+        #    curve.setVisible(False)
+        #    if gpio_name in self.channel_labels:
+        #        self.channel_labels[gpio_name].setVisible(False)
+        
+        # Luego actualizar y mostrar solo las curvas activas
+        for idx, subkey in enumerate(subkeys):
+            if subkey in self.ecg_curves:
+                # Aplicar offset vertical
+                offset = idx * 3
+                offset = 0
+                
+
+        
+
+                # Obtener datos para esta subclave
+                y_values = []
+                for a in analog_raw:
+                    if isinstance(a, dict) and subkey in a:
+                        y_values.append(a[subkey] + offset)
+                    else:
+                        y_values.append(offset)  # Valor predeterminado si no hay dato
+                
+                # Actualizar curva con todos los datos
+                self.ecg_curves[subkey].setData(x=timestamps, y=y_values)
+                self.ecg_curves[subkey].setVisible(True)
+                
+                # Actualizar etiqueta al final
+                if timestamps and y_values and subkey in self.channel_labels:
+                    # Buscar el último punto visible dentro del ROI
+                    last_visible_idx = -1
+                    for i in range(len(timestamps)-1, -1, -1):
+                        if min_x <= timestamps[i] <= max_x:
+                            last_visible_idx = i
+                            break
+                    
+                    # Si hay punto visible, mostrar etiqueta
+                    if last_visible_idx >= 0:
+                        self.channel_labels[subkey].setPos(timestamps[last_visible_idx], y_values[last_visible_idx])
+                        self.channel_labels[subkey].setVisible(True)
+        
+
+                    y_max = max(y_values) if y_values else 0
+                    y_min = min(y_values) if y_values else 0
+                    print(f"Rango de valores para {subkey}: {y_min} a {y_max}")
+                    self.ecg_plot.setYRange(y_min - 1, y_max + 1)
+
+
+
+        # ------- GRAFICAR EN rhythm_plot (solo primera curva, sin offset) --------
+        if subkeys:  # Si hay al menos una subclave activa
+            first_subkey = subkeys[0]
+            y_values_rhythm = []
             
-            # Actualizar información de los intervalos
-            self.update_interval_info()
+            for a in analog_raw:
+                if isinstance(a, dict) and first_subkey in a:
+                    y_values_rhythm.append(a[first_subkey])
+                else:
+                    y_values_rhythm.append(0)  # Valor predeterminado si no hay dato
+                    
+            self.rhythm_curve.setData(x=timestamps, y=y_values_rhythm)
+        
+        # Mantener el rango X fijo según el ROI
+        self.ecg_plot.setXRange(min_x, max_x, padding=0)
+        
+        # Actualizar etiquetas si aplica
+        self.update_interval_info()
+        
+        # Actualizar etiqueta del eje Y
+        if len(subkeys) == 1:
+            label = subkeys[0].replace('_', ' ')
+        else:
+            label = "Multicanal ECG"
+            
+        self.ecg_plot.setLabel('left', label, 'mV')
+
+
+
+    def set_active_subkeys(self, subkeys):
+        """
+        Establece qué subclaves de 'analog' se mostrarán en el gráfico principal
+        
+        Args:
+            subkeys (list): Lista de subclaves a mostrar (por ejemplo, ['gpio2', 'gpio4'])
+        """
+        if isinstance(subkeys, list) and len(subkeys) > 0:
+            self.active_subkey = subkeys
+        elif isinstance(subkeys, str):
+            self.active_subkey = [subkeys]
+        else:
+            print("Error: se requiere al menos una subclave activa")
+            return
+            
+        # Actualizar los gráficos con las nuevas subclaves activas
+        self.update_plots()
 
     def set_leads(self, lead_names):
         """
@@ -311,7 +479,7 @@ class ECGGraphManager(BaseGraphManager):
             
         # Actualizar gestor de datos con las nuevas derivaciones
         old_data_types = list(self.data_manager.data.keys())
-        new_data_types = ['t'] + lead_names
+        new_data_types = ['timestamp'] + lead_names
         
         # Crear nuevo gestor de datos con las derivaciones especificadas
         new_data_manager = DataManager(new_data_types)
