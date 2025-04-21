@@ -6,6 +6,7 @@ import threading
 import logging
 from pathlib import Path
 from typing import Dict, List, Union, Optional, Callable
+import math  # Añade esto al inicio del archivo Python
 
 # Importaciones para el servidor
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
@@ -34,10 +35,12 @@ class WebSocketManager:
     
     async def broadcast(self, message: dict):
         """Envía datos a todos los clientes conectados."""
+        logger.info(f"Broadcasting message to {len(self.active_connections)} connections: {message}")
         disconnected = []
         for connection in self.active_connections:
             try:
                 await connection.send_json(message)
+                logger.info("Mensaje enviado exitosamente")
             except Exception as e:
                 logger.error(f"Error enviando datos: {str(e)}")
                 disconnected.append(connection)
@@ -56,7 +59,7 @@ class ServidorBiosenales:
         self.server = None
         self.is_running = False
         self.config = {
-            "host": "localhost",
+            "host": "0.0.0.0",  # Escuchar en todas las interfaces
             "port": 8000,
             "dist_folder": "dist",  # Carpeta donde está tu build de Vite
             "api_external": False,  # Si es True, enviará datos a una API externa
@@ -121,32 +124,31 @@ class ServidorBiosenales:
         self.is_running = False
         logger.info("Servidor detenido")
     
+    # Reemplaza el método _data_sender de la clase ServidorBiosenales con este:
     def _data_sender(self):
         """Envía datos periódicamente a los clientes WebSocket."""
         logger.info("Iniciando envío de datos")
+        import asyncio
         
-        while not self.stop_event.is_set():
-            if self.data_callback:
-                try:
-                    # Obtener datos desde la callback
-                    data = self.data_callback()
-                    
-                    if self.config["api_external"] and self.config["api_url"]:
-                        # TODO: Implementar envío a API externa
-                        pass
-                    
-                    # Crear tarea asíncrona para enviar datos por WebSocket
-                    import asyncio
-                    loop = asyncio.new_event_loop()
-                    asyncio.set_event_loop(loop)
-                    loop.run_until_complete(self.ws_manager.broadcast(data))
-                    
-                except Exception as e:
-                    logger.error(f"Error enviando datos: {str(e)}")
-            
-            # Esperar el intervalo configurado
-            time.sleep(self.config["data_interval"] / 1000)
-    
+        async def send_data():
+            while not self.stop_event.is_set():
+                if self.data_callback:
+                    try:
+                        data = self.data_callback()
+                        logger.info(f"Enviando datos: {data}") # Para debug
+                        await self.ws_manager.broadcast(data)
+                    except Exception as e:
+                        logger.error(f"Error enviando datos: {str(e)}")
+                await asyncio.sleep(self.config["data_interval"] / 1000)
+        
+        # Crear y ejecutar el loop asíncrono
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            loop.run_until_complete(send_data())
+        finally:
+            loop.close()
+
     def start(self):
         """Inicia el servidor y el envío de datos en hilos separados."""
         if self.is_running:
@@ -428,29 +430,31 @@ class ServidorWebConfigUI:
         """Se llama cuando se cierra la aplicación principal."""
         self.servidor.stop()
 
-
-# Ejemplo de uso
 if __name__ == "__main__":
-    # Este ejemplo muestra cómo usar el componente en una aplicación PySide6
+    # Ejemplo básico de uso
     from PySide6.QtWidgets import QApplication, QMainWindow
     import sys
+    import random
+    import time
+    import threading
     
-    # Callback de ejemplo para proporcionar datos
+    # Función que genera datos de prueba
     def get_biosignal_data():
-        import random
-        import time
+        # Generar datos de ECG simulados (onda sinusoidal con ruido)
+        timestamp = int(time.time() * 1000)
+        ecg_data = [0.5 * math.sin(2 * math.pi * i / 100) + random.uniform(-0.1, 0.1) for i in range(50)]
         
-        # Simular datos de ECG
-        ecg_data = [random.uniform(0, 1) for _ in range(50)]
-        
-        return {
-            "timestamp": int(time.time() * 1000),
-            "ecg": ecg_data,
-            "heart_rate": random.randint(60, 100)
+        data = {
+            "timestamp": timestamp,
+            "ecg_data": ecg_data,
+            "heart_rate": random.randint(60, 100),
+            "filtros": ["low_pass", "notch"]  # Ejemplo de filtros
         }
+        logger.info(f"Generando datos: {data}")
+        return data
     
+    # Crear aplicación Qt
     app = QApplication(sys.argv)
-    
     window = QMainWindow()
     window.setWindowTitle("Demo Servidor Web para Bioseñales")
     
