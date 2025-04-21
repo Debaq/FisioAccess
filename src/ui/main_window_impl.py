@@ -51,7 +51,9 @@ class MainWindow(QMainWindow, Ui_Main):
                 objeto.clicked.connect(self.reconnect_graph)
 
         self.fs = 200
-                # Crear y configurar el gestor de filtros
+        self.spin_fs.valueChanged.connect(self.set_interval_w_fs)
+        self.spin_fs.setEnabled(False)
+        # Crear y configurar el gestor de filtros
         self.filter_manager = FilterManager(self)
         
         # Conectar la señal configurationChanged a nuestro método
@@ -60,7 +62,19 @@ class MainWindow(QMainWindow, Ui_Main):
         self.spin_time_record.setValue(60)
         self.spin_time_record.valueChanged.connect(self.windows_time)
         self.check_continue_record.stateChanged.connect(self.windows_time)
+    
+    def set_interval_w_fs(self, value):
         
+        interval = 1000 / value
+        #print(f"el intervalo es : {interval}")
+        #print(f'{{"cmd": "set_sample_rate", "interval": {interval}}}')
+        self.serial_handler.write_data((f'{{"cmd": "set_sample_rate", "interval": {interval}}}'))
+
+       # if self.interval != interval:
+       #     self.interval = interval
+       #     self.spin_interval.setValue(interval)
+        #print(value)
+    
     @Slot(float)
     def on_window_limit_reached(self, time_value):
         """Maneja el evento cuando se recibe una actualización del tiempo del gráfico"""
@@ -189,6 +203,7 @@ class MainWindow(QMainWindow, Ui_Main):
     @Slot()
     def command_into(self, value):
         status = value["status"]
+        print(status)
         interval = status["sample_interval"]
         fs = 1000 / interval
         if self.fs != fs:
@@ -268,6 +283,7 @@ class MainWindow(QMainWindow, Ui_Main):
 
                     self.statusbar.showMessage(f"Conectado a {port}")
                     self.serial_list.setEnabled(False)
+                    self.spin_fs.setEnabled(True)
                     self.btn_connect.setText("Desconectar")
                     self.start_read_serial()
                     self.serial_handler.write_data(('{"cmd": "set_sample_rate", "interval": 1}'))
@@ -294,6 +310,8 @@ class MainWindow(QMainWindow, Ui_Main):
                 self.statusbar.showMessage("Desconectado")
                 # Habilitar combo box después de desconectar
                 self.serial_list.setEnabled(True)
+                self.spin_fs.setEnabled(False)
+
                 self.btn_connect.setText("Conectar")
 
             except Exception as e:
